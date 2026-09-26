@@ -1,0 +1,44 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Confirm gcc is available
+        run: gcc --version
+
+      - name: Offline structural validation
+        run: python3 scripts/validate.py
+
+      - name: Host firmware tests
+        run: python3 scripts/test_firmware.py
+
+      - name: Analytical checks
+        run: python3 scripts/analyze.py
+
+      - name: Release guard must refuse (no gate may close from desk work)
+        run: |
+          if python3 manufacturing/release_guard.py; then
+            echo "release_guard.py exited zero; a P0 release gate must never close from CI." >&2
+            exit 1
+          fi
+          echo "release_guard.py correctly exited nonzero; gates remain OPEN."

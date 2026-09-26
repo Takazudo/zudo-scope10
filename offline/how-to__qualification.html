@@ -9,43 +9,5 @@
 <p>Do not apply ±24 V merely because the design spreadsheet contains it. First review all clamp paths and absolute maximum constraints, then conduct a controlled powered/unpowered current-limited test at a suitably equipped provider. Inspect both source and internal node currents and any back-powered rail. ESD immunity is a separate test; successful DC injection is not an IEC ESD claim.</p>
 <h2>Initial proposed acceptance limits</h2>
 <p>These are engineering targets, not achieved results. Review them after the first measured sample:</p>
-<table>
-<thead>
-<tr>
-<th>Item</th>
-<th>Proposed target</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Calibrated DC residual, low-impedance source</td>
-<td>no more than 100 mV over ±8 V, excluding noise outliers</td>
-</tr>
-<tr>
-<td>Channel crosstalk on DC steps</td>
-<td>no more than 100 mV input-referred after the selected settling interval</td>
-</tr>
-<tr>
-<td>Reliable useful bandwidth</td>
-<td>characterize DC–1 kHz amplitude error; do not assume flatness</td>
-</tr>
-<tr>
-<td>High-rate acquisition</td>
-<td>ten actual 10 ksample/s streams with counted overruns and measured skew</td>
-</tr>
-<tr>
-<td>RANGE state</td>
-<td>stable reading after 20 ms; no indefinite intermediate-state oscillation</td>
-</tr>
-<tr>
-<td>LCD behavior</td>
-<td>all ten panes, correct orientation/colors/labels; readable physical-scale text</td>
-</tr>
-<tr>
-<td>User assembly</td>
-<td>no unsoldered electrical part or wire after delivery</td>
-</tr>
-</tbody>
-</table>
-<p>No hardware result is prefilled in <code>manufacturing/acceptance-results.csv</code>. Failed items remain visible. The first populated prototype may require a second PCB revision; do not shift that rework onto the user.</p>
-<footer>Pre-layout evidence. No factory approval or hardware measurements are implied.</footer></main></html>
+<table><thead><tr><th>Item</th><th>Proposed target</th></tr></thead><tbody><tr><td>Calibrated DC residual, low-impedance source</td><td>no more than 100 mV over ±8 V, excluding noise outliers</td></tr><tr><td>Channel crosstalk on DC steps</td><td>no more than 100 mV input-referred after the selected settling interval</td></tr><tr><td>Reliable useful bandwidth</td><td>characterize DC–1 kHz amplitude error; do not assume flatness</td></tr><tr><td>High-rate acquisition</td><td>ten actual 10 ksample/s streams with counted overruns and measured skew</td></tr><tr><td>RANGE state</td><td>stable reading after 20 ms; no indefinite intermediate-state oscillation</td></tr><tr><td>LCD behavior</td><td>all ten panes, correct orientation/colors/labels; readable physical-scale text</td></tr><tr><td>User assembly</td><td>no unsoldered electrical part or wire after delivery</td></tr></tbody></table>
+<p>No hardware result is prefilled in <code>manufacturing/acceptance-results.csv</code>. Failed items remain visible. The first populated prototype may require a second PCB revision; do not shift that rework onto the user.</p><footer>Pre-layout evidence. No factory approval or hardware measurements are implied.</footer></main></html>

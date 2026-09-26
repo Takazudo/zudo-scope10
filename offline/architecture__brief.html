@@ -1,54 +1,5 @@
 <!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>P0 specification and tradeoffs · SCOPE10</title><link rel="stylesheet" href="style.css"><header><div class="tag">ZUDO / SCOPE 10 / P0</div><a href="index.html">Project catalogue</a> · <a href="../doc/public/prototype/index.html">UI simulation</a></header><main><div class="crumb">architecture/brief</div><h1>P0 specification and tradeoffs</h1><h2>Fixed scope</h2>
-<table>
-<thead>
-<tr>
-<th>Item</th>
-<th>P0 proposal</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Inputs</td>
-<td>10 independent DC-coupled mono signals</td>
-</tr>
-<tr>
-<td>Viewing</td>
-<td>1 LCD; portrait 320 × 480 logical pixels; 2 columns × 5 rows</td>
-</tr>
-<tr>
-<td>Controls</td>
-<td>10 TIME pots, 10 three-position RANGE switches, HOLD and LINK buttons</td>
-</tr>
-<tr>
-<td>Vertical display scales</td>
-<td>±3 V, ±5 V, ±8 V; software changes only</td>
-</tr>
-<tr>
-<td>Input working target</td>
-<td>±12 V, subject to qualification</td>
-</tr>
-<tr>
-<td>Power</td>
-<td>USB 5 V only; no USB-PD or Eurorack power header</td>
-</tr>
-<tr>
-<td>Acquisition target</td>
-<td>10,000 samples/second/channel, sequential; not yet implemented or measured</td>
-</tr>
-<tr>
-<td>Intended useful signal range</td>
-<td>CV/LFO and low audio, approximately DC–1 kHz</td>
-</tr>
-<tr>
-<td>Time windows</td>
-<td>2 ms–8.192 s across the whole pane, not per division</td>
-</tr>
-<tr>
-<td>Approximate panel envelope</td>
-<td>250 × 180 mm; control placement is only a study</td>
-</tr>
-</tbody>
-</table>
+<table><thead><tr><th>Item</th><th>P0 proposal</th></tr></thead><tbody><tr><td>Inputs</td><td>10 independent DC-coupled mono signals</td></tr><tr><td>Viewing</td><td>1 LCD; portrait 320 × 480 logical pixels; 2 columns × 5 rows</td></tr><tr><td>Controls</td><td>10 TIME pots, 10 three-position RANGE switches, HOLD and LINK buttons</td></tr><tr><td>Vertical display scales</td><td>±3 V, ±5 V, ±8 V; software changes only</td></tr><tr><td>Input working target</td><td>±12 V, subject to qualification</td></tr><tr><td>Power</td><td>USB 5 V only; no USB-PD or Eurorack power header</td></tr><tr><td>Acquisition target</td><td>10,000 samples/second/channel, sequential; not yet implemented or measured</td></tr><tr><td>Intended useful signal range</td><td>CV/LFO and low audio, approximately DC–1 kHz</td></tr><tr><td>Time windows</td><td>2 ms–8.192 s across the whole pane, not per division</td></tr><tr><td>Approximate panel envelope</td><td>250 × 180 mm; control placement is only a study</td></tr></tbody></table>
 <p>The 1 kHz intention is not a guaranteed metrology bandwidth. At 10 ksample/s/channel, Nyquist is 5 kHz; a 20 kHz input can alias severely. Two nominal 3.39 kHz RC poles only provide about 10 dB attenuation at Nyquist. The front end is therefore <strong>not a brick-wall anti-alias filter</strong>. Do not claim accurate full-audio-band viewing.</p>
 <h2>Why modules for the first carrier</h2>
 <p>The <a href="https://www.waveshare.com/Pico-ResTouch-LCD-3.5.htm">Waveshare module</a> documents 480 × 320 pixels, a 5 V supply, an installed female Pico header, a 73.44 × 48.96 mm active area and an 86 × 57.2 mm PCB. Its SPI-to-parallel bridge is part of the module. Buy the exact assembled version.</p>
@@ -56,5 +7,4 @@
 <p>This costs more than a bare RP2040 plus a bare display. The prototype exception avoids designing the MCU's USB/flash/regulator board and an insufficiently documented LCD interface at the same time as ten analog inputs. A later revision may integrate both after their performance is established.</p>
 <h2>Not selected for P0</h2>
 <p>HS35B01A / C19632787 remains a cost-down candidate, not the baseline: the public listing does not establish a reviewed serial interface, power arrangement, connector pin map or exact drawing. Do not treat the earlier roughly $9 display figure as the cost of the present module or the finished instrument.</p>
-<p>No touchscreen interaction, SD storage, FFT, tuner, signal generator, audio output, battery, network feature or oscillator core is included. TOUCH and SD chip-selects are held inactive. The presence of those parts on the purchased module does not put them in our feature list.</p>
-<footer>Pre-layout evidence. No factory approval or hardware measurements are implied.</footer></main></html>
+<p>No touchscreen interaction, SD storage, FFT, tuner, signal generator, audio output, battery, network feature or oscillator core is included. TOUCH and SD chip-selects are held inactive. The presence of those parts on the purchased module does not put them in our feature list.</p><footer>Pre-layout evidence. No factory approval or hardware measurements are implied.</footer></main></html>
