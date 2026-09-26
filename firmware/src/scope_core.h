@@ -49,6 +49,6 @@ typedef struct {
 } scope_window;
 uint32_t scope_window_samples(uint16_t time_code, uint32_t samples_per_s);
 unsigned scope_window_level(uint32_t window_samples);
-/* Fills out_cols[first_col .. width-1]; returns the plan. width must be >= 1. */
+/* Fills out_cols[first_col .. width-1] and returns the plan; with no history every column is blank. */
 scope_window scope_window_map(const scope_history *h, uint32_t window_samples, unsigned width, scope_bin *out_cols);
 #endif
