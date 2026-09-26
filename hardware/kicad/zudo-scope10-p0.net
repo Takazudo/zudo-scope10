@@ -1047,7 +1047,7 @@
       <libsource lib="ZudoScope10" part="testpoint" />
     </comp>
     <comp ref="F1">
-      <value>fuse</value>
+      <value>1206L050YR</value>
       <footprint />
       <libsource lib="ZudoScope10" part="fuse" />
     </comp>
@@ -1169,25 +1169,25 @@
       <node ref="U5" pin="4" />
       <node ref="C5" pin="1" />
       <node ref="RV1" pin="3" />
-      <node ref="SW1" pin="H" />
+      <node ref="SW1" pin="4" />
       <node ref="RV2" pin="3" />
-      <node ref="SW2" pin="H" />
+      <node ref="SW2" pin="4" />
       <node ref="RV3" pin="3" />
-      <node ref="SW3" pin="H" />
+      <node ref="SW3" pin="4" />
       <node ref="RV4" pin="3" />
-      <node ref="SW4" pin="H" />
+      <node ref="SW4" pin="4" />
       <node ref="RV5" pin="3" />
-      <node ref="SW5" pin="H" />
+      <node ref="SW5" pin="4" />
       <node ref="RV6" pin="3" />
-      <node ref="SW6" pin="H" />
+      <node ref="SW6" pin="4" />
       <node ref="RV7" pin="3" />
-      <node ref="SW7" pin="H" />
+      <node ref="SW7" pin="4" />
       <node ref="RV8" pin="3" />
-      <node ref="SW8" pin="H" />
+      <node ref="SW8" pin="4" />
       <node ref="RV9" pin="3" />
-      <node ref="SW9" pin="H" />
+      <node ref="SW9" pin="4" />
       <node ref="RV10" pin="3" />
-      <node ref="SW10" pin="H" />
+      <node ref="SW10" pin="4" />
       <node ref="R40" pin="1" />
       <node ref="U7" pin="24" />
       <node ref="C7" pin="1" />
@@ -1333,7 +1333,7 @@
       <node ref="U9" pin="9" />
     </net>
     <net code="25" name="CH01_RANGE_W">
-      <node ref="SW1" pin="C" />
+      <node ref="SW1" pin="3" />
       <node ref="R1112" pin="1" />
     </net>
     <net code="26" name="CH01_TIME">
@@ -1379,7 +1379,7 @@
       <node ref="U9" pin="8" />
     </net>
     <net code="34" name="CH02_RANGE_W">
-      <node ref="SW2" pin="C" />
+      <node ref="SW2" pin="3" />
       <node ref="R1122" pin="1" />
     </net>
     <net code="35" name="CH02_TIME">
@@ -1425,7 +1425,7 @@
       <node ref="U9" pin="7" />
     </net>
     <net code="43" name="CH03_RANGE_W">
-      <node ref="SW3" pin="C" />
+      <node ref="SW3" pin="3" />
       <node ref="R1132" pin="1" />
     </net>
     <net code="44" name="CH03_TIME">
@@ -1471,7 +1471,7 @@
       <node ref="U9" pin="6" />
     </net>
     <net code="52" name="CH04_RANGE_W">
-      <node ref="SW4" pin="C" />
+      <node ref="SW4" pin="3" />
       <node ref="R1142" pin="1" />
     </net>
     <net code="53" name="CH04_TIME">
@@ -1517,7 +1517,7 @@
       <node ref="U9" pin="5" />
     </net>
     <net code="61" name="CH05_RANGE_W">
-      <node ref="SW5" pin="C" />
+      <node ref="SW5" pin="3" />
       <node ref="R1152" pin="1" />
     </net>
     <net code="62" name="CH05_TIME">
@@ -1563,7 +1563,7 @@
       <node ref="U9" pin="4" />
     </net>
     <net code="70" name="CH06_RANGE_W">
-      <node ref="SW6" pin="C" />
+      <node ref="SW6" pin="3" />
       <node ref="R1162" pin="1" />
     </net>
     <net code="71" name="CH06_TIME">
@@ -1609,7 +1609,7 @@
       <node ref="U9" pin="3" />
     </net>
     <net code="79" name="CH07_RANGE_W">
-      <node ref="SW7" pin="C" />
+      <node ref="SW7" pin="3" />
       <node ref="R1172" pin="1" />
     </net>
     <net code="80" name="CH07_TIME">
@@ -1655,7 +1655,7 @@
       <node ref="U9" pin="2" />
     </net>
     <net code="88" name="CH08_RANGE_W">
-      <node ref="SW8" pin="C" />
+      <node ref="SW8" pin="3" />
       <node ref="R1182" pin="1" />
     </net>
     <net code="89" name="CH08_TIME">
@@ -1701,7 +1701,7 @@
       <node ref="U9" pin="23" />
     </net>
     <net code="97" name="CH09_RANGE_W">
-      <node ref="SW9" pin="C" />
+      <node ref="SW9" pin="3" />
       <node ref="R1192" pin="1" />
     </net>
     <net code="98" name="CH09_TIME">
@@ -1747,7 +1747,7 @@
       <node ref="U9" pin="22" />
     </net>
     <net code="106" name="CH10_RANGE_W">
-      <node ref="SW10" pin="C" />
+      <node ref="SW10" pin="3" />
       <node ref="R1202" pin="1" />
     </net>
     <net code="107" name="CH10_TIME">
@@ -1822,43 +1822,43 @@
       <node ref="C5" pin="2" />
       <node ref="RV1" pin="1" />
       <node ref="C1111" pin="2" />
-      <node ref="SW1" pin="L" />
+      <node ref="SW1" pin="1" />
       <node ref="C1112" pin="2" />
       <node ref="RV2" pin="1" />
       <node ref="C1121" pin="2" />
-      <node ref="SW2" pin="L" />
+      <node ref="SW2" pin="1" />
       <node ref="C1122" pin="2" />
       <node ref="RV3" pin="1" />
       <node ref="C1131" pin="2" />
-      <node ref="SW3" pin="L" />
+      <node ref="SW3" pin="1" />
       <node ref="C1132" pin="2" />
       <node ref="RV4" pin="1" />
       <node ref="C1141" pin="2" />
-      <node ref="SW4" pin="L" />
+      <node ref="SW4" pin="1" />
       <node ref="C1142" pin="2" />
       <node ref="RV5" pin="1" />
       <node ref="C1151" pin="2" />
-      <node ref="SW5" pin="L" />
+      <node ref="SW5" pin="1" />
       <node ref="C1152" pin="2" />
       <node ref="RV6" pin="1" />
       <node ref="C1161" pin="2" />
-      <node ref="SW6" pin="L" />
+      <node ref="SW6" pin="1" />
       <node ref="C1162" pin="2" />
       <node ref="RV7" pin="1" />
       <node ref="C1171" pin="2" />
-      <node ref="SW7" pin="L" />
+      <node ref="SW7" pin="1" />
       <node ref="C1172" pin="2" />
       <node ref="RV8" pin="1" />
       <node ref="C1181" pin="2" />
-      <node ref="SW8" pin="L" />
+      <node ref="SW8" pin="1" />
       <node ref="C1182" pin="2" />
       <node ref="RV9" pin="1" />
       <node ref="C1191" pin="2" />
-      <node ref="SW9" pin="L" />
+      <node ref="SW9" pin="1" />
       <node ref="C1192" pin="2" />
       <node ref="RV10" pin="1" />
       <node ref="C1201" pin="2" />
-      <node ref="SW10" pin="L" />
+      <node ref="SW10" pin="1" />
       <node ref="C1202" pin="2" />
       <node ref="R41" pin="2" />
       <node ref="SW11" pin="2" />
@@ -2001,16 +2001,16 @@
       <node ref="U6" pin="5" />
     </net>
     <net code="129" name="RANGE_MID">
-      <node ref="SW1" pin="M" />
-      <node ref="SW2" pin="M" />
-      <node ref="SW3" pin="M" />
-      <node ref="SW4" pin="M" />
-      <node ref="SW5" pin="M" />
-      <node ref="SW6" pin="M" />
-      <node ref="SW7" pin="M" />
-      <node ref="SW8" pin="M" />
-      <node ref="SW9" pin="M" />
-      <node ref="SW10" pin="M" />
+      <node ref="SW1" pin="2" />
+      <node ref="SW2" pin="2" />
+      <node ref="SW3" pin="2" />
+      <node ref="SW4" pin="2" />
+      <node ref="SW5" pin="2" />
+      <node ref="SW6" pin="2" />
+      <node ref="SW7" pin="2" />
+      <node ref="SW8" pin="2" />
+      <node ref="SW9" pin="2" />
+      <node ref="SW10" pin="2" />
       <node ref="R40" pin="2" />
       <node ref="R41" pin="1" />
     </net>

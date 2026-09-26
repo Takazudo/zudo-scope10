@@ -39,7 +39,12 @@ for n in range(1,11):
  add(f'RV{n}','pot',{1:'GND',2:t+'_TIME_W',3:'+3V3A'},sheet,'Endpoint direction must be checked on actual sample')
  add(f'R{b+1}','r1k',{1:t+'_TIME_W',2:t+'_TIME'},sheet)
  add(f'C{b+1}','c100n',{1:t+'_TIME',2:'GND'},sheet)
- add(f'SW{n}','range',{'C':t+'_RANGE_W','L':'GND','M':'RANGE_MID','H':'+3V3A'},sheet,'Logical pin letters intentionally block footprint release')
+ # G02 (#6): numeric terminal map replaces logical C/L/M/H placeholders. C->3 and M->2 are
+ # vendor facts (NKK H46); L->1 / H->4 follow NKK Left/Right naming but the panel-legend
+ # direction is a layout decision, still OPEN -- swap to L->4/H->1 if the panel reads the
+ # other way. See catalog range.open_questions and design/evidence/g02-delta.json.
+ RANGE_PIN={'C':'3','M':'2','L':'1','H':'4'}
+ add(f'SW{n}','range',{RANGE_PIN['C']:t+'_RANGE_W',RANGE_PIN['L']:'GND',RANGE_PIN['M']:'RANGE_MID',RANGE_PIN['H']:'+3V3A'},sheet,'Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.')
  add(f'R{b+2}','r1k',{1:t+'_RANGE_W',2:t+'_RANGE'},sheet)
  add(f'C{b+2}','c100n',{1:t+'_RANGE',2:'GND'},sheet)
 add('R40','r10k',{1:'+3V3A',2:'RANGE_MID'},'controls-left')
@@ -77,8 +82,10 @@ add('J20','socket20',{k:pico_nets[k] for k in range(1,21)},'module-interfaces','
 add('J21','socket20',{k:pico_nets[41-k] for k in range(1,21)},'module-interfaces','Right Pico H socket: pin 1 = Pico pin 40; do not mirror blindly')
 # Isolate ALL unused display header positions. No broad 40-pin pass-through.
 displaymap={3:'GND',8:'GND',13:'GND',18:'GND',23:'GND',28:'GND',33:'GND',38:'GND',39:'+5V_FUSED',11:'LCD_DC',12:'LCD_CS',14:'LCD_CLK',15:'LCD_MOSI',16:'LCD_MISO',17:'LCD_BL',20:'LCD_RST',21:'TP_CS_N',29:'SD_CS_N'}
-add('J30','header20',{k:displaymap.get(k) for k in range(1,21)},'module-interfaces','Display left header: pin 1 = Pico position 1. Power straps OPEN gate G01.')
-add('J31','header20',{k:displaymap.get(41-k) for k in range(1,21)},'module-interfaces','Display right header: pin 1 = Pico position 40; pin 2 supplies VSYS position')
+# G01 (#3) set_notes applied verbatim (applies_net_change: false); the J30/J31 net
+# assignments above (displaymap) are unchanged per the G01 header-net rule (#13).
+add('J30','header20',{k:displaymap.get(k) for k in range(1,21)},'module-interfaces','Display left header: pin 1 = Pico position 1. Keep pos 4 (module SRAM_CS, PSRAM CE w/ 10k pull-up), pos 7 (module SDIO_CLK via H6 jumper) and pos 19 (module GPIO14 -> R14 NC -> 3V3 LDO EN) unconnected: carrier uses GP2/GP5/GP14 for mux address/timing. LCD_BL (pos 17) has module 10k pull-up to VSYS. G01 OPEN pending physical strap check.')
+add('J31','header20',{k:displaymap.get(41-k) for k in range(1,21)},'module-interfaces','Display right header: pin 1 = Pico position 40. Pin 2 (pos 39 VSYS) is the module\'s only 5 V entry (no diode; feeds RT9193-33 3V3 LDO and backlight regulator). Pos 40 VBUS, 36 Pico3V3 (R15 NC), 37 3V3_EN (R12 NC), 35 ADC_VREF unused by module; keep isolated so no strap variant can cause regulator contention. G01 OPEN pending physical strap check.')
 for n,name in enumerate(['LCD_DC','LCD_CS','LCD_CLK','LCD_MOSI','LCD_BL','LCD_RST','ADDR0','ADDR1','ADDR2','ADDR3']):
  add(f'R{60+n}','r33',{1:name+'_SRC',2:name},'module-interfaces')
 for n,name in enumerate(['ADDR0','ADDR1','ADDR2','ADDR3']):add(f'R{80+n}','r100k',{1:name,2:'GND'},'module-interfaces')
@@ -100,7 +107,15 @@ for n,net in enumerate(['GND','VBUS_USB','+5V_FUSED','+3V3A','REF_RAW','+3V0_REF
 # Explicit physical-to-module relation is independent of pin-type assumptions.
 interface={'pico_h':{'J20':{str(k):k for k in range(1,21)},'J21':{str(k):41-k for k in range(1,21)}},'display':{'J30':{str(k):k for k in range(1,21)},'J31':{str(k):41-k for k in range(1,21)}}}
 write=lambda path,obj:(ROOT/path).write_text(json.dumps(obj,indent=2)+'\n')
-write('design/circuit.json',{'schema_version':1,'generator':'scripts/make_design.py','status':'REVIEW_ONLY_NOT_FOR_FABRICATION','parts':parts,'external_modules':['pico-h','display'],'connector_position_maps':interface})
+# G01 header-net rule (#13): desk evidence from #3 must NOT change the J30/J31 netlist above.
+# It is recorded here as pending proposals only; the local G01 procedure (issue #16's
+# LOCAL-HANDOFF.md) applies or rejects them after the physical module check.
+pending_g01_changes=[
+ {'id':'g01-r88-backlight-default','target':'parts[ref=R88]','proposal':'Module R16 (10k, VSYS->LCD_BL) overrides carrier R88 (100k, LCD_BL->GND): the backlight node sits near 4.5 V with GP13 high-impedance, so the backlight defaults ON (not off) and the node exceeds the RP2040 GPIO abs max of IOVDD+0.5V (small clamp current, estimated <0.1 mA, unmeasured). Decide at G01/G06 whether to keep R88, remove it, or accept and document; no value is changed here.','status':'OPEN_PENDING_PHYSICAL_CHECK','citation':'design/evidence/g01-delta.json changes[op=review_decision, target=parts[ref=R88]]; Waveshare Pico-ResTouch-LCD-3.5 schematic p1 LCD BACKLIGHT (3A) R16 10K VSYS->LCD_BL/CAT1 EN; RP2040 datasheet Sec 5.5.3.1 Table 622 (PDF p615)'},
+ {'id':'g01-j30-notes','target':'parts[ref=J30].notes','proposal':'set_notes applied to J30.notes: spare display positions 4/7/19 stay open (null pins already implement this); LCD_BL module pull-up documented. No net change.','status':'APPLIED_NOTES_ONLY_NO_NET_CHANGE','citation':'design/evidence/g01-delta.json changes[op=set_notes, target=parts[ref=J30].notes]'},
+ {'id':'g01-j31-notes','target':'parts[ref=J31].notes','proposal':'set_notes applied to J31.notes: position 39 (VSYS) is the module’s only 5V entry; isolating 35/36/37/40 is contention-free for every strap variant. No net change.','status':'APPLIED_NOTES_ONLY_NO_NET_CHANGE','citation':'design/evidence/g01-delta.json changes[op=set_notes, target=parts[ref=J31].notes]'},
+]
+write('design/circuit.json',{'schema_version':1,'generator':'scripts/make_design.py','status':'REVIEW_ONLY_NOT_FOR_FABRICATION','parts':parts,'external_modules':['pico-h','display'],'connector_position_maps':interface,'pending_g01_changes':pending_g01_changes})
 write('design/gpio.json',{'gpio_nets':gpio,'adc_channels':{0:'ADC0',1:'ADC1',2:'ADC2'},'mux_address_pins':[2,3,4,5],'mux_disable_pin':7,'display_spi':1,'display_spi_hz_initial':8000000,'display_cs_pin':9,'display_touch_sd_unused':True})
 # Planning BOM; no locations are invented and no CPL is emitted.
 groups={}
@@ -129,6 +144,10 @@ ET.indent(ex);ET.ElementTree(ex).write(ROOT/'hardware/kicad/zudo-scope10-p0.net'
 # Native KiCad 8 schematic format; all symbols embedded. User must open and run ERC.
 def uid(s):return str(uuid.uuid5(uuid.NAMESPACE_URL,'zudo-scope10-p0/'+s))
 def q(s):return json.dumps(str(s),ensure_ascii=False)
+G=1.27
+def f(v):
+ t=f'{round(v,4):.4f}'.rstrip('0').rstrip('.')
+ return '0' if t in ('','-0') else t
 def effect(size=1.27,hide=False):return f'(effects (font (size {size} {size}))'+(' hide' if hide else '')+')'
 def layout(record):
  keys=list(CAT[record]['pins']);n=math.ceil(len(keys)/2);out={}
@@ -138,38 +157,51 @@ def layout(record):
  return out,max(5.08,n*1.27+2.54)
 def pin_type(kind,name):
  if kind=='tlv9064':return 'power_in' if name in ('VCC','GND') else ('output' if name.startswith('OUT') else 'input')
- if kind=='mux':return 'power_in' if name in ('VCC','GND') else ('input' if name.startswith('S') or name=='E_N' else 'bidirectional')
+ # 74HC4067 Y/Z are analog-switch terminals with no drive of their own: passive, not bidirectional logic.
+ if kind=='mux':return 'power_in' if name in ('VCC','GND') else ('input' if name.startswith('S') or name=='E_N' else 'passive')
  if kind in ('ldo','ref'):return 'no_connect' if name=='NC' else ('power_out' if name=='OUT' else ('input' if name=='EN' else 'power_in'))
  return 'passive'
 def libsym(id,prefix=True):
  r=CAT[id];lo,h=layout(id);name='ZudoScope10:'+id if prefix else id
- a=[f'(symbol {q(name)} (pin_names (offset 0.508)) (in_bom yes) (on_board yes)',f'(property "Reference" "X" (at 0 {h+2.54} 0) {effect()})',f'(property "Value" {q(id)} (at 0 {-h-2.54} 0) {effect()})',f'(symbol {q(id+"_0_1")} (rectangle (start -10.16 {h}) (end 10.16 {-h}) (stroke (width 0.254) (type default)) (fill (type background))))',f'(symbol {q(id+"_1_1")}']
+ a=[f'(symbol {q(name)} (pin_names (offset 0.508)) (in_bom yes) (on_board yes)',f'(property "Reference" "X" (at 0 {f(h+2.54)} 0) {effect()})',f'(property "Value" {q(id)} (at 0 {f(-h-2.54)} 0) {effect()})',f'(symbol {q(id+"_0_1")} (rectangle (start -10.16 {f(h)}) (end 10.16 {f(-h)}) (stroke (width 0.254) (type default)) (fill (type background))))',f'(symbol {q(id+"_1_1")}']
  for k,(x,y,ang) in lo.items():
-  a.append(f'(pin {pin_type(id,r["pins"][k])} line (at {x} {y} {ang}) (length 2.54) (name {q(r["pins"][k])} {effect(1.0)}) (number {q(k)} {effect(1.0)}))')
+  a.append(f'(pin {pin_type(id,r["pins"][k])} line (at {f(x)} {f(y)} {ang}) (length 2.54) (name {q(r["pins"][k])} {effect(1.0)}) (number {q(k)} {effect(1.0)}))')
  return '\n'.join(a)+'))'
+# KiCad-standard PWR_FLAG shape: power symbol with one power_out pin; marks a net supplied from off-board (USB via the Pico module header).
+PWR_FLAG=('(symbol "{name}" (power) (pin_numbers hide) (pin_names (offset 0) hide) (in_bom no) (on_board no) (property "Reference" "#FLG" (at 0 1.905 0) '+effect(1.27,True)+') (property "Value" "PWR_FLAG" (at 0 3.81 0) '+effect()+') '
+ '(symbol "PWR_FLAG_0_0" (pin power_out line (at 0 0 90) (length 0) (name "~" '+effect()+') (number "1" '+effect()+'))) '
+ '(symbol "PWR_FLAG_0_1" (polyline (pts (xy 0 0) (xy 0 1.27) (xy -1.016 1.905) (xy 0 2.54) (xy 1.016 1.905) (xy 0 1.27)) (stroke (width 0) (type default)) (fill (type none)))))')
+# Nets whose only source is the USB VBUS/GND contacts of the external Pico module (passive socket pins) and the passive fuse.
+FLAGGED={'power':['+5V_FUSED','GND']}
 rootid=uid('root');names=['power','module-interfaces','acquisition']+[f'inputs-{n:02d}-{n+1:02d}' for n in [1,3,5,7,9]]+['controls-left','controls-right']
 for page,sh in enumerate(names,2):
  ps=[p for p in parts if p['sheet']==sh];sid=uid('sheet/'+sh)
- s=[f'(kicad_sch (version 20231120) (generator "eeschema") (uuid {sid}) (paper "A1")',f'(title_block (title {q("zudo-scope10 P0 / "+sh)}) (date "2026-09-26") (rev "P0 REVIEW ONLY") (comment 1 "GENERATED: no PCB routing or assembly approval"))','(lib_symbols '+''.join(libsym(id) for id in sorted({p['record'] for p in ps}))+')',f'(text "NOT FOR FABRICATION - exact footprints and interface gates remain OPEN" (at 20 15 0) {effect(2) } (uuid {uid(sh+"/warning")}))']
+ s=[f'(kicad_sch (version 20231120) (generator "eeschema") (uuid {sid}) (paper "A1")',f'(title_block (title {q("zudo-scope10 P0 / "+sh)}) (date "2026-09-26") (rev "P0 REVIEW ONLY") (comment 1 "GENERATED: no PCB routing or assembly approval"))','(lib_symbols '+''.join(libsym(id) for id in sorted({p['record'] for p in ps}))+(PWR_FLAG.format(name='ZudoScope10:PWR_FLAG') if sh in FLAGGED else '')+')',f'(text "NOT FOR FABRICATION - exact footprints and interface gates remain OPEN" (at 20 15 0) {effect(2) } (uuid {uid(sh+"/warning")}))']
  for idx,p in enumerate(ps):
-  x=45+(idx%7)*112;y=55+(idx//7)*92;id=p['record'];lo,h=layout(id);inst=uid('ref/'+p['ref'])
-  s.extend([f'(symbol (lib_id {q("ZudoScope10:"+id)}) (at {x} {y} 0) (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid {inst})',f'(property "Reference" {q(p["ref"])} (at {x} {y-h-5} 0) {effect()})',f'(property "Value" {q(p["value"])} (at {x} {y-h-2} 0) {effect(1.0)})',f'(property "Footprint" {q(p["footprint"])} (at {x} {y} 0) {effect(1.0,True)})',f'(property "Datasheet" "" (at {x} {y} 0) {effect(1.0,True)})',f'(property "Record" {q(id)} (at {x} {y} 0) {effect(1.0,True)})'])
+  x=(35+(idx%7)*88)*G;y=(43+(idx//7)*72)*G;id=p['record'];lo,h=layout(id);inst=uid('ref/'+p['ref'])
+  s.extend([f'(symbol (lib_id {q("ZudoScope10:"+id)}) (at {f(x)} {f(y)} 0) (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid {inst})',f'(property "Reference" {q(p["ref"])} (at {f(x)} {f(y-h-5)} 0) {effect()})',f'(property "Value" {q(p["value"])} (at {f(x)} {f(y-h-2)} 0) {effect(1.0)})',f'(property "Footprint" {q(p["footprint"])} (at {f(x)} {f(y)} 0) {effect(1.0,True)})',f'(property "Datasheet" "" (at {f(x)} {f(y)} 0) {effect(1.0,True)})',f'(property "Record" {q(id)} (at {f(x)} {f(y)} 0) {effect(1.0,True)})'])
   for k in lo:s.append(f'(pin {q(k)} (uuid {uid(p["ref"]+"/pin/"+k)}))')
   s.append(f'(instances (project "zudo-scope10-p0" (path "/{rootid}/{sid}" (reference {q(p["ref"])}) (unit 1)))))')
   for pin,(dx,dy,ang) in lo.items():
-   xx=x+dx;yy=y-dy;net=p['pins'][pin]
+   xx=f(x+dx);yy=f(y-dy);net=p['pins'][pin]
    if not net:s.append(f'(no_connect (at {xx} {yy}) (uuid {uid(p["ref"]+"/nc/"+pin)}))');continue
-   xx2=xx+(-5.08 if dx<0 else 5.08)
+   xx2=f(x+dx+(-5.08 if dx<0 else 5.08))
    s.append(f'(wire (pts (xy {xx} {yy}) (xy {xx2} {yy})) (stroke (width 0) (type default)) (uuid {uid(p["ref"]+"/wire/"+pin)}))')
    rot=0 if dx<0 else 180
    s.append(f'(global_label {q(net)} (shape passive) (at {xx2} {yy} {rot}) (effects (font (size 1.0 1.0)) (justify left)) (uuid {uid(p["ref"]+"/label/"+pin)}) (property "Intersheetrefs" "${{INTERSHEET_REFS}}" (at {xx2} {yy} {rot}) {effect(1,True)}))')
+ for i,net in enumerate(FLAGGED.get(sh,[]),1):
+  fx=f((16+i*16)*G);fy=f(20*G);fy2=f(24*G);ref=f'#FLG0{i}';fid=uid(sh+'/flag/'+net)
+  s.append(f'(symbol (lib_id "ZudoScope10:PWR_FLAG") (at {fx} {fy} 0) (unit 1) (in_bom no) (on_board no) (dnp no) (uuid {fid}) (property "Reference" {q(ref)} (at {fx} {f(18*G)} 0) {effect(1.27,True)}) (property "Value" "PWR_FLAG" (at {fx} {f(16*G)} 0) {effect()}) (property "Footprint" "" (at {fx} {fy} 0) {effect(1.27,True)}) (property "Datasheet" "" (at {fx} {fy} 0) {effect(1.27,True)}) (pin "1" (uuid {uid(sh+"/flag/"+net+"/pin")})) (instances (project "zudo-scope10-p0" (path "/{rootid}/{uid("sheet/"+sh)}" (reference {q(ref)}) (unit 1)))))')
+  s.append(f'(wire (pts (xy {fx} {fy}) (xy {fx} {fy2})) (stroke (width 0) (type default)) (uuid {uid(sh+"/flag/"+net+"/wire")}))')
+  s.append(f'(global_label {q(net)} (shape passive) (at {fx} {fy2} 270) (effects (font (size 1.0 1.0)) (justify right)) (uuid {uid(sh+"/flag/"+net+"/label")}) (property "Intersheetrefs" "${{INTERSHEET_REFS}}" (at {fx} {fy2} 270) {effect(1,True)}))')
  s.append(')');(ROOT/f'hardware/kicad/{sh}.kicad_sch').write_text('\n'.join(s)+'\n')
-s=[f'(kicad_sch (version 20231120) (generator "eeschema") (uuid {rootid}) (paper "A3") (lib_symbols)', '(title_block (title "zudo-scope10 / P0 schematic review") (date "2026-09-26") (rev "P0 PRELAYOUT"))',f'(text "TEN INPUTS / ONE LCD / NO HOME SOLDERING\nSchematic draft, not an approved netlist. Read START_HERE.md and design/release-gates.json." (at 20 15 0) (effects (font (size 2 2)) (justify left)) (uuid {uid("root/text")}))']
+# KiCad 9's S-expression reader rejects a raw newline inside a quoted string ("Failed to load"); emit \\n escapes.
+s=[f'(kicad_sch (version 20231120) (generator "eeschema") (uuid {rootid}) (paper "A3") (lib_symbols)', '(title_block (title "zudo-scope10 / P0 schematic review") (date "2026-09-26") (rev "P0 PRELAYOUT"))',f'(text "TEN INPUTS / ONE LCD / NO HOME SOLDERING\\nSchematic draft, not an approved netlist. Read START_HERE.md and design/release-gates.json." (at 20 15 0) (effects (font (size 2 2)) (justify left)) (uuid {uid("root/text")}))']
 for n,sh in enumerate(names):
  x=20+(n%3)*128;y=42+(n//3)*55;sid=uid('sheet/'+sh)
  s.append(f'(sheet (at {x} {y}) (size 108 32) (stroke (width 0.254) (type default)) (fill (color 0 0 0 0)) (uuid {sid}) (property "Sheetname" {q(sh)} (at {x} {y-1} 0) (effects (font (size 1.5 1.5)) (justify left bottom))) (property "Sheetfile" {q(sh+".kicad_sch")} (at {x} {y+33} 0) (effects (font (size 1.27 1.27)) (justify left top))) (instances (project "zudo-scope10-p0" (path "/{rootid}" (page {q(n+2)})))))')
 s.append('(sheet_instances (path "/" (page "1"))))');(ROOT/'hardware/kicad/zudo-scope10-p0.kicad_sch').write_text('\n'.join(s)+'\n')
-(ROOT/'hardware/libraries/ZudoScope10.kicad_sym').write_text('(kicad_symbol_lib (version 20231120) (generator "kicad_symbol_editor")\n'+''.join(libsym(id,False) for id in sorted(groups))+')\n')
+(ROOT/'hardware/libraries/ZudoScope10.kicad_sym').write_text('(kicad_symbol_lib (version 20231120) (generator "kicad_symbol_editor")\n'+''.join(libsym(id,False) for id in sorted(groups))+PWR_FLAG.format(name='PWR_FLAG')+')\n')
 (ROOT/'hardware/kicad/sym-lib-table').write_text('(sym_lib_table (lib (name "ZudoScope10") (type "KiCad") (uri "${KIPRJMOD}/../libraries/ZudoScope10.kicad_sym") (options "") (descr "P0 review symbols")))\n')
 write('hardware/kicad/zudo-scope10-p0.kicad_pro',{'meta':{'filename':'zudo-scope10-p0.kicad_pro','version':1},'text_variables':{'REVISION':'P0_PRELAYOUT_NOT_FOR_FAB'}})
 # Outline only; no fabricated electrical pads, tracks, or fake placements.
@@ -180,7 +212,7 @@ pcb='''(kicad_pcb (version 20240108) (generator "pcbnew")
  (38 "B.Mask" user) (39 "F.Mask" user) (46 "B.CrtYd" user) (47 "F.CrtYd" user) (48 "B.Fab" user) (49 "F.Fab" user))
  (setup (pad_to_mask_clearance 0)) (net 0 "")
  (gr_rect (start 50 50) (end 300 230) (stroke (width 0.1) (type default)) (fill none) (layer "Edge.Cuts") (uuid "'''+uid('pcb/outline')+'''"))
- (gr_text "OUTLINE STUDY ONLY - NO COMPONENTS OR ROUTING\nP0 / DO NOT FABRICATE" (at 175 140) (layer "Dwgs.User") (uuid "'''+uid('pcb/warn')+'''") (effects (font (size 3 3) (thickness 0.5))))
+ (gr_text "OUTLINE STUDY ONLY - NO COMPONENTS OR ROUTING\\nP0 / DO NOT FABRICATE" (at 175 140) (layer "Dwgs.User") (uuid "'''+uid('pcb/warn')+'''") (effects (font (size 3 3) (thickness 0.5))))
 )'''
 (ROOT/'hardware/kicad/zudo-scope10-p0.kicad_pcb').write_text(pcb+'\n')
 print(f'{len(parts)} physical schematic instances / {len(nets)} nets / {len(names)+1} native sheets')

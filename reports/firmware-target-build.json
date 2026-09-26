@@ -1,0 +1,38 @@
+{
+  "pico_sdk_tag": "2.1.1",
+  "pico_sdk_commit_sha": "bddd20f928ce76142793bef434d4f75f4af6e433",
+  "toolchain": "arm-none-eabi-gcc (15:13.2.rel1-2) 13.2.1 20231009",
+  "cmake": "cmake version 3.28.3",
+  "picotool_strategy": "PICOTOOL_FETCH_FROM_GIT_PATH (CMake FetchContent builds picotool 2.1.1 once into reference/downloads/picotool-fetch; no libusb-1.0-dev required)",
+  "board": "pico",
+  "compile_flags": "-Wall -Wextra",
+  "targets": [
+    {
+      "target": "scope10_diagnostic",
+      "uf2_path": "firmware/build/scope10_diagnostic.uf2",
+      "uf2_size_bytes": 67584,
+      "uf2_sha256": "069a5eed318895dbd3bf900ab4a8b45d1c1d98766d0a16e731b12b25584d5279",
+      "warning_count": 0,
+      "notes": "Slow USB CSV diagnostic; LCD held dark, serial output rate-limited."
+    },
+    {
+      "target": "scope10_acq",
+      "uf2_path": "firmware/build/scope10_acq.uf2",
+      "uf2_size_bytes": 81920,
+      "uf2_sha256": "e910724b3867f739143806d4cb1d40fd4987197c965f99ae2ad48456d287bb8a",
+      "warning_count": 0,
+      "notes": "10 kS/s/channel sequential acquisition engine (nominal design, see firmware/ACQUISITION.md); no rate, settle or jitter measured, G05 stays OPEN. Default build: LCD off."
+    },
+    {
+      "target": "scope10_acq+lcd",
+      "uf2_path": "firmware/build/lcd-enabled/scope10_acq.uf2",
+      "uf2_size_bytes": 93696,
+      "uf2_sha256": "ffacd99e5314d0e419b67c906e163cc6f71e39e851353ead21f5e1ce505e321e",
+      "warning_count": 0,
+      "notes": "scope10_acq configured with -DSCOPE_ENABLE_LCD=1: Waveshare LCD backend + ten-pane renderer (firmware/LCD-BACKEND.md). Not for use before G01 is physically verified; no display output verified, G06 stays OPEN."
+    }
+  ],
+  "warning_count": 0,
+  "warning_baseline": 0,
+  "notes": "Target UF2 builds only; hardware/bench behaviour is NOT tested here (G05 and G06 stay OPEN)."
+}

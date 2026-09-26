@@ -11,7 +11,7 @@ sources=json.loads((ROOT/'catalog/sources.json').read_text())['sources'];log=[]
 for s in sources:
  u=s['url'];path=urllib.parse.urlsplit(u).path.lower()
  if not path.endswith(('.pdf','.zip')):continue
- ext='.pdf' if path.endswith('.pdf') else '.zip';dest=ROOT/'reference/downloaded'/f"{s['id']}{ext}"
+ ext='.pdf' if path.endswith('.pdf') else '.zip';dest=ROOT/'reference/downloads'/f"{s['id']}{ext}"
  if not args.execute:print(s['id'],u);continue
  row={'id':s['id'],'url':u,'path':str(dest.relative_to(ROOT)),'checked_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
  try:
@@ -28,5 +28,7 @@ for s in sources:
  except Exception as e:row.update(state='UNAVAILABLE',error=str(e))
  log.append(row);print(s['id'],row['state'])
 if args.execute:
- (ROOT/'reports/source-fetch-local.json').write_text(json.dumps(log,indent=2)+'\n')
+ # Local-only fetch log: lives beside the gitignored downloads, never the tracked reports/ tree.
+ (ROOT/'reference/downloads').mkdir(parents=True,exist_ok=True)
+ (ROOT/'reference/downloads/source-fetch-local.json').write_text(json.dumps(log,indent=2)+'\n')
  sys.exit(1 if any(x['state']=='UNAVAILABLE' for x in log) else 0)

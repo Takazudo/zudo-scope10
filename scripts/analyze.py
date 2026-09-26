@@ -2,6 +2,7 @@
 """Nominal calculations and explicit corner checks, NOT measured hardware."""
 from pathlib import Path
 import json, math, itertools, csv
+import power_budget
 R=Path(__file__).resolve().parents[1]
 x=json.loads((R/'design/requirements.json').read_text())['input']
 ri=x['r_input'];rb=x['r_to_ref'];rg=x['r_to_gnd'];vr=x['reference_v']
@@ -26,3 +27,4 @@ with (R/'reports/filter-response.csv').open('w',newline='') as f:
  for k in range(181):
   hz=10**(k/45);g=response(hz);w.writerow([hz,g,20*math.log10(g),'CALCULATED_IDEAL_NOT_MEASURED'])
 print(json.dumps({k:report[k] for k in ['gain_v_per_v','zero_input_adc_v','small_signal_input_impedance_ohm','open_input_apparent_volts','filter_poles_hz','corner_results']},indent=2))
+power_budget.main()  # writes reports/power-budget.json; G07 calculation-only, see that report

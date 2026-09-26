@@ -136,8 +136,8 @@
       "manufacturer": "Texas Instruments",
       "kind": "IC",
       "package": "SOT-23-3",
-      "jlc_code": null,
-      "jlc_url": null,
+      "jlc_code": "C140329",
+      "jlc_url": "https://jlcpcb.com/partdetail/C140329",
       "role": "3.0 V reference buffered by U6D",
       "pins": {
         "1": "IN",
@@ -149,7 +149,7 @@
       ],
       "facts": [
         "3.0 V version; 0.15% initial accuracy and 30 ppm/C maximum drift are family specifications.",
-        "LCSC C140329 found; JLC direct listing was not verified. External sourcing/RFQ required."
+        "G08 (#9) fetched LCSC C140329 (https://www.lcsc.com/product-detail/C140329.html), checked 2026-09-26, exact MPN match confirmed (REF3330AIDBZR, TI, SOT-23, 3V, +/-0.15%, 30ppm/C max), stock 5102. This verifies, via LCSC, the previously unverified note; JLCPCB's own partdetail page was not independently fetched. listing_not_allocation: a page listing is not allocated stock or an order."
       ],
       "open_questions": [
         "Visual pin review, full supply/headroom check; no claim that reference fixes RP2040 ADC nonlinearity."
@@ -252,10 +252,13 @@
       "facts": [
         "Factory H version only; the ordinary bare-header Pico does not meet the no-soldering purchase specification.",
         "Pico ADC inputs are GP26-28; GP29 is not a free external ADC pin on this board.",
-        "500 kS/s is aggregate. Ten inputs are acquired sequentially."
+        "500 kS/s is aggregate. Ten inputs are acquired sequentially.",
+        "51 x 21 x 1.0 mm; pin rows 17.78 apart, 48.26 first-to-last, 2.54 pitch; micro-USB overhangs the pin-1 edge by 1.3 mm; 4 x dia 2.1 holes 11.4 apart, 2.0 from the USB edge and 2.4 from the far edge.",
+        "Physical numbering: pin 1 top-left beside USB, 1-20 down the left, 40 top-right. Orderable SC0917."
       ],
       "open_questions": [
-        "Module socket exact MPN, standoff height and USB access; verify Pico H module pinout against assembly."
+        "Module socket exact MPN, standoff height and USB access; verify Pico H module pinout against assembly.",
+        "Pico H factory header insulator height and pin length are not dimensioned in the Pico datasheet/product brief; measure a unit or obtain a Raspberry Pi drawing."
       ],
       "footprint_candidate": "",
       "identity_state": "EXACT_MPN",
@@ -325,13 +328,18 @@
       "facts": [
         "480 x 320; portrait logical surface 320 x 480. Active area 48.96 x 73.44 mm in portrait.",
         "5 V module; 3.3 V logic. Vendor module uses a serial-to-16-bit-parallel bridge and RGB565.",
-        "Factory female Pico socket headers are present."
+        "Factory female Pico socket headers are present.",
+        "Outline 86.00 x 57.20 x 1.6 mm PCB, R1.0 corners; two 1.0 mm recesses on the pin-1 edge (RUN 38.64-47.62, microSD 61.06-76.95 from the header-side edge).",
+        "Mounting holes 4.10 from each corner, 77.80 x 49.00 pitch; STEP models dia 5.5 x 4.0 mm standoffs (dia 2.5 bore) on the socket side. Drill diameter not dimensioned.",
+        "Female Pico sockets on the non-LCD side: pins 1-20 row 10.45 mm and pins 21-40 row 28.25 mm from the header-side edge (17.80 in STEP, 17.78 nominal); pin 1 and pin 40 at 1.62 mm from the pin-1 edge; pitch 2.54.",
+        "Socket housing extends 9.0 mm below the module PCB; modelled cavity depth 8.0 mm. Other underside parts <= 4.0 mm (standoffs), RUN switch 3.5 mm.",
+        "Active area 73.44 x 48.96 mm at 3.60 (header side) / 8.96 / 3.97 (pin-1 edge) / 4.27 mm from the board edges; glass top 5.2 mm above module PCB top."
       ],
       "open_questions": [
         "STOP: inspect R11/R12/R14/R15 regulator straps and module revision before connecting power.",
         "Do not tie Pico 3V3_OUT to the display regulator output.",
-        "Verify high/low unused chip-select states, SPI word framing, actual mounting holes and board stack.",
-        "Exact module STEP and vendor driver were linked but binary downloads failed in this environment."
+        "Verify high/low unused chip-select states and SPI word framing.",
+        "Measure mounting-hole drill and standoff thread; confirm socket engagement spec on the received module."
       ],
       "footprint_candidate": "",
       "identity_state": "EXACT_MPN",
@@ -350,10 +358,10 @@
       "jlc_url": "https://jlcpcb.com/partdetail/C6684954",
       "role": "Three maintained display range positions",
       "pins": {
-        "C": "COMMON_LOGICAL",
-        "L": "LOW_RANGE_LOGICAL",
-        "M": "MID_RANGE_LOGICAL",
-        "H": "HIGH_RANGE_LOGICAL"
+        "1": "THROW_LEFT",
+        "2": "THROW_CENTER",
+        "3": "COMMON",
+        "4": "THROW_RIGHT"
       },
       "source_ids": [
         "range",
@@ -361,12 +369,15 @@
       ],
       "facts": [
         "Manufacturer states SP3T On-On-On, top actuation, straight PC terminals, break-before-make.",
-        "Listing showed zero stock; price is not an availability guarantee."
+        "Listing showed zero stock; price is not an availability guarantee.",
+        "Terminal spacing code D (0.100 in): single row 1-2-3 at 2.54 mm, 3-4 at 5.08 mm; recommended PCB hole (0.8) dia; terminal section (0.4) x (0.6) mm.",
+        "Body (15.8) x (4.0) mm, (4.5) mm high; terminals (3.0) mm below body per H48 ((3.4) in H47 isometric; conflict unresolved); actuator (1.2) x (1.5) mm protruding (2.0) mm above body; (2.0) mm travel per step. Actuator top about 6.5 mm above PCB (derived). All reference dims, no tolerances.",
+        "Terminal 3 lies on the body and actuator centreline (centre marks, not toleranced). Four corner standoff bosses on the underside; no PCB mounting pegs."
       ],
       "open_questions": [
-        "STOP: numeric pin numbers, pad geometry and 2 mm lever/panel access are not qualified.",
-        "Logical terminal letters in schematic are intentional placeholders, not pad numbers.",
-        "Approve signal-level switching and cleaning process; price/lead time via RFQ."
+        "STOP: pad geometry and 2 mm lever/panel access are not qualified; numeric terminal map resolved from NKK catalogue H46/H47, still needs a drawn footprint and real-part fit check.",
+        "OPEN: terminal 2/3 (M/C) mapping is a vendor fact (C->3 is COM, M->2); terminal 1/4 (L/H) follows NKK Left/Right naming but the panel-legend direction is a layout decision, not yet confirmed. Swap to L->4 / H->1 if the panel reads the other way at layout.",
+        "Approve signal-level switching and cleaning process (not process sealed: hand clean locally, NKK H44); price/lead time via RFQ."
       ],
       "footprint_candidate": "",
       "identity_state": "EXACT_MPN",
@@ -636,13 +647,19 @@
       "source_ids": [],
       "facts": [
         "Jack axis parallel to PCB; rear/edge/raised patch strip layout, not Thonkiconn footprint. Two locating posts. Exact manufacturer page1 schematic visually checked: ONLY THREE electrical contact nodes; five legs include duplicated contacts and DO NOT imply normally closed switching contacts. Non-threaded5mm OD nose with3.6mm nominal opening in drawing;3.5mm audiojack class.",
-        ""
+        "",
+        "Through-hole: land view titled 'PCB hole dimensions (+/-0.1), shown as bottom face'; pin tails 3.2 mm below body.",
+        "Five slot openings drawn about 1.5 (along axis) x 1.0 mm; callout reads '(6-1.X1.5)' against 5 drawn (typo). Near row at 1.8 / 5.0 / 8.5 mm from the nose shoulder, far row at 1.8 / 8.5 mm; row pitch 5.8 mm.",
+        "Two locating posts dia 1.0 on the part; board holes 2 x dia 1.3 at 2.3 and 8.3 mm from the shoulder, midway between rows. Plating of post holes and slots not stated.",
+        "Body 11.5 + 2.5 nose, 6 wide, 5 high; nose OD 5, opening dia 3.6. Contact schematic: 1 = sleeve bar, 2 = V spring, 3 = ^ spring; no normally-closed contact.",
+        "3 logical contacts / 5 physical legs: duplicated pad mapping is OPEN (G02 #6)."
       ],
       "open_questions": [
         "Verify original PDF view and actual physical terminals before assigning footprint.",
         "Factory soldering and mechanical support required; no home electrical rework.",
         "STOP: five physical legs represent three contacts; duplicated pads and extra-slot notation are unresolved. No normal switch.",
-        "Open unconnected jack is biased and must NOT be interpreted as zero volts; shorted-input calibration is required."
+        "Open unconnected jack is biased and must NOT be interpreted as zero volts; shorted-input calibration is required.",
+        "OPEN (G02 #6): drawing parts table (1 -> terminal 1; contact 2 qty 2 -> terminals 2-3; contact 3 -> 4; PPA base -> 5) cannot be tied to slot positions and is internally inconsistent. A third-party EasyEDA footprint (C668607, contributor Xkcc) numbers near row 1/3/2 and far row 1/2 but its geometry contradicts the manufacturer drawing, so it is not evidence. Needs sample continuity or vendor confirmation."
       ],
       "footprint_candidate": "",
       "identity_state": "EXACT_MPN",
@@ -685,10 +702,13 @@
       "facts": [
         "Vertical/top push; round black actuator; no bracket;1.6N operating force. Tiny switch is not a velocity-sensitive pad or an adequately sized finger key on its own.",
         "",
-        "Retained XUNPU drawing visually inspected: two SMT contact terminals numbered 1 and 2; normally open. Body 3.9 x 3.0 mm; recommended pad outside span 5.50 mm and inside gap 3.40 mm, pad height 2.00 mm."
+        "Retained XUNPU drawing visually inspected: two SMT contact terminals numbered 1 and 2; normally open. Body 3.9 x 3.0 mm; recommended pad outside span 5.50 mm and inside gap 3.40 mm, pad height 2.00 mm.",
+        "Variant code AR02016 = A stainless dome, R no locating post, 020 = H 2.0 mm actuator top above seating plane, 16 = 160 gf.",
+        "Exactly two terminals (1 left, 2 right in top view), single NO contact; no internally joined terminal pairs. Terminals 1.30 wide spanning 5.00; actuator dia 1.80; body height 1.50.",
+        "Recommended pads 5.50 outside / 3.40 inside / 2.00 high => 1.05 x 2.00 at +/-2.225; ZudoScope10:SW_XUNPU_TS1088_AR02016_REVIEW matches pad-for-pad (pad 1 at -2.225)."
       ],
       "open_questions": [
-        "Independently verify pad orientation, actuator height and any cap/enclosure mechanics against the exact AR02016 variant."
+        "Pads and pin identity verified against drawing; remaining: real-part fit, panel/cap reach to a 2.0 mm actuator."
       ],
       "footprint_candidate": "ZudoScope10:SW_XUNPU_TS1088_AR02016_REVIEW",
       "identity_state": "EXACT_MPN",
@@ -749,7 +769,8 @@
         "pico-pins"
       ],
       "facts": [
-        "Exact mating length, insulator height, retention and shoulder clearance are NOT defined by 2.54 mm pitch alone."
+        "Exact mating length, insulator height, retention and shoulder clearance are NOT defined by 2.54 mm pitch alone.",
+        "Pico H clearance = socket height + Pico H seated header height (OPEN). Allow 1.3 mm USB overhang beyond the pin-1 edge plus plug access. If the Pico sits under the display, the display gap must exceed the Pico stack."
       ],
       "open_questions": [
         "STOP: select exact orderable and mechanical stack. Factory-populate all four strips."
@@ -796,7 +817,9 @@
         "pico-pins"
       ],
       "facts": [
-        "Exact mating length, insulator height, retention and shoulder clearance are NOT defined by 2.54 mm pitch alone."
+        "Exact mating length, insulator height, retention and shoulder clearance are NOT defined by 2.54 mm pitch alone.",
+        "Mating length above insulator must be <= 8.0 mm (modelled display socket cavity) and >= the socket's minimum engagement (unknown).",
+        "Display PCB underside sits at (insulator height + 9.0 mm) above the carrier; module 4.0 mm standoffs fall short by (insulator height + 5.0 mm), so added spacers are required for support."
       ],
       "open_questions": [
         "STOP: select exact orderable and mechanical stack. Factory-populate all four strips."
@@ -810,12 +833,12 @@
     },
     {
       "id": "fuse",
-      "mpn": null,
-      "manufacturer": "RFQ exact manufacturer",
+      "mpn": "1206L050YR",
+      "manufacturer": "Littelfuse",
       "kind": "Protection",
       "package": "1206 PPTC candidate",
-      "jlc_code": null,
-      "jlc_url": null,
+      "jlc_code": "C163512",
+      "jlc_url": "https://jlcpcb.com/partdetail/C163512",
       "role": "Analog/display branch protection",
       "pins": {
         "1": "IN",
@@ -823,10 +846,11 @@
       },
       "source_ids": [],
       "facts": [
-        "Proposed 500 mA hold, >=6 V. This does not limit Pico USB inrush before the carrier branch."
+        "Proposed 500 mA hold, >=6 V. This does not limit Pico USB inrush before the carrier branch.",
+        "G08 candidate: LCSC C163512, Littelfuse 1206L050YR (https://lcsc.com/product-detail/Resettable-Fuses_Littelfuse-1206L050YR_C163512.html), checked 2026-09-26, stock 21130. listing_not_allocation: a page listing is not allocated stock or an order."
       ],
       "open_questions": [
-        "Select actual part and qualify trip time, cold resistance and USB current budget."
+        "meets_spec: exact match at 500 mA hold / 6 V, no margin above the stated minimums. Sizing against the actual measured inrush budget is out of scope for this evidence pass (see G07). Select/confirm the actual part and qualify trip time, cold resistance and USB current budget before fabrication."
       ],
       "footprint_candidate": "",
       "identity_state": "SPECIFICATION_ONLY",
@@ -837,12 +861,12 @@
     },
     {
       "id": "r1m",
-      "mpn": null,
-      "manufacturer": "RFQ value/package selection",
+      "mpn": "RT0603BRD071ML",
+      "manufacturer": "YAGEO",
       "kind": "Resistor",
       "package": "0603",
-      "jlc_code": null,
-      "jlc_url": null,
+      "jlc_code": "C326730",
+      "jlc_url": "https://jlcpcb.com/partdetail/C326730",
       "role": "input impedance/current limit",
       "pins": {
         "1": "P1",
@@ -850,10 +874,11 @@
       },
       "source_ids": [],
       "facts": [
-        "1M; 0.1% 25 ppm/C; >=50 V. Value specified by this design; not an exact orderable."
+        "1M; 0.1% 25 ppm/C; >=50 V. Value specified by this design; not an exact orderable.",
+        "G08 candidate: LCSC C326730 (https://www.lcsc.com/product-detail/C326730.html), checked 2026-09-26, meets spec, stock 8540. listing_not_allocation: a page listing is not allocated stock or an order."
       ],
       "open_questions": [
-        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+        "RFQ/allocate stock before fabrication; listing is not an order."
       ],
       "footprint_candidate": "Resistor_SMD:R_0603_1608Metric",
       "identity_state": "SPECIFICATION_ONLY",
@@ -866,12 +891,12 @@
     },
     {
       "id": "r200k",
-      "mpn": null,
-      "manufacturer": "RFQ value/package selection",
+      "mpn": "RT0603BRD07200KL",
+      "manufacturer": "YAGEO",
       "kind": "Resistor",
       "package": "0603",
-      "jlc_code": null,
-      "jlc_url": null,
+      "jlc_code": "C728585",
+      "jlc_url": "https://jlcpcb.com/partdetail/C728585",
       "role": "bias divider",
       "pins": {
         "1": "P1",
@@ -879,10 +904,11 @@
       },
       "source_ids": [],
       "facts": [
-        "200k; 0.1% 25 ppm/C. Value specified by this design; not an exact orderable."
+        "200k; 0.1% 25 ppm/C. Value specified by this design; not an exact orderable.",
+        "G08 candidate: LCSC C728585 (https://lcsc.com/product-detail/chip-resistor-surface-mount_yageo-rt0603brd07200kl_C728585.html), checked 2026-09-26, meets spec, stock 248120. listing_not_allocation: a page listing is not allocated stock or an order."
       ],
       "open_questions": [
-        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+        "RFQ/allocate stock before fabrication; listing is not an order."
       ],
       "footprint_candidate": "Resistor_SMD:R_0603_1608Metric",
       "identity_state": "SPECIFICATION_ONLY",
@@ -908,10 +934,11 @@
       },
       "source_ids": [],
       "facts": [
-        "249k; 0.1% 25 ppm/C. Value specified by this design; not an exact orderable."
+        "249k; 0.1% 25 ppm/C. Value specified by this design; not an exact orderable.",
+        "G08 (#9): manufacturer spec sheet confirms YAGEO RT0603BRD07249KL exists at this value, but no LCSC product-detail page was found or fetched; no C-number is recorded here without a fetched citation."
       ],
       "open_questions": [
-        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+        "OPEN: no cited LCSC/JLC listing found for the 249k value; assign a stocked exact MPN/C-code and source its datasheet before fabrication."
       ],
       "footprint_candidate": "Resistor_SMD:R_0603_1608Metric",
       "identity_state": "SPECIFICATION_ONLY",
@@ -924,12 +951,12 @@
     },
     {
       "id": "r4k7",
-      "mpn": null,
-      "manufacturer": "RFQ value/package selection",
+      "mpn": "HoLTT0603-1/10W-4.7K-1%",
+      "manufacturer": "Milliohm",
       "kind": "Resistor",
       "package": "0603",
-      "jlc_code": null,
-      "jlc_url": null,
+      "jlc_code": "C2904521",
+      "jlc_url": "https://jlcpcb.com/partdetail/C2904521",
       "role": "second filter",
       "pins": {
         "1": "P1",
@@ -937,10 +964,11 @@
       },
       "source_ids": [],
       "facts": [
-        "4.7k; 1%. Value specified by this design; not an exact orderable."
+        "4.7k; 1%. Value specified by this design; not an exact orderable.",
+        "G08 candidate: LCSC C2904521 (https://www.lcsc.com/product-detail/C2904521.html), checked 2026-09-26, meets spec, stock 820. listing_not_allocation: a page listing is not allocated stock or an order."
       ],
       "open_questions": [
-        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+        "RFQ/allocate stock before fabrication; listing is not an order."
       ],
       "footprint_candidate": "Resistor_SMD:R_0603_1608Metric",
       "identity_state": "SPECIFICATION_ONLY",
@@ -953,12 +981,12 @@
     },
     {
       "id": "r10k",
-      "mpn": null,
-      "manufacturer": "RFQ value/package selection",
+      "mpn": "0603WAF1002T5E",
+      "manufacturer": "UNI-ROYAL",
       "kind": "Resistor",
       "package": "0603",
-      "jlc_code": null,
-      "jlc_url": null,
+      "jlc_code": "C25804",
+      "jlc_url": "https://jlcpcb.com/partdetail/C25804",
       "role": "switch ladder, pulls",
       "pins": {
         "1": "P1",
@@ -966,10 +994,11 @@
       },
       "source_ids": [],
       "facts": [
-        "10k; 1%. Value specified by this design; not an exact orderable."
+        "10k; 1%. Value specified by this design; not an exact orderable.",
+        "G08 candidate: LCSC C25804 (https://www.lcsc.com/product-detail/C25804.html), checked 2026-09-26, meets spec. Page states \"Out of Stock\" with a \"Notify Me\" option. listing_not_allocation: a page listing is not allocated stock or an order."
       ],
       "open_questions": [
-        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+        "RFQ/allocate stock before fabrication; page shows zero stock at the time checked."
       ],
       "footprint_candidate": "Resistor_SMD:R_0603_1608Metric",
       "identity_state": "SPECIFICATION_ONLY",
@@ -982,12 +1011,12 @@
     },
     {
       "id": "r100k",
-      "mpn": null,
-      "manufacturer": "RFQ value/package selection",
+      "mpn": "0603WAF1003T5E",
+      "manufacturer": "UNI-ROYAL",
       "kind": "Resistor",
       "package": "0603",
-      "jlc_code": null,
-      "jlc_url": null,
+      "jlc_code": "C25803",
+      "jlc_url": "https://jlcpcb.com/partdetail/C25803",
       "role": "digital/default pulls",
       "pins": {
         "1": "P1",
@@ -995,10 +1024,11 @@
       },
       "source_ids": [],
       "facts": [
-        "100k; 1%. Value specified by this design; not an exact orderable."
+        "100k; 1%. Value specified by this design; not an exact orderable.",
+        "G08 candidate: LCSC C25803 (https://www.lcsc.com/product-detail/C25803.html), checked 2026-09-26, meets spec, stock 17040200. listing_not_allocation: a page listing is not allocated stock or an order."
       ],
       "open_questions": [
-        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+        "RFQ/allocate stock before fabrication; listing is not an order."
       ],
       "footprint_candidate": "Resistor_SMD:R_0603_1608Metric",
       "identity_state": "SPECIFICATION_ONLY",
@@ -1011,12 +1041,12 @@
     },
     {
       "id": "r100",
-      "mpn": null,
-      "manufacturer": "RFQ value/package selection",
+      "mpn": "0603 \u00b11% 100\u03a9 (VO)",
+      "manufacturer": "VO",
       "kind": "Resistor",
       "package": "0603",
-      "jlc_code": null,
-      "jlc_url": null,
+      "jlc_code": "C2889384",
+      "jlc_url": "https://jlcpcb.com/partdetail/C2889384",
       "role": "ADC isolation",
       "pins": {
         "1": "P1",
@@ -1024,10 +1054,11 @@
       },
       "source_ids": [],
       "facts": [
-        "100; 1%. Value specified by this design; not an exact orderable."
+        "100; 1%. Value specified by this design; not an exact orderable.",
+        "G08 candidate: LCSC C2889384 (https://www.lcsc.com/product-detail/Chip-Resistor-Surface-Mount_VO_C2889384.html), checked 2026-09-26, meets spec. Page states \"Not available now\". listing_not_allocation: a page listing is not allocated stock or an order."
       ],
       "open_questions": [
-        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+        "RFQ/allocate stock before fabrication; page shows zero availability at the time checked."
       ],
       "footprint_candidate": "Resistor_SMD:R_0603_1608Metric",
       "identity_state": "SPECIFICATION_ONLY",
@@ -1040,12 +1071,12 @@
     },
     {
       "id": "r1k",
-      "mpn": null,
-      "manufacturer": "RFQ value/package selection",
+      "mpn": "0603WAF1001T5E",
+      "manufacturer": "UNI-ROYAL",
       "kind": "Resistor",
       "package": "0603",
-      "jlc_code": null,
-      "jlc_url": null,
+      "jlc_code": "C21190",
+      "jlc_url": "https://jlcpcb.com/partdetail/C21190",
       "role": "control isolation/rail bleed",
       "pins": {
         "1": "P1",
@@ -1053,10 +1084,11 @@
       },
       "source_ids": [],
       "facts": [
-        "1k; 1%. Value specified by this design; not an exact orderable."
+        "1k; 1%. Value specified by this design; not an exact orderable.",
+        "G08 candidate: LCSC C21190 (https://www.lcsc.com/product-detail/C21190.html), checked 2026-09-26, meets spec, stock 7514000. listing_not_allocation: a page listing is not allocated stock or an order."
       ],
       "open_questions": [
-        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+        "RFQ/allocate stock before fabrication; listing is not an order."
       ],
       "footprint_candidate": "Resistor_SMD:R_0603_1608Metric",
       "identity_state": "SPECIFICATION_ONLY",
@@ -1069,12 +1101,12 @@
     },
     {
       "id": "r33",
-      "mpn": null,
-      "manufacturer": "RFQ value/package selection",
+      "mpn": "RC0603FR-0733RL",
+      "manufacturer": "YAGEO",
       "kind": "Resistor",
       "package": "0603",
-      "jlc_code": null,
-      "jlc_url": null,
+      "jlc_code": "C108661",
+      "jlc_url": "https://jlcpcb.com/partdetail/C108661",
       "role": "SPI source termination",
       "pins": {
         "1": "P1",
@@ -1082,10 +1114,12 @@
       },
       "source_ids": [],
       "facts": [
-        "33; 1%. Value specified by this design; not an exact orderable."
+        "33; 1%. Value specified by this design; not an exact orderable.",
+        "G08 candidate: LCSC C108661 (https://www.lcsc.com/product-detail/C108661.html), checked 2026-09-26, meets spec, stock 85500. listing_not_allocation: a page listing is not allocated stock or an order.",
+        "G08 rejected a false match found in the same search: 0603WAF3300T5E / C23138 is 330\u03a9, not 33\u03a9; not used."
       ],
       "open_questions": [
-        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+        "RFQ/allocate stock before fabrication; listing is not an order."
       ],
       "footprint_candidate": "Resistor_SMD:R_0603_1608Metric",
       "identity_state": "SPECIFICATION_ONLY",
@@ -1098,12 +1132,12 @@
     },
     {
       "id": "c470p",
-      "mpn": null,
-      "manufacturer": "RFQ value/package selection",
+      "mpn": "06035A471KAT2A",
+      "manufacturer": "Kyocera AVX",
       "kind": "Capacitor",
       "package": "0603",
-      "jlc_code": null,
-      "jlc_url": null,
+      "jlc_code": "C597169",
+      "jlc_url": "https://jlcpcb.com/partdetail/C597169",
       "role": "input filter",
       "pins": {
         "1": "P1",
@@ -1111,10 +1145,11 @@
       },
       "source_ids": [],
       "facts": [
-        "470pF; C0G 5% >=25 V. Value specified by this design; not an exact orderable."
+        "470pF; C0G 5% >=25 V. Value specified by this design; not an exact orderable.",
+        "G08 candidate: LCSC C597169 (https://www.lcsc.com/product-detail/multilayer-ceramic-capacitors-mlcc-smd-smt_kyocera-avx-06035a471kat2a_C597169.html), checked 2026-09-26, stock 240. listing_not_allocation: a page listing is not allocated stock or an order."
       ],
       "open_questions": [
-        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+        "meets_spec: NO on tolerance. Value/dielectric/voltage/package match, but the page states +/-10% tolerance, looser than this design's stated 5% max. Do not fabricate against this candidate without a tighter-tolerance replacement or a design tolerance review."
       ],
       "footprint_candidate": "Capacitor_SMD:C_0603_1608Metric",
       "identity_state": "SPECIFICATION_ONLY",
@@ -1127,12 +1162,12 @@
     },
     {
       "id": "c10n",
-      "mpn": null,
-      "manufacturer": "RFQ value/package selection",
+      "mpn": "GRM1885C1H103JA01D",
+      "manufacturer": "muRata",
       "kind": "Capacitor",
       "package": "0603",
-      "jlc_code": null,
-      "jlc_url": null,
+      "jlc_code": "C85973",
+      "jlc_url": "https://jlcpcb.com/partdetail/C85973",
       "role": "filter",
       "pins": {
         "1": "P1",
@@ -1140,10 +1175,11 @@
       },
       "source_ids": [],
       "facts": [
-        "10nF; C0G 5% >=25 V. Value specified by this design; not an exact orderable."
+        "10nF; C0G 5% >=25 V. Value specified by this design; not an exact orderable.",
+        "G08 candidate: LCSC C85973 (https://www.lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_Murata-Electronics-GRM1885C1H103JA01D_C85973.html), checked 2026-09-26, meets spec, stock 98960. listing_not_allocation: a page listing is not allocated stock or an order."
       ],
       "open_questions": [
-        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+        "RFQ/allocate stock before fabrication; listing is not an order."
       ],
       "footprint_candidate": "Capacitor_SMD:C_0603_1608Metric",
       "identity_state": "SPECIFICATION_ONLY",
@@ -1156,12 +1192,12 @@
     },
     {
       "id": "c1n",
-      "mpn": null,
-      "manufacturer": "RFQ value/package selection",
+      "mpn": "CC0603FRNPO9BN102",
+      "manufacturer": "YAGEO",
       "kind": "Capacitor",
       "package": "0603",
-      "jlc_code": null,
-      "jlc_url": null,
+      "jlc_code": "C309468",
+      "jlc_url": "https://jlcpcb.com/partdetail/C309468",
       "role": "ADC bucket",
       "pins": {
         "1": "P1",
@@ -1169,10 +1205,11 @@
       },
       "source_ids": [],
       "facts": [
-        "1nF; C0G 5% >=25 V. Value specified by this design; not an exact orderable."
+        "1nF; C0G 5% >=25 V. Value specified by this design; not an exact orderable.",
+        "G08 candidate: LCSC C309468 (https://www.lcsc.com/product-detail/C309468.html), checked 2026-09-26, meets spec, stock 483500. Page dielectric label is NP0 (equivalent to C0G); tolerance +/-1%, tighter than the design's 5% requirement. listing_not_allocation: a page listing is not allocated stock or an order."
       ],
       "open_questions": [
-        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+        "RFQ/allocate stock before fabrication; listing is not an order."
       ],
       "footprint_candidate": "Capacitor_SMD:C_0603_1608Metric",
       "identity_state": "SPECIFICATION_ONLY",
@@ -1185,12 +1222,12 @@
     },
     {
       "id": "c100n",
-      "mpn": null,
-      "manufacturer": "RFQ value/package selection",
+      "mpn": "CC0603KRX7R9BB104",
+      "manufacturer": "YAGEO",
       "kind": "Capacitor",
       "package": "0603",
-      "jlc_code": null,
-      "jlc_url": null,
+      "jlc_code": "C14663",
+      "jlc_url": "https://jlcpcb.com/partdetail/C14663",
       "role": "local decoupling",
       "pins": {
         "1": "P1",
@@ -1198,10 +1235,11 @@
       },
       "source_ids": [],
       "facts": [
-        "100nF; X7R >=16 V. Value specified by this design; not an exact orderable."
+        "100nF; X7R >=16 V. Value specified by this design; not an exact orderable.",
+        "G08 candidate: LCSC C14663 (https://www.lcsc.com/product-detail/C14663.html), checked 2026-09-26, meets spec, stock 8686600. listing_not_allocation: a page listing is not allocated stock or an order."
       ],
       "open_questions": [
-        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+        "RFQ/allocate stock before fabrication; listing is not an order."
       ],
       "footprint_candidate": "Capacitor_SMD:C_0603_1608Metric",
       "identity_state": "SPECIFICATION_ONLY",
@@ -1214,12 +1252,12 @@
     },
     {
       "id": "c1u",
-      "mpn": null,
-      "manufacturer": "RFQ value/package selection",
+      "mpn": "CC0805KKX7R8BB105",
+      "manufacturer": "YAGEO",
       "kind": "Capacitor",
       "package": "0805",
-      "jlc_code": null,
-      "jlc_url": null,
+      "jlc_code": "C91186",
+      "jlc_url": "https://jlcpcb.com/partdetail/C91186",
       "role": "regulator/reference decoupling",
       "pins": {
         "1": "P1",
@@ -1227,10 +1265,11 @@
       },
       "source_ids": [],
       "facts": [
-        "1uF; X7R >=10 V; effective >0.47uF. Value specified by this design; not an exact orderable."
+        "1uF; X7R >=10 V; effective >0.47uF. Value specified by this design; not an exact orderable.",
+        "G08 candidate: LCSC C91186 (https://www.lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_1uF-105-10-25V_C91186.html), checked 2026-09-26, nominal/dielectric/voltage confirmed (1uF, X7R, 25V, 0805), stock 880. listing_not_allocation: a page listing is not allocated stock or an order."
       ],
       "open_questions": [
-        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+        "OPEN: the effective->0.47uF DC-bias-derating requirement was NOT checked against this candidate; no fetched page gave a derating curve. RFQ/allocate stock before fabrication."
       ],
       "footprint_candidate": "Capacitor_SMD:C_0805_2012Metric",
       "identity_state": "SPECIFICATION_ONLY",
@@ -1243,12 +1282,12 @@
     },
     {
       "id": "c10u",
-      "mpn": null,
-      "manufacturer": "RFQ value/package selection",
+      "mpn": "CL21A106KAYNNNE",
+      "manufacturer": "Samsung Electro-Mechanics",
       "kind": "Capacitor",
       "package": "0805",
-      "jlc_code": null,
-      "jlc_url": null,
+      "jlc_code": "C15850",
+      "jlc_url": "https://jlcpcb.com/partdetail/C15850",
       "role": "branch bulk",
       "pins": {
         "1": "P1",
@@ -1256,10 +1295,12 @@
       },
       "source_ids": [],
       "facts": [
-        "10uF; X5R/X7R >=10 V; verify effective capacitance. Value specified by this design; not an exact orderable."
+        "10uF; X5R/X7R >=10 V; verify effective capacitance. Value specified by this design; not an exact orderable.",
+        "Not currently wired to any BOM reference (record has empty source_ids and no ref in design/circuit.json); recorded for completeness since identity_state is SPECIFICATION_ONLY.",
+        "G08 candidate: LCSC C15850 (https://www.lcsc.com/product-detail/C15850.html), checked 2026-09-26, meets spec, stock 1507260. listing_not_allocation: a page listing is not allocated stock or an order."
       ],
       "open_questions": [
-        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+        "OPEN: effective-capacitance derating not checked. RFQ/allocate stock and confirm this record is actually needed before fabrication."
       ],
       "footprint_candidate": "Capacitor_SMD:C_0805_2012Metric",
       "identity_state": "SPECIFICATION_ONLY",

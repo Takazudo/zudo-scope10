@@ -1,0 +1,38 @@
+{
+  "scope": "ngspice run of the SAME ideal-buffer netlist analyze.py models analytically (simulation/input-channel.cir: EBUFFER gain=1, no op-amp slew/bandwidth/offset, no ADC, no diode/PCB parasitics). This is NOT a TLV9064 vendor-model run and does not close G04; see AGENTS.md invariants.",
+  "netlist": "simulation/input-channel.cir",
+  "ngspice_version": "** ngspice-42 : Circuit level simulation program",
+  "dc_endpoint_volts": 12.0,
+  "ngspice": {
+    "v_out_at_vin_0": 1.497594,
+    "v_out_at_vin_plus": 2.69567,
+    "v_out_at_vin_minus": 0.2995188,
+    "gain_v_per_v": 0.09983963333333333,
+    "zero_input_adc_v": 1.497594,
+    "dc_gain_db": -20.0139,
+    "minus_3db_corner_hz": 2179.8432712824883
+  },
+  "analyze_py": {
+    "gain_v_per_v": 0.09983961507618283,
+    "zero_input_adc_v": 1.4975942261427426,
+    "filter_poles_hz": [
+      3391.715184749098,
+      3386.2753849339438
+    ],
+    "cascade_minus_3db_corner_hz_reimplemented": 2181.1361925775727
+  },
+  "comparison": {
+    "gain_pct_diff": 1.8286479255568185e-05,
+    "zero_pct_diff": 1.5100401603078925e-05,
+    "corner_vs_single_pole_pct_diff": 35.62711169384085,
+    "corner_vs_two_pole_cascade_pct_diff": 0.0592774215330625,
+    "tolerance_pct": 2.0,
+    "within_tolerance": true,
+    "explanation": "analyze.py's filter_poles_hz lists each RC stage's own pole frequency (~3392 Hz and ~3386 Hz), not the -3 dB point of the two of them cascaded; two near-equal single-pole stages in series cross -3 dB at about 0.64x a single stage's pole, so comparing ngspice's simulated corner directly against filter_poles_hz would show a large, expected difference. This script instead re-derives the cascade's own -3 dB point from analyze.py's published poles using the same textbook two-pole formula (reimplemented here, analyze.py itself is not imported or modified) and compares ngspice against that."
+  },
+  "vendor_model": {
+    "attempted": false,
+    "ran": false,
+    "note": "Not attempted: no redistributable TLV9064 PSpice/TINA model licence was confirmed, so none is fetched or committed per AGENTS.md licensing rules. The ideal-buffer run above is the only ngspice run this script performs."
+  }
+}

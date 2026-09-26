@@ -1,82 +1,18 @@
-<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>fuse / supplier selection open · SCOPE10</title><link rel="stylesheet" href="style.css"><header><div class="tag">ZUDO / SCOPE 10 / P0</div><a href="index.html">Project catalogue</a> · <a href="../doc/public/prototype/index.html">UI simulation</a></header><main><div class="crumb">components/records/fuse</div><h1>fuse / supplier selection open</h1><h2>Identity</h2>
-<table>
-<thead>
-<tr>
-<th>Field</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Record</td>
-<td>fuse</td>
-</tr>
-<tr>
-<td>Manufacturer</td>
-<td>RFQ exact manufacturer</td>
-</tr>
-<tr>
-<td>Orderable identity</td>
-<td>NOT SELECTED</td>
-</tr>
-<tr>
-<td>JLC/LCSC</td>
-<td>NOT VERIFIED / NOT APPLICABLE</td>
-</tr>
-<tr>
-<td>Package</td>
-<td>1206 PPTC candidate</td>
-</tr>
-<tr>
-<td>Identity</td>
-<td>SPECIFICATION_ONLY</td>
-</tr>
-<tr>
-<td>Fit</td>
-<td>PROPOSED_NOT_ASSEMBLED</td>
-</tr>
-<tr>
-<td>References</td>
-<td>F1</td>
-</tr>
-<tr>
-<td>Footprint candidate</td>
-<td>NOT ASSIGNED</td>
-</tr>
-</tbody>
-</table>
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>1206L050YR · SCOPE10</title><link rel="stylesheet" href="style.css"><header><div class="tag">ZUDO / SCOPE 10 / P0</div><a href="index.html">Project catalogue</a> · <a href="../doc/public/prototype/index.html">UI simulation</a></header><main><div class="crumb">components/records/fuse</div><h1>1206L050YR</h1><h2>Identity</h2>
+<table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Record</td><td>fuse</td></tr><tr><td>Manufacturer</td><td>Littelfuse</td></tr><tr><td>Orderable identity</td><td>1206L050YR</td></tr><tr><td>JLC/LCSC</td><td>C163512</td></tr><tr><td>Package</td><td>1206 PPTC candidate</td></tr><tr><td>Identity</td><td>SPECIFICATION_ONLY</td></tr><tr><td>Fit</td><td>PROPOSED_NOT_ASSEMBLED</td></tr><tr><td>References</td><td>F1</td></tr><tr><td>Footprint candidate</td><td>NOT ASSIGNED</td></tr></tbody></table>
 <h2>Intended function</h2>
 <p>Analog/display branch protection</p>
 <h2>Recorded findings</h2>
-<p>Proposed 500 mA hold, &gt;=6 V. This does not limit Pico USB inrush before the carrier branch.</p>
+<p>Proposed 500 mA hold, &amp;gt;=6 V. This does not limit Pico USB inrush before the carrier branch.</p>
+<p>G08 candidate: LCSC C163512, Littelfuse 1206L050YR (https://lcsc.com/product-detail/Resettable-Fuses_Littelfuse-1206L050YR_C163512.html), checked 2026-09-26, stock 21130. listing_not_allocation: a page listing is not allocated stock or an order.</p>
 <h2>Pin map</h2>
 <p>Pin assignments below are electrical evidence or explicitly logical placeholders. They are not footprint qualification.</p>
-<table>
-<thead>
-<tr>
-<th>Pin</th>
-<th>Function</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>IN</td>
-</tr>
-<tr>
-<td>2</td>
-<td>OUT</td>
-</tr>
-</tbody>
-</table>
+<table><thead><tr><th>Pin</th><th>Function</th></tr></thead><tbody><tr><td>1</td><td>IN</td></tr><tr><td>2</td><td>OUT</td></tr></tbody></table>
 <h2>Documents and models</h2>
 <p>No original model or source binary was recovered for this record in this package. See the sources and the local download manifest; no nominal model is presented as an exact replacement.</p>
 <h2>Coverage and unresolved questions</h2>
 <p><strong>Footprint independently qualified: NO. Factory order approved: NO. Bench result: NOT TESTED.</strong></p>
-<ul>
-<li>Select actual part and qualify trip time, cold resistance and USB current budget.</li>
-</ul>
+<ul><li>meets_spec: exact match at 500 mA hold / 6 V, no margin above the stated minimums. Sizing against the actual measured inrush budget is out of scope for this evidence pass (see G07). Select/confirm the actual part and qualify trip time, cold resistance and USB current budget before fabrication.</li></ul>
 <p>The presence of a part number, datasheet or model closes none of these remaining gates automatically.</p>
 <h2>Sources</h2>
-<p>Values and package constraints are authored design requirements, not manufacturer-verified specifications of a selected orderable part. Select the exact item and add its evidence before placement.</p>
-<footer>Pre-layout evidence. No factory approval or hardware measurements are implied.</footer></main></html>
+<p>Values and package constraints are authored design requirements, not manufacturer-verified specifications of a selected orderable part. Select the exact item and add its evidence before placement.</p><footer>Pre-layout evidence. No factory approval or hardware measurements are implied.</footer></main></html>

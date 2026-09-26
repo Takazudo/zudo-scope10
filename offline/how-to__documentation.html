@@ -3,15 +3,13 @@
 <p>The lamp's key principle is retained: <strong>structured component data are authoritative; pages are a generated projection</strong>. Edit <code>catalog/components.json</code>, source records or narrative inputs, then run <code>python3 scripts/build_docs.py</code>. Do not edit the generated component pages independently.</p>
 <h2>Official scaffold route</h2>
 <p>The included <code>scripts/bootstrap_doc.sh NEW_DIRECTORY</code> invokes the published <code>create-zudo-doc@5.27.0</code> scaffold in an empty directory, copies this package's MDX, public assets and minimal config into it, and leaves dependency installation to you. It does not modify your existing lamp project or a pre-existing target directory.</p>
-<pre><code class="language-sh">bash scripts/bootstrap_doc.sh /path/to/new/scope-doc
+<pre><code>bash scripts/bootstrap_doc.sh /path/to/new/scope-doc
 cd /path/to/new/scope-doc
 pnpm install
 pnpm build
-pnpm dev
-</code></pre>
+pnpm dev</code></pre>
 <p>The framework package/build tool were not installed or built in this environment because network package downloads were unavailable. Native build and interaction checks remain local tasks; the separate offline site is already generated.</p>
 <p>For an existing zudo-doc workspace copy <code>doc/src/content/docs/</code>, <code>doc/public/</code> and the selected configuration fields, resolving category collisions deliberately. Keep public source binaries under review: manufacturer files are retained for local engineering reference and do not automatically carry permission for unrestricted republication.</p>
 <h2>Component evidence</h2>
 <p>Each generated record carries exact or unresolved identity, role, package candidate, pin mapping, source links, retained file hashes, source availability and separate open questions. A verified part identity does not mean a verified footprint, a verified factory process, an assembled board or a successful measurement. Blank asset sections say explicitly that a model or datasheet was not recovered.</p>
-<p>The pot has an original downloaded manufacturer STEP and drawing files recovered from the earlier component ZIP. The Pico/display STEP files were not downloaded successfully; the mechanical envelope study is not substituted for exact CAD. Missing binary downloads are listed and a local source-fetch script is supplied.</p>
-<footer>Pre-layout evidence. No factory approval or hardware measurements are implied.</footer></main></html>
+<p>The pot has an original downloaded manufacturer STEP and drawing files recovered from the earlier component ZIP. The Pico/display STEP files were not downloaded successfully; the mechanical envelope study is not substituted for exact CAD. Missing binary downloads are listed and a local source-fetch script is supplied.</p><footer>Pre-layout evidence. No factory approval or hardware measurements are implied.</footer></main></html>

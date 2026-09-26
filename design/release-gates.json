@@ -5,61 +5,126 @@
       "id": "G01",
       "title": "Exact display power/straps and module revision",
       "status": "OPEN",
-      "required_evidence": "Inspect manufacturer schematic page image, actual module; prove 5V input and no regulator contention."
+      "required_evidence": "Inspect manufacturer schematic page image, actual module; prove 5V input and no regulator contention.",
+      "evidence_partial": [
+        "design/evidence/g01-display-power.md",
+        "design/evidence/g01-delta.json",
+        "design/circuit.json (pending_g01_changes[id=g01-r88-backlight-default], parts[ref=J30/J31].notes)",
+        "design/narrative-pages.json (architecture/power-and-module-interface.mdx, \"G01/G06 pending decision\" section)",
+        "design/evidence/INTEGRATION.md (\"G01 — pending proposal only, header nets unchanged\")"
+      ],
+      "evidence_partial_note": "Desk-only: module R16 (10k VSYS->LCD_BL) vs carrier R88 (100k LCD_BL->GND) backlight-default-on conflict recorded as a pending proposal, not applied. No net changed. Physical module revision/strap check and the pending R88 decision remain local (LOCAL-HANDOFF.md)."
     },
     {
       "id": "G02",
       "title": "Mechanical parts and footprint/pad mapping",
       "status": "OPEN",
-      "required_evidence": "Resolve NKK numerical pins, jack duplicate terminals, button feet, connector orderables and actuator heights."
+      "required_evidence": "Resolve NKK numerical pins, jack duplicate terminals, button feet, connector orderables and actuator heights.",
+      "evidence_partial": [
+        "design/evidence/g02-mechanical-pins.md",
+        "design/evidence/g02-delta.json",
+        "design/evidence/INTEGRATION.md (\"G02 — pin maps and facts added to the catalog\")",
+        "catalog/components.json (records[id=range].pins C->3, M->2 applied; L/H OPEN)"
+      ],
+      "evidence_partial_note": "Vendor-fact terminal map for range C/M applied; L/H stays OPEN pending panel orientation. Jack leg-to-contact map, Waveshare drill/standoff, Pico H header height and 1x20 strip orderables remain OPEN; real-part fit is a local gate."
     },
     {
       "id": "G03",
       "title": "Native KiCad validation",
       "status": "OPEN",
-      "required_evidence": "Open generated sheets, independently inspect connectivity and ERC; finalize footprint assignments and PCB routing; DRC and schematic parity."
+      "required_evidence": "Open generated sheets, independently inspect connectivity and ERC; finalize footprint assignments and PCB routing; DRC and schematic parity.",
+      "evidence_partial": [
+        "reports/kicad-check.json",
+        "design/evidence/INTEGRATION.md (\"Other integrator-owned fixes\")"
+      ],
+      "evidence_partial_note": "kicad-cli 9.0.9 loads the root 11-sheet hierarchy and outline-only PCB; hierarchy ERC=0 unexplained, outline-board DRC=0 errors, netlist parity PASS (224 instances / 134 nets, 0 differences). This is not placement, routing or a final DRC of a populated board; those remain local KiCad GUI work."
     },
     {
       "id": "G04",
       "title": "Input/protection qualification",
       "status": "OPEN",
-      "required_evidence": "Test powered/unpowered faults, leakage, open-input bias, multiple channel injection, recovery and loading."
+      "required_evidence": "Test powered/unpowered faults, leakage, open-input bias, multiple channel injection, recovery and loading.",
+      "evidence_partial": [
+        "reports/spice.json",
+        "reports/analog-analysis.json",
+        "reports/filter-response.csv",
+        "simulation/input-channel.cir"
+      ],
+      "evidence_partial_note": "ngspice ideal-buffer run matches analyze.py's analytic model within tolerance; no vendor TLV9064 SPICE model, no fault/transient/leakage test. Bench qualification is a local gate."
     },
     {
       "id": "G05",
       "title": "Acquisition qualification",
       "status": "OPEN",
-      "required_evidence": "Scope mux settling and ADC start, actual uniform sample cadence, missed-slot counters, alias response and cross-talk."
+      "required_evidence": "Scope mux settling and ADC start, actual uniform sample cadence, missed-slot counters, alias response and cross-talk.",
+      "evidence_partial": [
+        "firmware/ACQUISITION.md",
+        "reports/firmware-host-tests.json",
+        "reports/firmware-target-build.json",
+        "reports/analog-analysis.json (acquisition budget)"
+      ],
+      "evidence_partial_note": "Host-tested cycle-level model of the real acq_engine.c/scope_core.c passes (uniform slots, ring wrap/overrun, missed-slot accounting, channel-order invariance). Target UF2 builds clean. No bench-measured rate, settle, jitter, alias or cross-talk. Known unreconciled figure: firmware/ACQUISITION.md's implemented budget gives a 75us CH1->CH10 skew (9 slots x 8.333us); the generated architecture narrative (design/narrative-pages.json -> doc/.../architecture/acquisition.mdx) and reports/analog-analysis.json still carry a 72us figure from an earlier 8us-slot sketch that predates the #12 engine. ACQUISITION.md already states this discrepancy explicitly; reconciling the narrative source and analyze.py's hardcoded value is left open (see LOCAL-HANDOFF.md) because it is not a one-line fix -- the surrounding narrative paragraph frames the schedule as an unimplemented target, which is no longer accurate now that #12 shipped the engine."
     },
     {
       "id": "G06",
       "title": "Firmware/display integration",
       "status": "OPEN",
-      "required_evidence": "Build with actual Pico SDK; integrate exact vendor bridge driver; verify ten panes, time/range, controls, HOLD and LINK."
+      "required_evidence": "Build with actual Pico SDK; integrate exact vendor bridge driver; verify ten panes, time/range, controls, HOLD and LINK.",
+      "evidence_partial": [
+        "firmware/LCD-BACKEND.md",
+        "reports/firmware-target-build.json (scope10_acq+lcd target)",
+        "reports/firmware-host-tests.json (LCD bridge framing/clipping/pane-layout/renderer host tests)"
+      ],
+      "evidence_partial_note": "Clean-room Waveshare LCD backend; scope10_acq+lcd builds with SCOPE_ENABLE_LCD=1 against the real Pico SDK (0 warnings). A few vendor panel-tuning numbers (gamma/VCOM/frame-rate/scan/inversion) are used; LCD_VENDOR_PANEL_TUNING=0 excludes them (user decision, LOCAL-HANDOFF.md). SPI clocked conservatively at 15 MHz. No display was flashed or observed; G01's backlight-default decision must be resolved before enabling SCOPE_ENABLE_LCD locally."
     },
     {
       "id": "G07",
       "title": "Power and USB budget",
       "status": "OPEN",
-      "required_evidence": "Measure display backlight/inrush + Pico + analog rail; satisfy USB source contract and power sequencing."
+      "required_evidence": "Measure display backlight/inrush + Pico + analog rail; satisfy USB source contract and power sequencing.",
+      "evidence_partial": [
+        "reports/power-budget.json",
+        "scripts/power_budget.py"
+      ],
+      "evidence_partial_note": "Desk arithmetic only. No power gate ties +5V_FUSED to USB enumeration state, so the display/analog load path is unconditioned on the host granting the configured 500 mA limit (vs_unconfigured_limit: fail_or_unknown). PPTC F1's derated hold current (630 mA) vs the USB 500 mA configured limit is a tension, not a measured fault. Backlight current and module-side VBUS bulk capacitance are unknown. Bench measurement is a local gate."
     },
     {
       "id": "G08",
       "title": "Exact sourcing and factory route",
       "status": "OPEN",
-      "required_evidence": "Resolve every specification-only BOM row, external module/socket/knob supply, factory test and all soldering."
+      "required_evidence": "Resolve every specification-only BOM row, external module/socket/knob supply, factory test and all soldering.",
+      "evidence_partial": [
+        "design/evidence/g08-sourcing.md",
+        "design/evidence/g08-delta.json",
+        "design/evidence/INTEGRATION.md (\"G08 — mpn/jlc_code applied only where cited\")",
+        "manufacturing/RFQ.md",
+        "manufacturing/bom-planning.csv"
+      ],
+      "evidence_partial_note": "mpn/jlc_code applied for 11 specification-only candidates with a cited source; r249k, socket20 and header20 stay OPEN (no located page). c470p/c1u/c10u/fuse are applied but flagged as imperfect candidates (tolerance/derating/margin caveats). Listing is not allocated stock or an order; quote and factory route remain a local gate."
     },
     {
       "id": "G09",
       "title": "Physical review",
       "status": "OPEN",
-      "required_evidence": "Print panel at 100%; test real screen readability and control/cable clearance; accept stack and support."
+      "required_evidence": "Print panel at 100%; test real screen readability and control/cable clearance; accept stack and support.",
+      "evidence_partial": [
+        "mechanical/print/panel-1to1.svg",
+        "mechanical/print/panel-1to1.pdf",
+        "mechanical/print/README.md"
+      ],
+      "evidence_partial_note": "Printable 1:1 panel sheet generated and regenerated deterministically. No physical print, readability check or stack/clearance acceptance has been done; that is a local gate."
     },
     {
       "id": "G10",
       "title": "Release approval",
       "status": "OPEN",
-      "required_evidence": "Generate BOM/CPL/Gerbers from final saved KiCad revision and explicitly approve quote. No current order export."
+      "required_evidence": "Generate BOM/CPL/Gerbers from final saved KiCad revision and explicitly approve quote. No current order export.",
+      "evidence_partial": [
+        "manufacturing/release_guard.py (exits nonzero; refuses while any gate is open)",
+        "reports/validation.json",
+        "SHA256SUMS.txt"
+      ],
+      "evidence_partial_note": "release_allowed stays false. No BOM/CPL/Gerber export exists. Explicit release approval, generated only from the final saved KiCad revision, is a local decision (LOCAL-HANDOFF.md)."
     }
   ]
 }

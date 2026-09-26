@@ -17,7 +17,8 @@
     "@takazudo/zfb-runtime": "2.20.2",
     "@takazudo/zfb-md-wasm": "2.20.2",
     "@takazudo/zudo-doc": "5.27.0",
-    "preact": "^10.29.1"
+    "preact": "^10.29.1",
+    "preact-render-to-string": "^6.5.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

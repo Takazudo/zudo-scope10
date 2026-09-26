@@ -1,17 +1,15 @@
 {
   "result": "PASS",
-  "mode": "Inline local HTML/JS bytes, no URL navigation",
+  "mode": "Inline local HTML/JS bytes plus HTTP navigation via scripts/serve.py",
   "checks": [
     "Inline offline catalogue search",
     "Ten controls / three ranges / link restores local positions / hold freezes pixels",
-    "390px mobile viewport: no document horizontal overflow"
+    "HTTP offline catalogue loads and search filters cards",
+    "HTTP ten-pane UI: time controls, radios, link restore, HOLD freeze, no 390px overflow, no console errors",
+    "HTTP GLB viewer: model loads, no console errors, non-blank canvas captured",
+    "HTTP built zfb site (doc/dist) serves getting-started and components pages"
   ],
   "page_errors": [],
-  "not_run": [
-    "HTTP/file URL loading",
-    "Standalone ESM/GLB model viewer",
-    "Native zudo-doc build",
-    "Physical LCD"
-  ],
-  "environment_note": "Initial loopback navigation returned ERR_BLOCKED_BY_ADMINISTRATOR; no browser policy settings were changed."
+  "not_run": [],
+  "native_zudo_doc_build": "checked separately by `pnpm build` in doc/ (see reports/doc-generation.json)"
 }

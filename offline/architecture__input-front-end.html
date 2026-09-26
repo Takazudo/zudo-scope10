@@ -4,10 +4,9 @@
 <p>Two complete channels use one physical TLV9064IDR. U1–U5 provide the 20 input buffer amplifiers. U6 supplies the three post-mux buffers and the reference buffer. The design data enumerate every physical IC pin, rather than inventing multiple U references for the same package.</p>
 <h2>Transfer function</h2>
 <p>Let <code>G = 1/1M + 1/200k + 1/249k</code>. For an ideal low-impedance source:</p>
-<pre><code class="language-text">Vnode = ((Vin / 1M) + (Vref / 200k)) / G
+<pre><code>Vnode = ((Vin / 1M) + (Vref / 200k)) / G
       = 0.099839615 × Vin + 1.497594226 V, with Vref = 3.0 V
-Vin   = (Vnode - 1.497594226) / 0.099839615
-</code></pre>
+Vin   = (Vnode - 1.497594226) / 0.099839615</code></pre>
 <p>At −12 V the nominal node is 0.299519 V; at +12 V it is 2.695670 V. Both leave nominal headroom on a 3.3 V analog rail. The 0.1% divider-resistor / 0.15% reference corner enumeration spans 0.294579 V at the negative end to 2.700079 V at the positive end. <strong>This excludes op-amp offset, temperature, diode leakage, source resistance, ADC errors, capacitance tolerance and PCB parasitics.</strong> It is not a complete tolerance certification.</p>
 <p>The effective Thevenin resistance is 99.84 kΩ, giving a first pole near 3,392 Hz. The second pole is near 3,386 Hz. Nominal combined attenuation is −0.19 dB at 500 Hz, −0.73 dB at 1 kHz, −2.60 dB at 2 kHz and −10.04 dB at 5 kHz. These filters soften pulse/saw edges, even when their fundamentals are below 1 kHz.</p>
 <p>Run <code>python3 scripts/analyze.py</code> to reproduce all values. <code>reports/analog-analysis.json</code> and <code>reports/filter-response.csv</code> are calculated, not measured. <code>simulation/input-channel.cir</code> is an ideal-buffer ngspice starting model; vendor macro-model and transient/fault validation have not been run.</p>
@@ -17,5 +16,4 @@ Vin   = (Vnode - 1.497594226) / 0.099839615
 <p>A later switched jack that shorts the input to ground while unplugged can solve this, but it requires a new exact part, pad/contact map and mechanical qualification. The current PJ-313 5JCJ is not a switched/normalled jack.</p>
 <h2>Protection is an open engineering gate</h2>
 <p>±24 V is a <strong>test target</strong>, not a qualified rating. The 1 MΩ resistor bounds an approximate positive injection current to 24 µA/channel. Ten such channels could inject 240 µA into an unpowered system; a 1 kΩ analog-rail bleed gives an ideal 0.24 V bound under that simplified assumption. Negative injection, individual internal rail paths, ESD, latch-up, diode forward voltages, power sequencing and leakage are not proved by that arithmetic.</p>
-<p>Before connecting this prototype to valued equipment, qualify positive/negative powered and unpowered inputs with current-limited fixtures at the assembler or bench-service provider. Never connect mains, speakers/amplifier outputs, unknown industrial voltages or a different ground potential. The instrument is non-isolated and its ground may be bonded to a USB computer.</p>
-<footer>Pre-layout evidence. No factory approval or hardware measurements are implied.</footer></main></html>
+<p>Before connecting this prototype to valued equipment, qualify positive/negative powered and unpowered inputs with current-limited fixtures at the assembler or bench-service provider. Never connect mains, speakers/amplifier outputs, unknown industrial voltages or a different ground potential. The instrument is non-isolated and its ground may be bonded to a USB computer.</p><footer>Pre-layout evidence. No factory approval or hardware measurements are implied.</footer></main></html>

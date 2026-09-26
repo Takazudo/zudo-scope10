@@ -1,0 +1,44 @@
+name: kicad
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: kicad-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  kicad-check:
+    # The kicad-9.0-releases PPA targets noble; distro KiCad 7 cannot read these v8-format files.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install KiCad 9 from the kicad-9.0-releases PPA
+        run: |
+          sudo add-apt-repository --yes ppa:kicad/kicad-9.0-releases
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends kicad kicad-symbols kicad-footprints
+          kicad-cli version
+
+      - name: Native KiCad load, ERC totals and netlist parity
+        run: python3 scripts/kicad_check.py
+
+      - name: Upload KiCad check report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kicad-check
+          path: reports/kicad-check.json
+          if-no-files-found: warn

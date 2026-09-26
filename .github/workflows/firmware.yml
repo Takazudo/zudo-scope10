@@ -1,0 +1,58 @@
+name: firmware
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: firmware-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install ARM toolchain and build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib \
+            cmake ninja-build
+
+      - name: Host firmware tests
+        run: python3 scripts/test_firmware.py
+
+      - name: Build target firmware (pico-sdk 2.1.1)
+        run: bash scripts/build_firmware.sh
+
+      - name: Upload diagnostic UF2 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: scope10_diagnostic-uf2
+          path: firmware/build/scope10_diagnostic.uf2
+          if-no-files-found: error
+
+      - name: Upload acquisition engine UF2 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: scope10_acq-uf2
+          path: firmware/build/scope10_acq.uf2
+          if-no-files-found: error
+
+      - name: Upload build report
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-target-build-report
+          path: reports/firmware-target-build.json
+          if-no-files-found: error
