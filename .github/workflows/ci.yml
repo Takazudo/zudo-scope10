@@ -32,6 +32,9 @@ jobs:
       - name: Host firmware tests
         run: python3 scripts/test_firmware.py
 
+      - name: Validation non-destructiveness regression (#23/#31)
+        run: python3 scripts/test_validate_nondestructive.py
+
       - name: Analytical checks
         run: python3 scripts/analyze.py
 

@@ -9,7 +9,12 @@ session on this tree; results and report paths are current as of this commit.
   instances, 134 named nets, module/contact maps, native-file S-expression structure, XML graph
   equivalence, 11-sheet inventory, source-file hashes, local HTML references and deterministic
   regeneration. (`markdown-it-py` absent in this container; `offline/*.html` regenerates in its
-  fallback mode, which the check tolerates.)
+  fallback mode, which the check tolerates.) Regeneration is checked in an isolated temp copy of
+  the repository (#23/#31), so a mismatch or a generator bug cannot mutate or destroy this
+  checkout's PCB, project or any other file; `hardware/kicad/zudo-scope10-p0.kicad_pro`/
+  `.kicad_pcb` are developer-owned once created and `scripts/make_design.py` only writes them on
+  first creation or with `--init-kicad`. `python3 scripts/test_validate_nondestructive.py` is the
+  regression fixture for this behavior.
 - `python3 scripts/test_firmware.py`: the portable C core (including the real `acq_engine.c`,
   `scope_core.c`, `lcd_bridge.c`, `scope_render.c`) compiled under the host C compiler with
   warnings as errors and passed calibration, 4,096-point logarithmic time, range/debounce/

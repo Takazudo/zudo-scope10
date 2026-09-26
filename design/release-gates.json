@@ -1,5 +1,8 @@
 {
   "release_allowed": false,
+  "design_phase": "pre-layout",
+  "design_phase_values": ["pre-layout", "layout", "qualification"],
+  "design_phase_note": "Drives scripts/validate.py's phase-aware checks (outline-only PCB, no fabricated footprint/factory-approval flags). pre-layout keeps those checks exactly as strict as before this field existed. Advancing this value does not itself close any gate above or set release_allowed; it only lets validate.py require review evidence instead of emptiness once real placement/routing/qualification work begins.",
   "gates": [
     {
       "id": "G01",
