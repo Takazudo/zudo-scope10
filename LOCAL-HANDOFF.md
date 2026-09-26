@@ -148,6 +148,12 @@ already-populated board) plugs in — never a soldering task for the user.
 Desk evidence for all three is recorded (`reports/spice.json`, `reports/analog-analysis.json`,
 `firmware/ACQUISITION.md`, `reports/power-budget.json`); none of it is a bench measurement.
 
+`manufacturing/acceptance-results.csv`'s `result` column holds one of four values: `NOT_RUN`
+(no measurement attempted yet, the state of every row today), `PASS`, `FAIL`, or `BLOCKED`
+(attempted but could not be completed, e.g. missing fixture). `scripts/validate_extra.py`
+enforces this set, plus that any `PASS`/`FAIL` row has a nonempty, on-disk `evidence_file`
+along with `operator` and `date`.
+
 1. **G04 (input/protection):** using `manufacturing/acceptance-results.csv` as the recording
    template, test powered/unpowered faults, leakage, open-input bias (expect ≈+1.66 V on an
    unplugged input — this is a known, accepted P0 limitation, not a fault), multi-channel
