@@ -220,6 +220,7 @@ static void test_blit_through_bridge(void) {
 
 /* ---- display_port.h test double for the renderer: routes through lcd_blit and the models ---- */
 static uint32_t rect_calls, rect_max_pixels, plot_calls;
+static uint32_t text_calls; /* display calls landing in a label or status row */
 static bool rect_inside(scope_rect in, scope_rect out) {
     return in.x >= out.x && in.y >= out.y && in.x + in.w <= out.x + out.w && in.y + in.h <= out.y + out.h;
 }
@@ -228,8 +229,11 @@ bool scope_display_rect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const ui
     rect_calls++;
     if ((uint32_t)w * h > rect_max_pixels) rect_max_pixels = (uint32_t)w * h;
     assert((uint32_t)x + w <= SCOPE_DISPLAY_WIDTH && (uint32_t)y + h <= SCOPE_DISPLAY_HEIGHT);
-    for (unsigned p = 0; p < SCOPE_CHANNELS; p++)
-        if (rect_inside((scope_rect){x, y, w, h}, scope_pane_plot_rect(p))) plot_calls++;
+    for (unsigned p = 0; p < SCOPE_CHANNELS; p++) {
+        scope_rect r = {x, y, w, h};
+        if (rect_inside(r, scope_pane_plot_rect(p))) plot_calls++;
+        if (rect_inside(r, scope_pane_label_rect(p)) || rect_inside(r, scope_pane_status_rect(p))) text_calls++;
+    }
     return fake_ready && lcd_blit(&bus, x, y, w, h, px);
 }
 static bool rect_disjoint(scope_rect a, scope_rect b) {
@@ -290,6 +294,106 @@ static void test_layout(void) {
     assert(scope_render_level(4095, 10000) == 9); /* 8.192 s = 81920 samples: 568/column -> level 9, 512/bin */
 }
 
+/* Decodes one text cell from GRAM against the firmware font table; '#' = no glyph matches or
+ * a pixel outside the glyph box is lit. *fg receives the lit-pixel colour (BG if blank). */
+static char decode_cell(unsigned x, unsigned y, uint16_t *fg) {
+    uint8_t rows[SCOPE_GLYPH_H] = {0};
+    *fg = SCOPE_COLOUR_BG;
+    for (unsigned r = 0; r < SCOPE_CELL_H; r++)
+        for (unsigned b = 0; b < SCOPE_CELL_W; b++) {
+            uint16_t v = gram[y + r][x + b];
+            if (v == SCOPE_COLOUR_BG) continue;
+            if (*fg != SCOPE_COLOUR_BG && v != *fg) return '#';
+            *fg = v;
+            if (b >= SCOPE_GLYPH_W || r < SCOPE_GLYPH_Y || r >= SCOPE_GLYPH_Y + SCOPE_GLYPH_H) return '#';
+            rows[r - SCOPE_GLYPH_Y] |= (uint8_t)(0x10u >> b);
+        }
+    for (unsigned c = 1; c < 256; c++) {
+        const uint8_t *g = scope_font_glyph((unsigned char)c);
+        if (g && !memcmp(g, rows, SCOPE_GLYPH_H)) return (char)c;
+    }
+    return '#';
+}
+
+/* The field's text from GRAM with the padding spaces trimmed; asserts one colour throughout. */
+static const char *field_text(unsigned pane, scope_text_field f, uint16_t *colour) {
+    static char buf[SCOPE_TEXT_CELLS + 1];
+    scope_rect r = scope_pane_field_rect(pane, f);
+    unsigned n = 0;
+    *colour = SCOPE_COLOUR_BG;
+    for (unsigned x = r.x; x < r.x + r.w; x += SCOPE_CELL_W) {
+        uint16_t fg;
+        buf[n++] = decode_cell(x, r.y, &fg);
+        if (fg != SCOPE_COLOUR_BG) {
+            assert(*colour == SCOPE_COLOUR_BG || *colour == fg);
+            *colour = fg;
+        }
+    }
+    buf[n] = '\0';
+    while (n && buf[n - 1] == ' ') buf[--n] = '\0';
+    char *t = buf;
+    while (*t == ' ') t++;
+    return t;
+}
+
+static bool field_is(unsigned pane, scope_text_field f, const char *want, uint16_t colour) {
+    uint16_t got;
+    const char *t = field_text(pane, f, &got);
+    if (strcmp(t, want) != 0) {
+        fprintf(stderr, "pane %u field %d: got \"%s\", want \"%s\"\n", pane, (int)f, t, want);
+        return false;
+    }
+    return !*want || got == colour;
+}
+
+static void test_font_and_labels(void) {
+    /* Every glyph distinct (so decoding is unambiguous) and inside 5 columns. */
+    const char *set = "0123456789.+-?VmskACDHIKLNOPSTU \xb1";
+    for (const char *a = set; *a; a++) {
+        const uint8_t *ga = scope_font_glyph((unsigned char)*a);
+        assert(ga);
+        for (unsigned r = 0; r < SCOPE_GLYPH_H; r++) assert(ga[r] < 0x20u);
+        for (const char *b = a + 1; *b; b++) assert(memcmp(ga, scope_font_glyph((unsigned char)*b), SCOPE_GLYPH_H));
+    }
+    assert(!scope_font_glyph('Z') && !scope_font_glyph('\0'));
+    char out[SCOPE_FIELD_MAX + 1];
+    assert(scope_render_window_label(0, 10000, out) == 5 && !strcmp(out, "2.0ms"));
+    assert(scope_render_window_label(4095, 10000, out) == 5 && !strcmp(out, "8.19s"));
+    assert(scope_render_window_label(65535, 10000, out) == 5 && !strcmp(out, "8.19s"));
+    unsigned n_ms = 0, n_s = 0;
+    for (unsigned c = 0; c < 4096; c++) {
+        unsigned n = scope_render_window_label((uint16_t)c, 10000, out);
+        assert(n == strlen(out) && n >= 5 && n <= SCOPE_FIELD_MAX);
+        for (unsigned i = 0; i < n; i++) assert(scope_font_glyph((unsigned char)out[i]));
+        if (!strcmp(out + n - 2, "ms")) n_ms++; else { assert(out[n - 1] == 's'); n_s++; }
+    }
+    assert(n_ms && n_s);
+    assert(!strcmp(scope_status_token_text(SCOPE_STATUS_UNCAL), "UNCAL"));
+    assert(!strcmp(scope_status_token_text(SCOPE_STATUS_CLIP), "CLIP"));
+    assert(!strcmp(scope_status_token_text(SCOPE_STATUS_SAT), "SAT"));
+    assert(!strcmp(scope_status_token_text(SCOPE_STATUS_NONE), "") && !strcmp(scope_status_token_text(99), ""));
+    /* Fields sit on whole cells inside their row, disjoint from each other. */
+    for (unsigned p = 0; p < SCOPE_CHANNELS; p++)
+        for (unsigned f = 0; f < SCOPE_FIELD_COUNT; f++) {
+            scope_rect r = scope_pane_field_rect(p, (scope_text_field)f);
+            scope_rect row = f < SCOPE_FIELD_TOKEN ? scope_pane_label_rect(p) : scope_pane_status_rect(p);
+            assert(rect_inside(r, row) && r.h == SCOPE_CELL_H && r.w % SCOPE_CELL_W == 0 && (r.x - row.x) % SCOPE_CELL_W == 0);
+            for (unsigned g = f + 1; g < SCOPE_FIELD_COUNT; g++)
+                assert(rect_disjoint(r, scope_pane_field_rect(p, (scope_text_field)g)));
+        }
+    assert(scope_pane_field_rect(0, SCOPE_FIELD_COUNT).w == 0);
+    assert(scope_pane_field_rect(0, SCOPE_FIELD_TOKEN).w >= 5u * SCOPE_CELL_W); /* "UNCAL" fits */
+}
+
+/* One item per step so the pass ends exactly at its boundary, with nothing of the next begun. */
+static unsigned render_pass(scope_render_state *s, const scope_render_input *in) {
+    unsigned start = s->passes, guard = 0;
+    text_calls = 0;
+    while (s->passes == start && guard++ < 10000) scope_render_step(s, in, 1);
+    assert(s->passes == start + 1u);
+    return text_calls;
+}
+
 static scope_history H[SCOPE_CHANNELS];
 
 static void test_renderer(void) {
@@ -304,7 +408,7 @@ static void test_renderer(void) {
     in.range[9] = -1;
     scope_render_state s;
     scope_render_init(&s);
-    rect_calls = rect_max_pixels = 0;
+    rect_calls = rect_max_pixels = text_calls = 0;
     unsigned guard = 0;
     while (s.passes == 0 && guard++ < 10000) scope_render_step(&s, &in, 4);
     assert(s.passes == 1 && s.rects_failed == 0 && s.rects_sent == rect_calls);
@@ -320,52 +424,86 @@ static void test_renderer(void) {
         assert(gram[p.y + row][p.x + SCOPE_PLOT_W - 101u] != colour);
         scope_rect tag = scope_pane_tag_rect(ch);
         assert(gram[tag.y][tag.x] == colour);
-        scope_rect st = scope_pane_status_rect(ch);
-        unsigned by = st.y + SCOPE_STATUS_BOX_Y;
-        for (unsigned i = 0; i < 3; i++) {
-            uint16_t box = gram[by][st.x + i * SCOPE_STATUS_RANGE_PITCH];
-            assert(box == (in.range[ch] == (int8_t)i ? colour : SCOPE_COLOUR_DIM));
-        }
-        assert(gram[by][st.x + SCOPE_STATUS_LINK_X] == SCOPE_COLOUR_DIM);
-        assert(gram[by][st.x + SCOPE_STATUS_HOLD_X] == SCOPE_COLOUR_DIM);
-        scope_rect lb = scope_pane_label_rect(ch); /* reserved for the label sub: nothing drawn yet */
-        for (unsigned y = lb.y; y < lb.y + lb.h; y++)
-            for (unsigned x = lb.x; x < lb.x + lb.w; x++) assert(gram[y][x] == 0);
         scope_rect sep = scope_pane_separator_rect(ch);
         assert(gram[sep.y][sep.x] == SCOPE_COLOUR_SEPARATOR && gram[sep.y][sep.x + sep.w - 1u] == SCOPE_COLOUR_SEPARATOR);
+        char id[3] = {(char)('0' + (ch + 1u) / 10u), (char)('0' + (ch + 1u) % 10u), 0};
+        assert(field_is(ch, SCOPE_FIELD_ID, id, colour)); /* channel colour identity */
+        assert(field_is(ch, SCOPE_FIELD_WINDOW, "2.0ms", SCOPE_COLOUR_TEXT));
+        assert(field_is(ch, SCOPE_FIELD_TOKEN, "", 0) && field_is(ch, SCOPE_FIELD_LINK, "", 0));
+        assert(field_is(ch, SCOPE_FIELD_HOLD, "", 0));
     }
+    assert(field_is(0, SCOPE_FIELD_RANGE, "\xb1" "3V", SCOPE_COLOUR_TEXT));
+    assert(field_is(5, SCOPE_FIELD_RANGE, "\xb1" "8V", SCOPE_COLOUR_TEXT));
+    assert(field_is(9, SCOPE_FIELD_RANGE, "\xb1" "?V", SCOPE_COLOUR_TEXT)); /* range == -1: unknown */
+    assert(s.text_rects == text_calls);
+    /* Worst case, every field dirty: ID 1 + RANGE 2 + WINDOW 3 + TOKEN 3 + LINK 2 + HOLD 2 calls. */
+    const unsigned text_worst_per_pass = 13u * SCOPE_CHANNELS;
+    assert(text_calls == text_worst_per_pass);
+    printf("renderer: first pass %u display calls, %u of them text (worst case)\n", (unsigned)rect_calls,
+           (unsigned)text_calls);
 
-    /* HOLD: plots frozen (no plot-area transfers), status still updates and shows HOLD. */
+    /* Unchanged content: no text is redrawn. */
+    assert(render_pass(&s, &in) == 0);
+
+    /* Range change on CH1 only: exactly its RANGE field (2 calls) is redrawn. */
+    in.range[0] = 2;
+    assert(render_pass(&s, &in) == 2);
+    assert(field_is(0, SCOPE_FIELD_RANGE, "\xb1" "8V", SCOPE_COLOUR_TEXT));
+    in.range[9] = 1;
+    assert(render_pass(&s, &in) == 2);
+    assert(field_is(9, SCOPE_FIELD_RANGE, "\xb1" "5V", SCOPE_COLOUR_TEXT));
+
+    /* TIME endpoint: CH10 at full scale. */
+    in.time_code[9] = 4095;
+    assert(render_pass(&s, &in) == 3);
+    assert(field_is(9, SCOPE_FIELD_WINDOW, "8.19s", SCOPE_COLOUR_TEXT));
+    assert(field_is(5, SCOPE_FIELD_WINDOW, "2.0ms", SCOPE_COLOUR_TEXT));
+
+    /* Status token slot: CH6 shows CLIP, then clears. */
+    in.status_token[5] = SCOPE_STATUS_CLIP;
+    assert(render_pass(&s, &in) == 3);
+    assert(field_is(5, SCOPE_FIELD_TOKEN, "CLIP", SCOPE_COLOUR_WARN) && field_is(4, SCOPE_FIELD_TOKEN, "", 0));
+    in.status_token[5] = SCOPE_STATUS_NONE;
+    render_pass(&s, &in);
+    assert(field_is(5, SCOPE_FIELD_TOKEN, "", 0));
+
+    /* HOLD: plots frozen (no plot-area transfers, even when pressed mid-pane), text still
+     * updates and shows HOLD. */
+    scope_render_step(&s, &in, 10);
+    assert(s.item > 1u && s.item < 1u + SCOPE_PLOT_W); /* inside CH1's plot columns */
     in.hold = true;
+    in.range[5] = 0;
     plot_calls = 0;
-    unsigned start = s.passes;
-    while (s.passes == start) scope_render_step(&s, &in, 4);
+    render_pass(&s, &in);
     assert(plot_calls == 0);
-    scope_rect st0 = scope_pane_status_rect(0);
-    assert(gram[st0.y + SCOPE_STATUS_BOX_Y][st0.x + SCOPE_STATUS_HOLD_X] == SCOPE_COLOUR_HOLD);
+    for (unsigned ch = 0; ch < SCOPE_CHANNELS; ch++) assert(field_is(ch, SCOPE_FIELD_HOLD, "HOLD", SCOPE_COLOUR_HOLD));
+    assert(field_is(5, SCOPE_FIELD_RANGE, "\xb1" "3V", SCOPE_COLOUR_TEXT));
 
-    /* LINK: every pane takes CH1's TIME window (and TIME bar). */
+    /* LINK: every pane takes CH1's TIME window, and its label says so. */
     in.hold = false;
     in.link = true;
     in.time_code[0] = 4095;
     in.time_code[5] = 0;
-    start = s.passes;
-    while (s.passes == start) scope_render_step(&s, &in, 4);
-    scope_rect st5 = scope_pane_status_rect(5);
-    unsigned y5 = st5.y + SCOPE_STATUS_BOX_Y;
-    assert(gram[y5][st5.x + SCOPE_STATUS_BAR_X + SCOPE_STATUS_BAR_W - 1u] == scope_channel_colour(5)); /* full bar from CH1 */
-    assert(gram[y5][st5.x + SCOPE_STATUS_LINK_X] == SCOPE_COLOUR_LINK);
+    render_pass(&s, &in);
+    for (unsigned ch = 0; ch < SCOPE_CHANNELS; ch++) {
+        assert(field_is(ch, SCOPE_FIELD_LINK, "LINK", SCOPE_COLOUR_LINK));
+        assert(field_is(ch, SCOPE_FIELD_HOLD, "", 0));
+        assert(field_is(ch, SCOPE_FIELD_WINDOW, "8.19s", SCOPE_COLOUR_LINK));
+    }
+    in.link = false;
+    render_pass(&s, &in);
+    assert(field_is(5, SCOPE_FIELD_WINDOW, "2.0ms", SCOPE_COLOUR_TEXT) && field_is(5, SCOPE_FIELD_LINK, "", 0));
+    assert(field_is(0, SCOPE_FIELD_WINDOW, "8.19s", SCOPE_COLOUR_TEXT));
 
     /* More history than plot columns (192 bins > 144): only the newest SCOPE_PLOT_W bins are
      * drawn, right-aligned, filling every column; the older samples fall off the left edge. */
-    in.link = false;
     in.time_code[0] = 0;
+    in.time_code[9] = 0;
     for (unsigned ch = 0; ch < SCOPE_CHANNELS; ch++) {
         scope_history_init(&H[ch]);
         for (unsigned i = 0; i < 300; i++) scope_history_push(&H[ch], i < 300u - SCOPE_PLOT_W ? 100u : 4000u);
     }
-    start = s.passes;
-    while (s.passes == start) scope_render_step(&s, &in, 4);
+    render_pass(&s, &in);
     uint16_t old_row = scope_code_to_row(100, SCOPE_PLOT_H), new_row = scope_code_to_row(4000, SCOPE_PLOT_H);
     assert(old_row != new_row);
     for (unsigned ch = 0; ch < SCOPE_CHANNELS; ch++) {
@@ -405,6 +543,7 @@ int main(void) {
     test_clip();
     test_blit_through_bridge();
     test_layout();
+    test_font_and_labels();
     test_renderer();
     test_buttons();
     puts("LCD bridge framing, clipping, pane layout and renderer host tests passed (models only; G06 OPEN)");

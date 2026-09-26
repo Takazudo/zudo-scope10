@@ -107,18 +107,20 @@ The source is `https://files.waveshare.com/upload/f/fc/Pico-ResTouch-LCD-X_X_Cod
 
 **Layout.** Portrait 320 × 480, with ten 160 × 96 panes in two columns of five. Numbering is column-major, to match the physical control banks: CH1–CH5 fill the left column top to bottom and CH6–CH10 the right, so CH6 is top right. `scripts/validate_extra.py` checks this numbering against the simulator (`doc/public/prototype/scope-ui.js`) and the panel study (`mechanical/panel-layout-study.json`). Each pane has five parts:
 
-- a label row above the plot (`scope_pane_label_rect`, 144 × 10) for the channel ID, range and window duration. It is reserved and not drawn yet;
+- a label row above the plot (`scope_pane_label_rect`, 144 × 10): the two-digit channel ID `01`…`10` in the channel colour, the debounced range `±3V` / `±5V` / `±8V` (`±?V` while the range is unknown, `range == -1`), and the window duration, right-aligned;
 - a 4-px channel colour tag to the left of the plot;
 - a 144 × 66 plot (`SCOPE_PLOT_W` × `SCOPE_PLOT_H`), independent of the 192-bin `SCOPE_HISTORY_BINS`. For now it shows the newest 144 bins of the chosen level, right-aligned, with the newest sample at the right;
-- a status row below the plot (`scope_pane_status_rect`, 144 × 10). For now it holds three RANGE boxes (±3 / ±5 / ±8 V, left to right, lit by the debounced range), a TIME bar, a LINK box and a HOLD box. The HOLD/LINK/status text will go here;
+- a status row below the plot (`scope_pane_status_rect`, 144 × 10): a status-token slot for `UNCAL` / `CLIP` / `SAT` (set through `scope_render_input.status_token`; nothing sets it yet), then `LINK` and `HOLD`, each shown only while that mode is latched;
 - a separator row.
 
-**Window.** Each pane's window is `scope_time_seconds(TIME code) × 10 000 samples/s`, mapped through `scope_history_level_for_window`.
+**Text.** Both text rows are a grid of 24 cells, each 6 × 10 px. Glyphs are 5 × 7 from a clean-room font defined in `scope_render.c` as a `const` table: digits, `. + - ± ? V m s k` and the capitals needed for `HOLD LINK UNCAL CLIP SAT`. `scope_pane_field_rect()` gives each field's rect. Each field is one render item, drawn two cells (120 px) per `scope_display_rect` call. The last drawn string and colour of each field are cached per pane, and a field is redrawn only when either changes. A field whose transfer fails is retried on the next pass.
+
+**Window.** Each pane's window is `scope_time_seconds(TIME code) × 10 000 samples/s`, mapped through `scope_history_level_for_window`. All duration text comes from `scope_render_window_label()` (`2.0ms` … `99.9ms`, `100ms` … `999ms`, `1.00s` … `8.19s`), which for now formats `scope_time_seconds()` of the effective TIME code.
 
 **HOLD and LINK.**
 
-- HOLD freezes the plots. The status block keeps updating.
-- LINK makes every pane use CH1's TIME window. This is a **time-link of views, not phase synchronisation**: channels are still sampled sequentially (see `ACQUISITION.md`).
+- HOLD freezes the plots, including a pass already part-way through a pane. The text keeps updating.
+- LINK makes every pane use CH1's TIME window, and the duration text turns the LINK colour. This is a **time-link of views, not phase synchronisation**: channels are still sampled sequentially (see `ACQUISITION.md`).
 - Both are press-to-toggle with 20 ms debounce, on the active-low GP0/GP1.
 
 **Transfer size.**
@@ -133,7 +135,8 @@ The source is `https://files.waveshare.com/upload/f/fc/Pico-ResTouch-LCD-X_X_Cod
 | Transfer | Size | Time |
 |---|---|---|
 | Plot column | 154 B | ≈ 82 µs |
-| Status row | ≈ 1.6 KB | ≈ 0.9 ms |
+| Text, one pane, every field changed (13 calls, 25 cells) | ≈ 3.3 KB | ≈ 1.8 ms |
+| Text, unchanged | 0 | 0 |
 | Full pass of ten panes | — | ≈ 0.13 s |
 | Init | 1 + 120 + 120 + 20 ms of waits, plus a 307 200 B clear (≈ 164 ms) | ≈ 0.43 s |
 
@@ -157,10 +160,13 @@ The tests cover:
 - code-to-row monotonicity;
 - column spans;
 - window levels;
-- a full render pass through blit → bridge model → GRAM, checking trace, tag, range boxes, the still-empty label row and separator;
+- a full render pass through blit → bridge model → GRAM, checking trace, tag and separator;
+- the font (every glyph distinct and five columns wide) and `scope_render_window_label()` at both TIME endpoints and every code in between;
+- text decoded back from GRAM against the font table: channel ID and channel colour on every pane, and range, duration and status token checked for CH1, CH6 and CH10, including range changes, `±?V` and both TIME endpoints;
+- text call counts: 130 per pass when every field is new (13 per pane), 0 when nothing changed, and only the changed field redrawn otherwise;
 - more history bins than plot columns: only the newest 144 bins are drawn, right-aligned;
-- HOLD (no plot transfers, HOLD box lit);
-- LINK (CH1 window and bar on every pane);
+- HOLD (no plot transfers, even when pressed mid-pane; `HOLD` shown);
+- LINK (CH1 window and duration text on every pane, `LINK` shown, own window restored when LINK is released);
 - counting of backend failures;
 - button debounce.
 
