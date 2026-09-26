@@ -267,3 +267,31 @@ along with `operator` and `date`.
 3. Explicitly record release approval in `design/release-gates.json` (`release_allowed: true` and
    every gate `status: "CLOSED"` with real `evidence_files`) only once a human has reviewed the
    real evidence for every gate. `manufacturing/release_guard.py` enforces this refusal until then.
+
+### `manufacturing/release_guard.py` exit-code contract (#28/#39)
+
+The guard is structured as testable functions (`scripts/test_release_guard.py`) with a fixed
+contract that CI and `scripts/validate.py` both assert on:
+
+- **`0`** — the manifest is structurally complete (exactly gates G01–G10, unique IDs, correctly
+  typed fields) and every gate is `CLOSED` with `evidence_files` that resolve to real files inside
+  the repo. This is never automated engineering approval — the guard's own success message says so,
+  and a human must still independently review every gate's evidence before a quote is approved.
+- **`2`** — intentional REFUSED: the manifest is well-formed but release is not warranted yet
+  (`release_allowed` is `false`, a gate is not `CLOSED`, or a `CLOSED` gate's evidence does not
+  resolve — missing, a directory, or escaping the repo root). CI and `validate.py` assert exactly
+  this exit code for the checked-in manifest, not merely "nonzero".
+- **`3`** — malformed manifest: invalid JSON, wrong top-level shape, a non-boolean
+  `release_allowed`, an invalid `status`, wrongly-typed `evidence_files`/`evidence_urls`, or a gate
+  ID set that is not exactly G01–G10 (duplicates, missing, or unknown IDs).
+- **`1`** — the guard itself crashed. This must never be confused with `2`: a crash is not a
+  considered refusal.
+
+`evidence_urls` is the typed field for external references; per the contract it is never sufficient
+on its own to close a gate. `evidence_partial`/`evidence_partial_note` (added by #31) stay
+informational only and are not schema-validated.
+
+Seam for #24 (prototype/production routes): `validate_gates()` currently hardcodes the single
+full-release G01–G10 required-ID set. A route-aware caller should compute its own required ID set
+(and, if the prototype/production schemas define it, bind evidence to a specific design revision)
+and pass it into that function rather than duplicating the validation logic.

@@ -38,10 +38,17 @@ jobs:
       - name: Analytical checks
         run: python3 scripts/analyze.py
 
-      - name: Release guard must refuse (no gate may close from desk work)
+      - name: Release guard must refuse with exit code 2 (no gate may close from desk work)
         run: |
-          if python3 manufacturing/release_guard.py; then
-            echo "release_guard.py exited zero; a P0 release gate must never close from CI." >&2
+          set +e
+          python3 manufacturing/release_guard.py
+          code=$?
+          set -e
+          if [ "$code" -ne 2 ]; then
+            echo "release_guard.py exited $code; expected exit code 2 (intentional REFUSED). 0 would silently approve, and any other nonzero (crash/malformed) must not be treated as a considered refusal." >&2
             exit 1
           fi
-          echo "release_guard.py correctly exited nonzero; gates remain OPEN."
+          echo "release_guard.py correctly exited 2 (REFUSED); gates remain OPEN."
+
+      - name: Release guard unit tests (#28/#39)
+        run: python3 scripts/test_release_guard.py

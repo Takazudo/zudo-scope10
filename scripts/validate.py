@@ -108,7 +108,7 @@ else:
  unevidenced=[r['id'] for r in cat if _qualified_without_evidence(r,'footprint_qualified','footprint_qualified_evidence') or _qualified_without_evidence(r,'factory_order_approved','factory_order_approved_evidence')]
  check('Every qualified footprint/factory approval carries a review evidence reference',not unevidenced,json.dumps(unevidenced))
 guard=subprocess.run([sys.executable,str(R/'manufacturing/release_guard.py')],capture_output=True,text=True)
-check('Release guard blocks this package',guard.returncode!=0 and not gates['release_allowed'])
+check('Release guard exits 2 (REFUSED) for the checked-in manifest',guard.returncode==2 and guard.stderr.startswith('REFUSED') and not gates['release_allowed'],f'exit={guard.returncode} stderr={guard.stderr[:200]!r}')
 # Deterministic generated content. Regenerate in an isolated temp copy of the whole
 # repository and compare bytes there -- the checkout itself is never run against the
 # generators, so a mismatch (or a generator bug) cannot mutate or destroy it (#23/#31).
