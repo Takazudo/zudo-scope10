@@ -41,10 +41,10 @@ Citation shorthand: `NKK H46` means the catalogue page number printed on the pag
   | Left | 3-1 |
 
   The schematic beside the table labels **3 (COM)** and draws terminals in the order 4, 3, 2, 1. The page notes "ON-OFF-ON circuit can be created by not connecting terminal 2", which confirms that 2 is the centre throw. NKK H46 also warns: **"Terminal numbers are not actually on switch."** Orientation on the PCB therefore comes from the asymmetric pitch (below), not from a marking.
-- **Terminal layout, spacing code D (inch), 3-On models** (NKK H47, "Terminal Spacing" D, right column): one straight row of 4 terminals. Pitch is **2.54** for 1–2 and 2–3, then **5.08** for 3–4. The recommended PCB hole is **(0.8) Dia Typ**. The terminal section is (0.4) × (0.6) Typ, and the drawing shows (3.4) along the row. The "D" code is also confirmed by the ordering chart (NKK H46: `D` = Inch .100″ × .100″; `P` = Top Actuated; `2` = Silver, 0.1 A @ 30 V DC).
+- **Terminal layout, spacing code D (inch), 3-On models** (NKK H47, "Terminal Spacing" D, right column): one straight row of 4 terminals. Pitch is **2.54** for 1–2 and 2–3, then **5.08** for 3–4. The recommended PCB hole is **(0.8) Dia Typ**. The terminal section is (0.4) × (0.6) Typ. The isometric view gives the terminal projection as **(3.4)**, but H48 gives **(3.0)**. This conflict is recorded, not resolved; plan for 3.0–3.4 mm. The "D" code is also confirmed by the ordering chart (NKK H46: `D` = Inch .100″ × .100″; `P` = Top Actuated; `2` = Silver, 0.1 A @ 30 V DC).
 - **Body and actuator** (NKK H48, "3-On Circuit • Top Actuated", SS14MDP2 views):
   - body length **(15.8)**, width **(4.0)**, height above the seating plane **(4.5)**;
-  - terminal length below the body **(3.0)**, terminal section (0.4) × (0.6);
+  - terminal length below the body **(3.0)** (H47 isometric shows (3.4)), terminal section (0.4) × (0.6);
   - actuator (1.2) across × (1.5) along travel, standing **(2.0)** above the body top;
   - travel **(2.0) Typ** per step.
   - Derived: the actuator top sits about **6.5 mm** above the PCB (4.5 + 2.0). All values are in parentheses on the drawing, so they are reference dimensions without tolerances.
@@ -62,7 +62,7 @@ Citation shorthand: `NKK H46` means the catalogue page number printed on the pag
   - far row, 2 slots at x = 1.8 and 8.5 (vertically aligned with the near row's first and third slots);
   - row-to-row pitch **5.8** (the body is 6 wide, dimension "6").
   - The chain 2.5 + 1.8 + 3.2 + 3.5 + 3.1 = 14.1 disagrees by 0.1 with the side view's 2.5 + 11.5 = 14.0 (Jack p1 3C–6C). This is noted, not resolved.
-- **Locating posts:** 2 × **Ø1** on the part (bottom view "2-φ1", Jack p1 15C). The board holes are **2 × Ø1.3** (Jack p1 8E–9E). They sit midway between the rows at x = **2.3** and **8.3** (2.3 + 6), so the posts are 6.0 apart. Both are non-plated locating holes as drawn; no pad is shown.
+- **Locating posts:** 2 × **Ø1** on the part (bottom view "2-φ1", Jack p1 15C). The board holes are **2 × Ø1.3** (Jack p1 8E–9E). They sit midway between the rows at x = **2.3** and **8.3** (2.3 + 6), so the posts are 6.0 apart. The drawing does not state plating for the post holes or the slots, so the plating choice is OPEN for the footprint author.
 - **Body:** 11.5 long + 2.5 nose, 6 wide, 5 high. The nose is Ø5 OD with a **Ø3.6** opening (Jack p1 7C–8D). Weight 0.2 g, scale 5:1, sheet dated 2016-06-17, revision A (title block).
 - **Three electrical nodes only:** the contact schematic 触点示意图 (Jack p1 16E–16F) shows contact **1** tied to the sleeve bar, **2** as a V spring and **3** as a ^ spring. There is no normally-closed switch contact. The drawing does not name tip or ring; reading 2 = ring and 3 = tip follows the symbol convention, not a printed label.
 
