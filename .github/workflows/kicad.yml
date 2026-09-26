@@ -29,7 +29,7 @@ jobs:
         run: |
           sudo add-apt-repository --yes ppa:kicad/kicad-9.0-releases
           sudo apt-get update
-          sudo apt-get install --yes --no-install-recommends kicad
+          sudo apt-get install --yes --no-install-recommends kicad kicad-symbols kicad-footprints
           kicad-cli version
 
       - name: Native KiCad load, ERC totals and netlist parity
