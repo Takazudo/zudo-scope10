@@ -2,10 +2,25 @@
 """Generate a review schematic/netlist from an explicit pin-to-net circuit.
 This is NOT a routing or fabrication tool. Unqualified interfaces remain visible.
 Standard library only. Run from any working directory.
+
+Ownership split (#23/#31): everything below except the KiCad project (.kicad_pro)
+and the PCB (.kicad_pcb) is generator-owned and reproducible on every run --
+native schematic sheets, the netlist, the symbol library, sym-lib-table,
+design/circuit.json, design/gpio.json, design/connections.csv and
+manufacturing/bom-planning.csv are always rewritten from design/circuit.json's
+inputs. .kicad_pro and .kicad_pcb become developer-owned once they exist: an
+ordinary run never touches them (that is the destructive-overwrite bug fixed
+by #23), and they are (re)written only when missing or when --init-kicad is
+passed explicitly. Local placement, routing and project settings (LOCAL-
+HANDOFF.md's G03 step) live only in those two files and survive every
+ordinary regeneration and every scripts/validate.py run.
 """
 from pathlib import Path
-import json,uuid,math,csv,xml.etree.ElementTree as ET
+import argparse,json,uuid,math,csv,xml.etree.ElementTree as ET
 ROOT=Path(__file__).resolve().parents[1]
+_ap=argparse.ArgumentParser(description='Generate the P0 review schematic/netlist/BOM.')
+_ap.add_argument('--init-kicad',action='store_true',help='Also (re)write hardware/kicad/zudo-scope10-p0.kicad_pro and .kicad_pcb with a fresh minimal project and empty outline. Destroys any existing placement/routing/project settings. Without this flag, an ordinary run only creates those two files if they do not exist yet, and never touches them otherwise.')
+args=_ap.parse_args()
 CAT={r['id']:r for r in json.loads((ROOT/'catalog/components.json').read_text())['records']}
 parts=[]
 def add(ref,kind,nets,sheet,notes='',value=None):
@@ -203,9 +218,17 @@ for n,sh in enumerate(names):
 s.append('(sheet_instances (path "/" (page "1"))))');(ROOT/'hardware/kicad/zudo-scope10-p0.kicad_sch').write_text('\n'.join(s)+'\n')
 (ROOT/'hardware/libraries/ZudoScope10.kicad_sym').write_text('(kicad_symbol_lib (version 20231120) (generator "kicad_symbol_editor")\n'+''.join(libsym(id,False) for id in sorted(groups))+PWR_FLAG.format(name='PWR_FLAG')+')\n')
 (ROOT/'hardware/kicad/sym-lib-table').write_text('(sym_lib_table (lib (name "ZudoScope10") (type "KiCad") (uri "${KIPRJMOD}/../libraries/ZudoScope10.kicad_sym") (options "") (descr "P0 review symbols")))\n')
-write('hardware/kicad/zudo-scope10-p0.kicad_pro',{'meta':{'filename':'zudo-scope10-p0.kicad_pro','version':1},'text_variables':{'REVISION':'P0_PRELAYOUT_NOT_FOR_FAB'}})
-# Outline only; no fabricated electrical pads, tracks, or fake placements.
-pcb='''(kicad_pcb (version 20240108) (generator "pcbnew")
+# .kicad_pro/.kicad_pcb are developer-owned once created (#23/#31): only write them
+# when missing, or when --init-kicad explicitly asks to reset them. An ordinary run
+# must never erase local placement, routing or project settings.
+pro_path=ROOT/'hardware/kicad/zudo-scope10-p0.kicad_pro';pcb_path=ROOT/'hardware/kicad/zudo-scope10-p0.kicad_pcb'
+if args.init_kicad or not pro_path.exists():
+ write('hardware/kicad/zudo-scope10-p0.kicad_pro',{'meta':{'filename':'zudo-scope10-p0.kicad_pro','version':1},'text_variables':{'REVISION':'P0_PRELAYOUT_NOT_FOR_FAB'}})
+else:
+ print('kicad_pro exists; leaving developer-owned project settings untouched (pass --init-kicad to reset)')
+if args.init_kicad or not pcb_path.exists():
+ # Outline only; no fabricated electrical pads, tracks, or fake placements.
+ pcb='''(kicad_pcb (version 20240108) (generator "pcbnew")
  (general (thickness 1.6)) (paper "A4")
  (layers (0 "F.Cu" signal) (1 "In1.Cu" power) (2 "In2.Cu" power) (31 "B.Cu" signal)
  (44 "Edge.Cuts" user) (40 "Dwgs.User" user) (36 "B.SilkS" user "b.silkscreen") (37 "F.SilkS" user "f.silkscreen")
@@ -214,5 +237,7 @@ pcb='''(kicad_pcb (version 20240108) (generator "pcbnew")
  (gr_rect (start 50 50) (end 300 230) (stroke (width 0.1) (type default)) (fill none) (layer "Edge.Cuts") (uuid "'''+uid('pcb/outline')+'''"))
  (gr_text "OUTLINE STUDY ONLY - NO COMPONENTS OR ROUTING\\nP0 / DO NOT FABRICATE" (at 175 140) (layer "Dwgs.User") (uuid "'''+uid('pcb/warn')+'''") (effects (font (size 3 3) (thickness 0.5))))
 )'''
-(ROOT/'hardware/kicad/zudo-scope10-p0.kicad_pcb').write_text(pcb+'\n')
+ pcb_path.write_text(pcb+'\n')
+else:
+ print('kicad_pcb exists; leaving developer-owned board layout untouched (pass --init-kicad to reset)')
 print(f'{len(parts)} physical schematic instances / {len(nets)} nets / {len(names)+1} native sheets')

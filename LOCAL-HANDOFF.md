@@ -112,15 +112,34 @@ Desk work already confirms: kicad-cli 9.0.9 loads the root 11-sheet hierarchy an
 PCB; hierarchy ERC is 0 unexplained; outline-board DRC is 0 errors; netlist parity is exact
 (224 instances / 134 nets, 0 differences). None of that is placement or routing.
 
-1. Open `hardware/kicad/zudo-scope10-p0.kicad_pro` in the KiCad 9 GUI.
+**Ownership (#23/#31): your placement/routing work is safe.** `hardware/kicad/zudo-scope10-p0
+.kicad_pro` and `.kicad_pcb` are developer-owned once they exist. `scripts/make_design.py`
+only (re)writes them when they are missing, or when explicitly run with `--init-kicad`; an
+ordinary run leaves them untouched. `python3 scripts/validate.py` never runs the generators
+against this checkout at all — it regenerates everything in a throwaway temp copy and compares
+there, so neither a passing nor a failing validation run can touch your PCB/project. Everything
+else under `hardware/kicad/` (native schematic sheets, the netlist, `sym-lib-table`) plus
+`design/circuit.json`/`gpio.json`/`connections.csv` and `manufacturing/bom-planning.csv` stay
+generator-owned and are rewritten on every run — do not hand-edit those.
+
+1. Open `hardware/kicad/zudo-scope10-p0.kicad_pro` in the KiCad 9 GUI. (First time only: if it
+   does not exist yet, run `python3 scripts/make_design.py --init-kicad` once to create it and
+   the empty-outline PCB.)
 2. Assign real footprints for every part still marked OPEN in
    `design/evidence/INTEGRATION.md`'s footprint-coverage table (range, jack, pot, fuse; pico-h/
    display are external modules, not carrier footprints) — only after their real-part fit is
    confirmed under G02.
-3. Place all components and route the board (currently outline-only, no copper).
+3. Place all components and route the board (currently outline-only, no copper). Save; it stays
+   exactly as saved through any later `make_design.py`/`analyze.py`/`build_docs.py` or
+   `validate.py` run.
 4. Run the final DRC and ERC on the placed/routed board (not the outline board this session's
    `kicad_check.py` DRC covered) and a schematic-vs-PCB parity check.
-5. Only after this passes clean does G03 become a candidate for CLOSED.
+5. When real placement/routing exists, set `design/release-gates.json`'s `design_phase` to
+   `"layout"` (and later `"qualification"`) so `scripts/validate.py`'s outline-only and
+   footprint/factory-approval checks stop assuming pre-layout emptiness and instead require a
+   review evidence reference on any record that flips `footprint_qualified` or
+   `factory_order_approved` true. This never closes a gate or sets `release_allowed` by itself.
+6. Only after this passes clean does G03 become a candidate for CLOSED.
 
 ## Assembler review (START_HERE step 5)
 
