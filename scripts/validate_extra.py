@@ -22,8 +22,10 @@ def kicad_native_parity(check, ctx):
         print('SKIP: kicad-cli not found; native KiCad load/netlist parity not run.')
         return
     p = report['netlist_parity']
-    check('KiCad root sheet, PCB load and netlist parity with circuit.json', ok,
+    check('KiCad root sheet, PCB load, root ERC (0 unexplained), outline DRC and netlist parity with circuit.json', ok,
           f"sheets={report['root_schematic']['sheets']} pcb_loaded={report['pcb']['loaded']} "
+          f"erc_total={report['erc'].get('total')} erc_unexplained={report['erc'].get('unexplained')} "
+          f"drc_errors={report['pcb'].get('drc', {}).get('errors')} "
           f"parity={p['result']} differences={len(p.get('differences', []))}")
 
 

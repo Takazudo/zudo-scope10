@@ -1,6 +1,6 @@
 {
   "result": "PASS",
-  "scope": "Native kicad-cli load + ERC totals + netlist parity. NOT a clean ERC, NOT DRC of a placed/routed board, NOT layout or fabrication approval. Gate G03 stays OPEN.",
+  "scope": "Native kicad-cli load + root-hierarchy ERC (every remaining item needs a reason) + netlist parity + outline-board DRC. NOT DRC of a placed/routed board, NOT layout or fabrication approval. Gate G03 stays OPEN.",
   "kicad_cli_version": "9.0.9",
   "root_schematic": {
     "file": "hardware/kicad/zudo-scope10-p0.kicad_sch",
@@ -11,7 +11,14 @@
   "pcb": {
     "file": "hardware/kicad/zudo-scope10-p0.kicad_pcb",
     "loaded": true,
-    "note": "Load check only. The board is an outline study with no footprints or routing; its DRC output is not layout evidence and is not recorded here."
+    "drc": {
+      "errors": 0,
+      "warnings": 0,
+      "violations": 0,
+      "unconnected_items": 0,
+      "by_type": {}
+    },
+    "note": "DRC of the outline-only board (Edge.Cuts rectangle + drawing text; no footprints, no routing, schematic parity not run). 0 errors here is NOT layout evidence: placement, routing and final DRC are local KiCad GUI work."
   },
   "erc": {
     "loaded": true,
@@ -29,20 +36,18 @@
       "/controls-left/",
       "/controls-right/"
     ],
-    "total": 874,
-    "by_severity": {
-      "error": 2,
-      "warning": 872
+    "total": 0,
+    "by_severity": {},
+    "by_type": {},
+    "by_severity_and_type": {},
+    "zero_required": {
+      "endpoint_off_grid": 0,
+      "lib_symbol_issues": 0,
+      "lib_symbol_mismatch": 0
     },
-    "by_type": {
-      "endpoint_off_grid": 872,
-      "power_pin_not_driven": 2
-    },
-    "by_severity_and_type": {
-      "error:power_pin_not_driven": 2,
-      "warning:endpoint_off_grid": 872
-    },
-    "note": "Recorded as found by kicad-cli; not cleaned. ERC cleanup is a separate topic."
+    "unexplained": 0,
+    "remaining": [],
+    "note": "Measured on the root sheet (full 11-sheet hierarchy with the project sym-lib-table), which is authoritative. Running a sub-sheet on its own has no .kicad_pro beside it, so it reports lib_symbol_issues / footprint_link_issues (\"configuration does not include the ... library ZudoScope10\"), and global_label_dangling / pin_not_driven / power_pin_not_driven because the label peers and drivers live on other sheets; those are artefacts of the standalone invocation and do not occur in the hierarchy run. 74HC4067 Y/Z pins are generated as passive (analog-switch terminals, no drive), so unused channels tied to GND do not conflict with PWR_FLAG. PWR_FLAG is placed by scripts/make_design.py on +5V_FUSED and GND (power sheet): both are supplied only from off-board USB VBUS/GND through the passive Pico H socket contacts (and passive fuse F1), so no symbol pin drives them."
   },
   "netlist_parity": {
     "result": "PASS",

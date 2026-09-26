@@ -5,11 +5,12 @@ Runs kicad-cli (KiCad 9) on the generated root schematic and PCB:
 - `kicad-cli sch erc --format json` on the root sheet (full hierarchy);
 - `kicad-cli sch export netlist --format kicadxml`, compared with design/circuit.json
   (instance refs, named nets, every pin->net mapping);
-- `kicad-cli pcb drc --format json` only to prove the outline-only board loads.
+- `kicad-cli pcb drc --format json` on the outline-only board (no footprints, no routing).
 
-Writes reports/kicad-check.json. ERC totals are recorded as found, not judged: ERC
-cleanup is a separate topic. Skips cleanly (exit 0, no report written) when
-kicad-cli is absent. Exit 1 when a file fails to load or parity fails.
+Writes reports/kicad-check.json. Every remaining ERC item must carry a reason from
+ERC_REASONS; endpoint_off_grid and lib_symbol_issues must be exactly 0. Skips cleanly
+(exit 0, no report written) when kicad-cli is absent. Exit 1 when a file fails to load,
+parity fails, an ERC item is unexplained or a zero-required type appears, or DRC has errors.
 """
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -23,6 +24,21 @@ REPORT = R / 'reports/kicad-check.json'
 EXPECTED_SHEETS = 11
 # KiCad names a single-pin net on a no-connect pin "unconnected-(REF-PINNAME-PadN)".
 UNCONNECTED_PREFIX = 'unconnected-('
+# Must be exactly 0 on the root hierarchy (issue #11); never waived by a reason.
+ERC_ZERO_REQUIRED = ('endpoint_off_grid', 'lib_symbol_issues', 'lib_symbol_mismatch')
+# Reason per ERC type still accepted on the root hierarchy, keyed by type. Keep empty unless an
+# item is a real, reviewed design question; each entry needs a sentence a reviewer can check.
+ERC_REASONS = {}
+ERC_METHOD_NOTE = (
+    'Measured on the root sheet (full 11-sheet hierarchy with the project sym-lib-table), which is '
+    'authoritative. Running a sub-sheet on its own has no .kicad_pro beside it, so it reports '
+    'lib_symbol_issues / footprint_link_issues ("configuration does not include the ... library '
+    'ZudoScope10"), and global_label_dangling / pin_not_driven / power_pin_not_driven because the '
+    'label peers and drivers live on other sheets; those are artefacts of the standalone invocation '
+    'and do not occur in the hierarchy run. 74HC4067 Y/Z pins are generated as passive (analog-switch '
+    'terminals, no drive), so unused channels tied to GND do not conflict with PWR_FLAG. PWR_FLAG is placed by scripts/make_design.py on '
+    '+5V_FUSED and GND (power sheet): both are supplied only from off-board USB VBUS/GND through the '
+    'passive Pico H socket contacts (and passive fuse F1), so no symbol pin drives them.')
 
 
 def find_cli():
@@ -49,6 +65,12 @@ def erc(cli, tmp):
     by_type = Counter(v['type'] for v in violations)
     by_sev = Counter(v['severity'] for v in violations)
     by_both = Counter(f"{v['severity']}:{v['type']}" for v in violations)
+    remaining = [{'sheet': s['path'], 'type': v['type'], 'severity': v['severity'],
+                  'items': [i['description'] for i in v['items']],
+                  'reason': ERC_REASONS.get(v['type'])}
+                 for s in d['sheets'] for v in s['violations']]
+    zero_required = {t: by_type.get(t, 0) for t in ERC_ZERO_REQUIRED}
+    unexplained = sum(1 for v in remaining if not v['reason'] or v['type'] in ERC_ZERO_REQUIRED)
     return {
         'loaded': True,
         'sheets': len(d['sheets']),
@@ -57,7 +79,10 @@ def erc(cli, tmp):
         'by_severity': dict(sorted(by_sev.items())),
         'by_type': dict(sorted(by_type.items())),
         'by_severity_and_type': dict(sorted(by_both.items())),
-        'note': 'Recorded as found by kicad-cli; not cleaned. ERC cleanup is a separate topic.',
+        'zero_required': zero_required,
+        'unexplained': unexplained,
+        'remaining': remaining,
+        'note': ERC_METHOD_NOTE,
     }
 
 
@@ -128,12 +153,20 @@ def parity(netlist, circuit):
 
 def pcb_load(cli, tmp):
     out = tmp / 'drc.json'
-    code, log = run_cli(cli, ['pcb', 'drc', '--format', 'json', '-o', str(out), str(PCB)])
+    code, log = run_cli(cli, ['pcb', 'drc', '--format', 'json', '--severity-all', '-o', str(out), str(PCB)])
     if not out.is_file():
         return {'loaded': False, 'exit_code': code, 'log': log}
+    d = json.loads(out.read_text())
+    items = d.get('violations', []) + d.get('unconnected_items', [])
     return {'loaded': True,
-            'note': ('Load check only. The board is an outline study with no footprints or routing; '
-                     'its DRC output is not layout evidence and is not recorded here.')}
+            'drc': {'errors': sum(1 for v in items if v['severity'] == 'error'),
+                    'warnings': sum(1 for v in items if v['severity'] == 'warning'),
+                    'violations': len(d.get('violations', [])),
+                    'unconnected_items': len(d.get('unconnected_items', [])),
+                    'by_type': dict(sorted(Counter(v['type'] for v in items).items()))},
+            'note': ('DRC of the outline-only board (Edge.Cuts rectangle + drawing text; no footprints, '
+                     'no routing, schematic parity not run). 0 errors here is NOT layout evidence: '
+                     'placement, routing and final DRC are local KiCad GUI work.')}
 
 
 def check(write_report=True):
@@ -149,11 +182,14 @@ def check(write_report=True):
         p = parity(netlist, circuit) if netlist is not None else {'result': 'FAIL', 'netlist_export_error': err}
         b = pcb_load(cli, tmp)
     root_ok = e['loaded'] and e['sheets'] == EXPECTED_SHEETS
-    ok = root_ok and b['loaded'] and p['result'] == 'PASS'
+    erc_ok = e['loaded'] and e['unexplained'] == 0
+    drc_ok = b['loaded'] and b['drc']['errors'] == 0
+    ok = root_ok and erc_ok and drc_ok and p['result'] == 'PASS'
     report = {
         'result': 'PASS' if ok else 'FAIL',
-        'scope': ('Native kicad-cli load + ERC totals + netlist parity. NOT a clean ERC, NOT DRC of a '
-                  'placed/routed board, NOT layout or fabrication approval. Gate G03 stays OPEN.'),
+        'scope': ('Native kicad-cli load + root-hierarchy ERC (every remaining item needs a reason) + '
+                  'netlist parity + outline-board DRC. NOT DRC of a placed/routed board, NOT layout or '
+                  'fabrication approval. Gate G03 stays OPEN.'),
         'kicad_cli_version': cli_version(cli),
         'root_schematic': {'file': str(ROOT_SCH.relative_to(R)), 'loaded': e['loaded'],
                            'sheets': e.get('sheets'), 'expected_sheets': EXPECTED_SHEETS},
@@ -174,7 +210,8 @@ def main():
     p = report['netlist_parity']
     print(f"{report['result']}: root loaded={report['root_schematic']['loaded']} "
           f"sheets={report['root_schematic']['sheets']} pcb loaded={report['pcb']['loaded']} "
-          f"ERC total={report['erc'].get('total')} parity={p['result']}"
+          f"ERC total={report['erc'].get('total')} unexplained={report['erc'].get('unexplained')} "
+          f"DRC errors={report['pcb'].get('drc', {}).get('errors')} parity={p['result']}"
           + (f" instances={p['instances']['kicad']} nets={p['named_nets']['kicad']} differences={len(p['differences'])}"
              if 'instances' in p else ''))
     return 0 if ok else 1
