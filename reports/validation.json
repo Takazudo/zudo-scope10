@@ -82,27 +82,7 @@
       "detail": ""
     },
     {
-      "check": "S-expression inputs-07-08.kicad_sch",
-      "result": "PASS",
-      "detail": ""
-    },
-    {
-      "check": "S-expression module-interfaces.kicad_sch",
-      "result": "PASS",
-      "detail": ""
-    },
-    {
-      "check": "S-expression power.kicad_sch",
-      "result": "PASS",
-      "detail": ""
-    },
-    {
-      "check": "S-expression inputs-09-10.kicad_sch",
-      "result": "PASS",
-      "detail": ""
-    },
-    {
-      "check": "S-expression zudo-scope10-p0.kicad_sch",
+      "check": "S-expression acquisition.kicad_sch",
       "result": "PASS",
       "detail": ""
     },
@@ -117,22 +97,42 @@
       "detail": ""
     },
     {
-      "check": "S-expression inputs-03-04.kicad_sch",
-      "result": "PASS",
-      "detail": ""
-    },
-    {
       "check": "S-expression inputs-01-02.kicad_sch",
       "result": "PASS",
       "detail": ""
     },
     {
-      "check": "S-expression acquisition.kicad_sch",
+      "check": "S-expression inputs-03-04.kicad_sch",
       "result": "PASS",
       "detail": ""
     },
     {
       "check": "S-expression inputs-05-06.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "S-expression inputs-07-08.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "S-expression inputs-09-10.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "S-expression module-interfaces.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "S-expression power.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "S-expression zudo-scope10-p0.kicad_sch",
       "result": "PASS",
       "detail": ""
     },
@@ -335,6 +335,71 @@
       "check": "Regeneration preserves generated design/page bytes",
       "result": "PASS",
       "detail": ""
+    },
+    {
+      "check": "KiCad root sheet, PCB load, root ERC (0 unexplained), outline DRC and netlist parity with circuit.json",
+      "result": "PASS",
+      "detail": "sheets=11 pcb_loaded=True erc_total=0 erc_unexplained=0 drc_errors=0 parity=PASS differences=0"
+    },
+    {
+      "check": "ngspice run reconciled with analyze.py (#7)",
+      "result": "PASS",
+      "detail": "{\"gain_pct_diff\": 1.8286479255568185e-05, \"zero_pct_diff\": 1.5100401603078925e-05, \"corner_vs_single_pole_pct_diff\": 35.62711169384085, \"corner_vs_two_pole_cascade_pct_diff\": 0.0592774215330625, \"tolerance_pct\": 2.0, \"within_tolerance\": true, \"explanation\": \"analyze.py's filter_poles_hz lists each RC stage's own pole frequency (~3392 Hz and ~3386 Hz), not the -3 dB point of the two of them cascaded; two near-equal single-pole stages in series cross -3 dB at about 0.64x a single stage's pole, so comparing ngspice's simulated corner directly against filter_poles_hz would show a large, expected difference. This script instead re-derives the cascade's own -3 dB point from analyze.py's published poles using the same textbook two-pole formula (reimplemented here, analyze.py itself is not imported or modified) and compares ngspice against that.\"}"
+    },
+    {
+      "check": "Panel print SVG regenerates byte-identical",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Panel print LCD module envelope matches panel-layout-study.json",
+      "result": "PASS",
+      "detail": "(57.2, 86.0)"
+    },
+    {
+      "check": "Panel print active-area rectangle matches panel-layout-study.json",
+      "result": "PASS",
+      "detail": "(48.96, 73.44)"
+    },
+    {
+      "check": "Panel print outline matches mechanical/envelope-study.scad panel size",
+      "result": "PASS",
+      "detail": "(250.0, 180.0)"
+    },
+    {
+      "check": "power-budget.json has required sections",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "power-budget.json cites every top-level source it uses",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "G07 stays OPEN after desk power-budget calculation",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "LCD backend off by default (CMake option OFF, display_waveshare.c refuses to build without SCOPE_ENABLE_LCD=1)",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "G06 stays OPEN after desk LCD backend work",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "doc/ zfb build produced doc/dist (routes.json present)",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "HTTP browser smoke passed (catalogue, ten-pane UI, GLB viewer, built site)",
+      "result": "PASS",
+      "detail": "[\"Inline offline catalogue search\", \"Ten controls / three ranges / link restores local positions / hold freezes pixels\", \"HTTP offline catalogue loads and search filters cards\", \"HTTP ten-pane UI: time controls, radios, link restore, HOLD freeze, no 390px overflow, no console errors\", \"HTTP GLB viewer: model loads, no console errors, non-blank canvas captured\", \"HTTP built zfb site (doc/dist) serves getting-started and components pages\"]"
     }
   ],
   "not_run": [
