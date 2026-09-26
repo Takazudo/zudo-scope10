@@ -1,0 +1,179 @@
+{
+  "basis": "CALCULATION-ONLY, NOT MEASURED. Every input cites a manufacturer datasheet, the project's own circuit.json, or the existing (non-measured) architecture doc allowance. No bench, ERC/DRC or thermal result is claimed or implied. G07 stays OPEN.",
+  "citations": {
+    "pico-ds": {
+      "title": "Raspberry Pi Pico Datasheet",
+      "url": "https://datasheets.raspberrypi.com/pico/pico-datasheet.pdf",
+      "retrieved_local": "reference/downloads/pico-datasheet.pdf (gitignored, not committed)"
+    },
+    "tlv9064-ds": {
+      "title": "TI TLV9064 datasheet (SLOS...): quad RRIO amplifier",
+      "url": "https://www.ti.com/lit/ds/symlink/tlv9064.pdf",
+      "retrieved_local": "reference/downloads/tlv9064.pdf (gitignored, not committed)"
+    },
+    "74hc4067-ds": {
+      "title": "Nexperia 74HC4067/74HCT4067 datasheet, Rev. 10 (25 Jul 2024)",
+      "url": "https://assets.nexperia.com/documents/data-sheet/74HC_HCT4067.pdf",
+      "retrieved_local": "reference/downloads/74hc4067.pdf (gitignored, not committed)"
+    },
+    "tlv755p-ds": {
+      "title": "TI TLV755P 500 mA low-IQ LDO datasheet",
+      "url": "https://www.ti.com/lit/ds/symlink/tlv755p.pdf",
+      "retrieved_local": "reference/downloads/tlv755p.pdf (gitignored, not committed)"
+    },
+    "ref33-ds": {
+      "title": "TI REF33xx family datasheet (covers REF3330)",
+      "url": "https://www.ti.com/lit/ds/symlink/ref33.pdf",
+      "retrieved_local": "reference/downloads/ref3330.pdf (gitignored, not committed)"
+    },
+    "waveshare-sch": {
+      "title": "Waveshare Pico-ResTouch-LCD-3.5 module schematic",
+      "url": "https://files.waveshare.com/upload/8/85/Pico-ResTouch-LCD-3.5_Sch.pdf",
+      "retrieved_local": "reference/downloads/waveshare-sch.pdf (gitignored, not committed)"
+    },
+    "waveshare-wiki": {
+      "title": "Waveshare Pico-ResTouch-LCD-3.5 wiki page",
+      "url": "https://www.waveshare.com/wiki/Pico-ResTouch-LCD-3.5",
+      "retrieved_local": null
+    },
+    "power-mdx": {
+      "title": "Project architecture doc: power-and-module-interface.mdx (design allowances, not measured)",
+      "url": "doc/src/content/docs/architecture/power-and-module-interface.mdx",
+      "retrieved_local": null
+    },
+    "circuit-json": {
+      "title": "design/circuit.json (owns the design; component counts and capacitor values below are read from it)",
+      "url": "design/circuit.json",
+      "retrieved_local": null
+    },
+    "usb2-default-port": {
+      "title": "USB 2.0 default-port current limits (100 mA before configuration, 500 mA once configured with bMaxPower granted) and the no-inrush-limiting-circuit bulk-capacitance guidance (commonly cited as <=10 uF equivalent at a hot attach), as stated in issue #8",
+      "url": "https://github.com/Takazudo/zudo-scope10/issues/8",
+      "retrieved_local": null
+    }
+  },
+  "assumptions": [
+    "TLV9064 IQ is specified at VS=5.5V (datasheet Table 6.6); this project's analog rail runs at 3.3V, so the real per-amplifier IQ is likely lower than used here. Using the 5.5V-spec number is a deliberately conservative stand-in, not a 3.3V-specific figure.",
+    "74HC4067 static ICC is specified at VCC=4.5V-5.5V; this project runs the mux at 3.3V (inside the device's 2.0-10.0V rated range but below the tested bracket). The 4.5-5.5V figures are used as the closest available bracket, not a 3.3V-specific figure.",
+    "TLV75533 ground current's -40C to 85C maximum was not separately broken out in the extracted table beyond the 25C max (31 uA); 31 uA is used as a worst-case stand-in pending a full re-read of that datasheet table.",
+    "PPTC (F1) hold-current derating factor of 1.5x is a common application margin, not sourced from a specific vendor datasheet, because F1's exact part is still TBD (see design/circuit.json note on F1: 'Protection component identity pending').",
+    "Waveshare module backlight/total current has no citable manufacturer figure found in this pass (see waveshare_current_check_note); the 300 mA display allowance is carried forward from the architecture doc unverified.",
+    "Downstream capacitance for the USB inrush check only sums the carrier-side capacitor(s) on +5V_FUSED found in design/circuit.json (C30, 1uF). The Waveshare module's and Pico's own onboard VBUS/VSYS-side bulk capacitance are not established here (see waveshare_schematic_notes and pico_notes) -- the inrush verdict is PASS only for the known figure, UNKNOWN overall.",
+    "Pico datasheet has no scenario matching this project's firmware; the BOOTSEL and Popcorn/VGA figures are cited only as a plausibility bracket around the existing 80 mA allowance, not a substitute measurement."
+  ],
+  "component_counts": {
+    "tlv9064_packages": 6,
+    "op_amp_channels_used": 24,
+    "mux_74hc4067_packages": 3,
+    "source": "design/circuit.json parts[] counted by 'record' field"
+  },
+  "analog_rail_3v3a_quiescent": {
+    "basis": "datasheet quiescent/static currents only -- excludes any op-amp output drive current into a load, which is not modeled here",
+    "op_amps_ua": {
+      "typ": 12912.0,
+      "max_25c": 18000.0,
+      "max_hot": 19200.0,
+      "citation": "tlv9064-ds"
+    },
+    "mux_ua": {
+      "max_25c_all_devices": 24.0,
+      "max_85c_all_devices": 240.0,
+      "citation": "74hc4067-ds"
+    },
+    "reference_ua": {
+      "typ": 3.9,
+      "max_25c": 5.0,
+      "max_85c": 6.5,
+      "citation": "ref33-ds"
+    },
+    "typical_total_ma": 12.94,
+    "worst_case_total_ma": 19.447,
+    "fits_within_40ma_allowance": true,
+    "headroom_note": "Quiescent-only totals sit well inside the existing 40 mA carrier allowance; the remaining headroom covers op-amp output drive current, which this calculation does not model."
+  },
+  "ldo_tlv75533": {
+    "own_ground_current_ma": {
+      "typ": 0.025,
+      "worst": 0.031,
+      "citation": "tlv755p-ds"
+    },
+    "dropout_max_mv_at_500ma_3v3out": 238.0,
+    "dissipation_mw": {
+      "formula": "(Vin - Vout) * Iout + Vin * Ignd, per REF33xx datasheet Section 8.3 PD formula shape",
+      "vin_v": 5.0,
+      "vout_v": 3.3,
+      "iout_ma_used": 40.0,
+      "typical": 68.12,
+      "worst_case": 68.16
+    }
+  },
+  "pico_datasheet_bracket": {
+    "bootsel_idle_mean_ma_by_temp": {
+      "-25C": 9.4,
+      "25C": 8.7,
+      "85C": 9.0
+    },
+    "bootsel_active_mean_ma_by_temp": {
+      "-25C": 10.5,
+      "25C": 9.9,
+      "85C": 10.1
+    },
+    "popcorn_vga_avg_mean_ma_by_temp": {
+      "-25C": 85.6,
+      "25C": 86.5,
+      "85C": 88.0
+    },
+    "popcorn_vga_max_mean_ma_by_temp": {
+      "-25C": 91.6,
+      "25C": 91.6,
+      "85C": 92.8
+    },
+    "note": "Popcorn/VGA benchmark drives a VGA+SD+I2S board this project does not have; BOOTSEL is USB-idle/active with no ADC/SPI-display/GPIO activity. Neither scenario is this project's firmware. Cited only to bracket plausibility of the existing 80 mA Pico allowance, which is itself an allowance, not a datasheet or measured figure."
+  },
+  "pico_notes": [
+    "Pico VBUS: nominal 5 V +/-10%; VSYS operating range 1.8 V to 5.5 V (datasheet Section 3.1/electrical spec).",
+    "Datasheet recommends keeping external load on the 3V3 pin under 300.0 mA; not directly applicable here since this carrier does not load Pico's 3V3 pin, but cited for completeness.",
+    "No VBUS or VSYS input-capacitance figure was found anywhere in the datasheet text (checked). Pico's own onboard bulk capacitance on VBUS/VSYS is therefore UNKNOWN in this pass; the Pico schematic PDF (separate from the datasheet) was not fetched."
+  ],
+  "waveshare_module": {
+    "current_ma": null,
+    "current_check_note": "Checked https://www.waveshare.com/wiki/Pico-ResTouch-LCD-3.5 (raw HTML) and https://www.waveshare.com/pico-restouch-lcd-3.5.htm (raw HTML): no textual mA/current figure found. A prior automated fetch reported '5V 180mA' from an FAQ image on the wiki page; both FAQ images (Pico-ResTouch-LCD-3.5-faq.png, -faq2.png) were downloaded and visually inspected in this pass and show unrelated file-browser screenshots, not a power figure. That claim is REJECTED, not used. The 300 mA display allowance therefore remains an allowance with no manufacturer current citation found.",
+    "schematic_notes": [
+      "Backlight LED anode (net LED-A) is fed from VSYS through three parallel resistors silkscreened '2R' (R17/R18/R19, ~2 ohm each if read correctly) -- a resistor-limited backlight drive, not a dedicated LED driver IC. LED count, forward voltage and hence backlight current are NOT recoverable from text extraction alone; G01 already flags this module's power strapping as requiring visual/physical verification.",
+      "The module carries its own onboard 3.3V LDO (U7, marked 'RT9193-33') taking VSYS as input, with a 1uF capacitor (C11) shown near it; several 100nF ceramics (C1/C2/C7/C8/C14/C16/C17/C18) appear near VSYS/3V3/LED-A nets. Exact pin association of each part could not be confirmed from text-only PDF extraction (no page-image render tool was available in this environment). Reported as an observation, not a bill-of-materials fact."
+    ]
+  },
+  "downstream_capacitance_5v_fused": {
+    "known_carrier_side_uf": 1.0,
+    "known_carrier_side_refs": [
+      "C30"
+    ],
+    "citation": "circuit-json",
+    "inrush_guidance_uf": 10.0,
+    "status_known_figure_only": "pass",
+    "status_overall": "unknown",
+    "overall_status_reason": "Module- and Pico-side VBUS/VSYS bulk capacitance are not established (see waveshare_schematic_notes and pico_notes)."
+  },
+  "usb_budget": {
+    "documented_allowance_total_ma": 420.0,
+    "allowance_citation": "power-mdx",
+    "unconfigured_limit_ma": 100.0,
+    "configured_limit_ma": 500.0,
+    "vs_configured_limit": {
+      "status": "pass",
+      "margin_ma": 80.0
+    },
+    "vs_unconfigured_limit": {
+      "status": "fail_or_unknown",
+      "note": "No firmware/hardware power gate on +5V_FUSED->display/analog was found in design/circuit.json (F1 passes +5V_FUSED to both the display header and U10/U11 unconditionally). If backlight+analog current at attach exceeds 100 mA before the host completes enumeration and grants the configured 500 mA, that violates the USB 2.0 default-port unconfigured limit. Whether it actually does depends on the display's un-cited backlight current and is UNKNOWN; if it is close to the 300 mA allowance, it very likely does. This is a design risk to resolve (soft-start/power-gate sequencing tied to USB enumeration state, e.g. GPIO24 VBUS-sense, or Pico VBUS-present detection before enabling F1's downstream load), not something this calculation can pass or fail outright."
+    }
+  },
+  "pptc_f1_requirement": {
+    "part_status": "TBD (design/circuit.json: 'Protection component identity pending; not an inrush/load-switch substitute')",
+    "derating_factor_assumption": 1.5,
+    "worst_case_load_used_ma": 420.0,
+    "min_hold_current_ma": 630.0,
+    "tension_with_usb_configured_limit": true,
+    "tension_note": "A hold current of derating_factor x the 420 mA design allowance (630.0 mA) exceeds the 500 mA USB configured-port limit's usual safety margin. Either the 420 mA system allowance needs to come down (most likely by getting a real display current figure), or F1 must be selected nearer the USB limit itself with a smaller derating margin -- a choice that belongs to whoever selects F1, not to this script."
+  }
+}
