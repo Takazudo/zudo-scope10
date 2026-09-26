@@ -35,9 +35,9 @@ def _spice_check(check, ctx):
     Self-contained: skips entirely (no check recorded, so it cannot fail a
     run on a machine without ngspice) when the `ngspice` binary is not on
     PATH. When present, re-runs scripts/run_spice.py (which regenerates
-    reports/spice.json) and checks its own reconciliation verdict: either the
-    ngspice numbers are within 2% of analyze.py's, or spice.json carries a
-    non-empty explanation for the mismatch.
+    reports/spice.json) and checks its own reconciliation verdict: the
+    ngspice numbers must be within 2% of analyze.py's. spice.json's
+    `explanation` is a fixed methodology note, never a mismatch waiver.
     """
     import shutil
 
@@ -55,7 +55,7 @@ def _spice_check(check, ctx):
     comparison = spice.get("comparison", {})
     check(
         "ngspice run reconciled with analyze.py (#7)",
-        bool(comparison.get("within_tolerance")) or bool(comparison.get("explanation")),
+        bool(comparison.get("within_tolerance")),
         json.dumps(comparison),
     )
 
