@@ -65,6 +65,7 @@ EXTRA_CHECKS = [kicad_native_parity, _spice_check]
 
 def _check_panel_print(check, ctx):
     """G09 panel print sheet: deterministic regeneration; sizes match the JSON."""
+    import base64
     import json
     import re
     import sys
@@ -102,8 +103,86 @@ def _check_panel_print(check, ctx):
         detail=str(outline),
     )
 
+    # #44 / #26 part 3: the active-area rectangle embeds the real-renderer capture at
+    # physical scale, with the documented long-axis offset and a labelled orientation
+    # assumption -- the print must not silently drop back to an empty placeholder.
+    def rect_pos(svg, elem_id):
+        m = re.search(rf'id="{elem_id}"[^>]*x="([\d.-]+)"[^>]*y="([\d.-]+)"', svg)
+        return (float(m.group(1)), float(m.group(2))) if m else None
+
+    active_pos = rect_pos(svg_a, "active-area")
+    mod_w, mod_h = geo["scad"]["mod_w"], geo["scad"]["mod_h"]
+    active_w, active_h = data["screen_active_mm"]
+    px0 = (mpp.PAGE_W - geo["scad"]["panel_w"]) / 2.0
+    py0 = (mpp.PAGE_H - geo["scad"]["panel_h"]) / 2.0
+    want_x = px0 + geo["scad"]["mod_ox"] + (mod_w - active_w) / 2.0
+    want_y = py0 + geo["scad"]["mod_oy"] + (mod_h - active_h) / 2.0 - data["active_area_offset_mm"]
+    check(
+        "Panel print active area is shifted by the documented offset (design/evidence/g02-mechanical-pins.md #4a), not centred",
+        active_pos is not None
+        and abs(active_pos[0] - want_x) < 1e-6
+        and abs(active_pos[1] - want_y) < 1e-6
+        and data["active_area_offset_mm"] != 0,
+        detail=str(active_pos),
+    )
+    check(
+        "Panel print labels the active-area offset orientation as an explicit, unconfirmed ASSUMPTION",
+        "ASSUMPTION" in svg_a and "orientation NOT confirmed" in svg_a,
+    )
+
+    capture_png = (R / "reports/renderer-capture.png").read_bytes()
+    embedded_b64 = re.search(r'id="renderer-capture"[^>]*href="data:image/png;base64,([^"]+)"', svg_a)
+    check(
+        "Panel print embeds reports/renderer-capture.png byte-identically (not a placeholder)",
+        embedded_b64 is not None and base64.b64decode(embedded_b64.group(1)) == capture_png,
+    )
+    m = re.search(r'id="renderer-capture"[^>]*width="([\d.]+)"[^>]*height="([\d.]+)"', svg_a)
+    check(
+        "Panel print embeds the capture at the module's physical pixel pitch (320x480 px over the active-area mm size)",
+        m is not None and (float(m.group(1)), float(m.group(2))) == tuple(data["screen_active_mm"]),
+        detail=str(m.groups() if m else None),
+    )
+
+    gates = json.loads((R / "design/release-gates.json").read_text())
+    g02 = next((g for g in gates["gates"] if g["id"] == "G02"), None)
+    g09 = next((g for g in gates["gates"] if g["id"] == "G09"), None)
+    check("G02 stays OPEN after the renderer-capture panel print work", g02 is not None and g02["status"] == "OPEN")
+    check("G09 stays OPEN after the renderer-capture panel print work", g09 is not None and g09["status"] == "OPEN")
+
 
 EXTRA_CHECKS.append(_check_panel_print)
+
+
+def _check_renderer_capture(check, ctx):
+    """#44 / #26 part 3: the host renderer capture regenerates byte-identically and is
+    exactly 320x480 -- the actual scope_render.c/scope_core.c renderer, not a mockup."""
+    import struct
+    import sys
+
+    R = ctx["R"]
+    sys.path.insert(0, str(R / "scripts"))
+    import capture_renderer as cr
+
+    png_path = R / "reports/renderer-capture.png"
+    if not png_path.exists():
+        check("reports/renderer-capture.png exists", False, "run scripts/capture_renderer.py")
+        return
+    committed = png_path.read_bytes()
+    regenerated, meta = cr.build_png()
+    check("Renderer capture regenerates byte-identical", regenerated == committed)
+
+    width, height = struct.unpack(">II", committed[16:24])
+    check(
+        "Renderer capture is exactly 320x480 (SCOPE_DISPLAY_WIDTH x SCOPE_DISPLAY_HEIGHT)",
+        (width, height) == (cr.WIDTH, cr.HEIGHT) == (320, 480),
+        detail=f"{width}x{height}",
+    )
+    check("Renderer capture is 8-bit truecolor (no alpha) PNG", committed[24:26] == b"\x08\x02")
+
+
+EXTRA_CHECKS.append(_check_renderer_capture)
+
+
 def _power_budget_report(check, ctx):
     """G07: reports/power-budget.json exists, cites its inputs, and never
     claims a gate close."""

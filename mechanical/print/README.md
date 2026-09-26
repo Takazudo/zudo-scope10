@@ -8,9 +8,31 @@ ergonomic envelope, not an exact part, footprint or drill drawing (see the
 package `AGENTS.md`). It exists to let a human run gate **G09 ("Physical
 review")** locally; it never closes G09 by itself.
 
-Regenerate after any change to the two source files:
+The active-area rectangle embeds `reports/renderer-capture.png` (#44 / #26
+part 3): a deterministic host capture of the real `scope_render.c` /
+`scope_core.c` renderer (`scripts/capture_renderer.py`), at the module's
+physical pixel pitch. It carries the 2.68 mm long-axis active-area offset
+from `design/evidence/g02-mechanical-pins.md` (#4a); the print labels its
+mount **orientation as an explicit ASSUMPTION** (see
+`mechanical/panel-layout-study.json`'s `active_area_offset_*` fields) because
+the evidence gives the offset's magnitude and which STEP-local edge it is
+toward, not which physical panel edge that becomes once mounted. Read the
+real waveforms and text against the print at arm's length as an actual
+readability check, not the previous empty placeholder rectangle.
+
+**`panel-1to1.pdf` note (this change):** the PDF in this checkout predates
+the renderer-capture image above (no `rsvg-convert` or `cairosvg` was
+available in the environment that made this change, so the PDF could not be
+regenerated). Treat it as stale until it is regenerated from the current
+`panel-1to1.svg` with one of those tools installed; `panel-1to1.svg` itself
+is current and is what `scripts/validate_extra.py` checks.
+
+Regenerate after any change to the source files (including
+`reports/renderer-capture.png` — run `scripts/capture_renderer.py` first if
+that needs regenerating too):
 
 ```sh
+python3 scripts/capture_renderer.py
 python3 scripts/make_panel_print.py
 ```
 
@@ -38,10 +60,13 @@ writes deterministically — running it twice produces byte-identical output.
    (expected for at least the jacks/switches, whose exact bodies are not yet
    in the catalog).
 5. **Check screen readability at arm's length**: hold or tape the sheet at
-   the print's arm's-length viewing distance and confirm the printed
-   "ACTIVE AREA" rectangle text/labels are legible at the size shown — this
-   is a proxy for whether the real LCD's active area will read from that
-   distance, not a substitute for viewing the actual module.
+   the print's arm's-length viewing distance and confirm the channel number,
+   RANGE, window-duration, UNCAL/VIEW CLIP/ADC SAT and HOLD/LINK text and the
+   plotted waveforms in the "ACTIVE AREA" rectangle are legible at the size
+   shown. That rectangle is now the actual `scope_render.c` renderer output
+   (`reports/renderer-capture.png`), not a placeholder, so this is a genuine
+   readability check of the real geometry and font — still a proxy for the
+   real module at that distance, not a substitute for viewing it.
 6. **Check control and cable clearance**: for each channel, confirm there is
    room between the pot knob, the range switch and the jack envelope for a
    hand to turn the pot and for a plugged cable to sit without fouling the
