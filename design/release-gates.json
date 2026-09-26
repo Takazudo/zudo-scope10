@@ -88,9 +88,10 @@
       "evidence_partial": [
         "reports/power-budget.json",
         "scripts/power_budget.py",
-        "design/evidence/module-power.json"
+        "design/evidence/module-power.json",
+        "design/power-contract.json"
       ],
-      "evidence_partial_note": "Desk arithmetic only. No power gate ties +5V_FUSED to USB enumeration state, so the display/analog load path is unconditioned on the host granting the configured 500 mA limit (vs_unconfigured_limit: fail_or_unknown). F1 carries only the display+analog branch (340 mA); its 1.5x-derated target (510 mA) sits 10 mA above the selected 1206L050YR candidate's 500 mA nominal hold rating, with no manufacturer temperature-derating curve retained -- a tension, not a measured fault (see f1_branch_sizing in reports/power-budget.json). Backlight current and module-side VBUS bulk capacitance are unknown. Bench measurement is a local gate."
+      "evidence_partial_note": "Desk arithmetic only. design/power-contract.json now holds the explicit supported-source contract (>=500 mA at 5 V from attach, not established by enumeration or VBUS presence). No power gate ties +5V_FUSED to USB enumeration state, so the display/analog load path is unconditioned on the host granting any configured allowance (vs_unconfigured_limit: fail_or_unknown). The declared USB descriptor value is 250 mA (the unmodified Pico SDK 2.1.1 default; see power-contract.json's override_investigation for why a project override is not implemented), so the 420 mA planning allowance now correctly reports vs_declared_limit: fail rather than a masked pass against a fixed constant. F1 carries only the display+analog branch (340 mA); its 1.5x-derated target (510 mA) sits 10 mA above the selected 1206L050YR candidate's 500 mA nominal hold rating, with no manufacturer temperature-derating curve retained -- a tension, not a measured fault (see f1_branch_sizing in reports/power-budget.json). Backlight current and module-side VBUS bulk capacitance are unknown. Bench measurement of every supported power state (power-contract.json's power_states) is a local gate."
     },
     {
       "id": "G08",

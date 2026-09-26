@@ -9,6 +9,7 @@ a bench result. G07 stays OPEN regardless of this script's output.
 """
 from pathlib import Path
 import json
+import re
 
 R = Path(__file__).resolve().parents[1]
 
@@ -73,6 +74,13 @@ CITATIONS = {
         "url": "catalog/components.json",
         "retrieved_local": None,
     },
+    "power-contract-json": {
+        "title": "design/power-contract.json (shared USB source contract, declared descriptor value, override "
+        "investigation and per-state power behaviour, consumed by this script and scripts/validate_extra.py "
+        "so they cannot disagree)",
+        "url": "design/power-contract.json",
+        "retrieved_local": None,
+    },
     "usb2-default-port": {
         "title": "USB 2.0 default-port current limits (100 mA before configuration, 500 mA once configured with bMaxPower granted) and the "
         "no-inrush-limiting-circuit bulk-capacitance guidance (commonly cited as <=10 uF equivalent at a hot attach), as stated in issue #8",
@@ -92,6 +100,36 @@ def load_module_power_evidence():
 
 def load_catalog():
     return json.loads((R / "catalog/components.json").read_text())["records"]
+
+
+def load_power_contract():
+    return json.loads((R / "design/power-contract.json").read_text())
+
+
+def parse_cmake_usbd_max_power_targets():
+    """#37: per-target USBD_MAX_POWER_MA overrides actually present in
+    firmware/CMakeLists.txt, keyed by add_executable() target name. A target
+    with no override found relies on the pico_stdio_usb SDK default (see
+    design/power-contract.json's override_investigation) -- that is recorded
+    as override_ma=None, not treated as a parse failure."""
+    text = (R / "firmware/CMakeLists.txt").read_text()
+    targets = re.findall(r"add_executable\((\w+)\b", text)
+    overrides = {}
+    for target in targets:
+        # Look for USBD_MAX_POWER_MA=<value> anywhere in a
+        # target_compile_definitions(<target> ...) call for this target.
+        m = re.search(
+            rf"target_compile_definitions\(\s*{re.escape(target)}\b[^)]*\)",
+            text,
+            re.DOTALL,
+        )
+        value = None
+        if m:
+            dm = re.search(r"USBD_MAX_POWER_MA=(\d+)", m.group(0))
+            if dm:
+                value = int(dm.group(1))
+        overrides[target] = value
+    return overrides
 
 
 def evidence_entry(evidence, entry_id):
@@ -166,6 +204,7 @@ def main():
     parts = circuit["parts"]
     module_power = load_module_power_evidence()
     catalog = load_catalog()
+    power_contract = load_power_contract()
 
     check_model_circuit_parity(parts, module_power)
 
@@ -296,32 +335,39 @@ def main():
     inrush_known_status = "exceeds_guidance_figure" if known_downstream_cap_uf > inrush_guidance_uf else "within_guidance_figure"
     inrush_overall_status = "unknown"  # Pico onboard VBUS/VSYS bulk capacitance not found in the datasheet text; this known-figure comparison is not a measured inrush compliance claim
 
-    # --- USB 2.0 default-port budget check ---
+    # --- USB source contract / declared descriptor budget check (#37, source #20) ---
+    # design/power-contract.json is the single shared source for the declared
+    # descriptor value and the supported-source contract text; this script
+    # must not carry its own separate constant for either.
     usb_unconfigured_limit_ma = 100.0
-    usb_configured_limit_ma = 500.0
+    declared_max_power_ma = power_contract["declared_max_power_ma"]
+    cmake_target_overrides = parse_cmake_usbd_max_power_targets()
+    cmake_override_values = {v for v in cmake_target_overrides.values() if v is not None}
+    cmake_parity_with_contract = cmake_override_values <= {declared_max_power_ma}
 
-    total_allowance_vs_configured = "pass" if allow_total_ma <= usb_configured_limit_ma else "fail"
-    configured_margin_ma = usb_configured_limit_ma - allow_total_ma
+    total_allowance_vs_declared = "pass" if allow_total_ma <= declared_max_power_ma else "fail"
+    declared_margin_ma = declared_max_power_ma - allow_total_ma
 
     # The backlight (CAT1 regulator fed straight from VSYS/+5V_FUSED, per the
     # schematic note above) and the carrier's own analog rail power up as
     # soon as +5V_FUSED is present -- there is no firmware-controlled power
-    # gate on either path recorded in design/circuit.json. That current can
-    # therefore start flowing before USB enumeration/configuration
-    # completes, when the port is still bound by the 100 mA unconfigured
-    # limit. This is a genuine, calculation-only risk, not a measurement.
+    # gate on either path recorded in design/circuit.json. That current is
+    # therefore unconditional (design/power-contract.json's honesty section),
+    # not staged with USB enumeration/configuration state at all. This is a
+    # genuine, calculation-only risk, not a measurement.
     unconfigured_risk_status = "fail_or_unknown"
     unconfigured_risk_note = (
         "No firmware/hardware power gate on +5V_FUSED->display/analog was found in "
         "design/circuit.json (F1 passes +5V_FUSED to both the display header and U10/U11 "
         "unconditionally). If backlight+analog current at attach exceeds 100 mA before the "
-        "host completes enumeration and grants the configured 500 mA, that violates the USB "
-        "2.0 default-port unconfigured limit. Whether it actually does depends on the display's "
-        "un-cited backlight current and is UNKNOWN; if it is close to the 300 mA allowance, it "
-        "very likely does. This is a design risk to resolve (soft-start/power-gate sequencing "
-        "tied to USB enumeration state, e.g. GPIO24 VBUS-sense, or Pico VBUS-present detection "
-        "before enabling F1's downstream load), not something this calculation can pass or fail "
-        "outright."
+        "host completes enumeration and grants any configured allowance, that violates the USB "
+        "2.0 default-port unconfigured limit on an ordinary host port. Whether it actually does "
+        "depends on the display's un-cited backlight current and is UNKNOWN; if it is close to "
+        "the 300 mA allowance, it very likely does. Only a source meeting design/power-"
+        "contract.json's source_contract (>=500 mA at 5 V from attach, not established by VBUS "
+        "presence alone) is supported; see that file's honesty and decision_notes sections for "
+        "why VBUS presence is not treated as a substitute for real USB configuration state, and "
+        "for the recorded future configuration-gated load-switch option."
     )
 
     # --- LDO dissipation, typical and worst case ---
@@ -457,18 +503,32 @@ def main():
             "not_a_measured_inrush_compliance_claim": True,
         },
         "usb_budget": {
+            "basis": "Allowances (design/narrative-pages.json planning figures) vs. the declared USB "
+            "descriptor value (design/power-contract.json). Neither is a measurement: "
+            "measured_current_ma is None until a bench measurement is recorded (G07 stays OPEN).",
             "documented_allowance_total_ma": allow_total_ma,
             "allowance_citation": "power-mdx",
+            "measured_current_ma": None,
+            "measured_current_note": "No physical current measurement has been performed. G07 stays OPEN.",
             "unconfigured_limit_ma": usb_unconfigured_limit_ma,
-            "configured_limit_ma": usb_configured_limit_ma,
-            "vs_configured_limit": {
-                "status": total_allowance_vs_configured,
-                "margin_ma": configured_margin_ma,
+            "declared_max_power_ma": declared_max_power_ma,
+            "declared_max_power_citation": "power-contract-json",
+            "target_descriptor_inspection": "NOT_RUN (requires ARM build + descriptor dump)",
+            "cmake_target_overrides": cmake_target_overrides,
+            "cmake_parity_with_contract": cmake_parity_with_contract,
+            "vs_declared_limit": {
+                "status": total_allowance_vs_declared,
+                "margin_ma": declared_margin_ma,
+                "note": "A budget allowance greater than power-contract.json's declared_max_power_ma "
+                "cannot report 'pass' here -- see design/power-contract.json's override_investigation "
+                "for why declared_max_power_ma is currently the unmodified SDK default rather than a "
+                "value matching the source contract.",
             },
             "vs_unconfigured_limit": {
                 "status": unconfigured_risk_status,
                 "note": unconfigured_risk_note,
             },
+            "source_contract": power_contract["source_contract"]["requirement"],
         },
         "f1_branch_sizing": {
             "note": "F1 sits between VBUS_USB and +5V_FUSED (design/circuit.json parts[ref=F1]) and "

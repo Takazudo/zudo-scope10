@@ -56,6 +56,11 @@
       "url": "catalog/components.json",
       "retrieved_local": null
     },
+    "power-contract-json": {
+      "title": "design/power-contract.json (shared USB source contract, declared descriptor value, override investigation and per-state power behaviour, consumed by this script and scripts/validate_extra.py so they cannot disagree)",
+      "url": "design/power-contract.json",
+      "retrieved_local": null
+    },
     "usb2-default-port": {
       "title": "USB 2.0 default-port current limits (100 mA before configuration, 500 mA once configured with bMaxPower granted) and the no-inrush-limiting-circuit bulk-capacitance guidance (commonly cited as <=10 uF equivalent at a hot attach), as stated in issue #8",
       "url": "https://github.com/Takazudo/zudo-scope10/issues/8",
@@ -172,18 +177,30 @@
     "not_a_measured_inrush_compliance_claim": true
   },
   "usb_budget": {
+    "basis": "Allowances (design/narrative-pages.json planning figures) vs. the declared USB descriptor value (design/power-contract.json). Neither is a measurement: measured_current_ma is None until a bench measurement is recorded (G07 stays OPEN).",
     "documented_allowance_total_ma": 420.0,
     "allowance_citation": "power-mdx",
+    "measured_current_ma": null,
+    "measured_current_note": "No physical current measurement has been performed. G07 stays OPEN.",
     "unconfigured_limit_ma": 100.0,
-    "configured_limit_ma": 500.0,
-    "vs_configured_limit": {
-      "status": "pass",
-      "margin_ma": 80.0
+    "declared_max_power_ma": 250,
+    "declared_max_power_citation": "power-contract-json",
+    "target_descriptor_inspection": "NOT_RUN (requires ARM build + descriptor dump)",
+    "cmake_target_overrides": {
+      "scope10_diagnostic": null,
+      "scope10_acq": null
+    },
+    "cmake_parity_with_contract": true,
+    "vs_declared_limit": {
+      "status": "fail",
+      "margin_ma": -170.0,
+      "note": "A budget allowance greater than power-contract.json's declared_max_power_ma cannot report 'pass' here -- see design/power-contract.json's override_investigation for why declared_max_power_ma is currently the unmodified SDK default rather than a value matching the source contract."
     },
     "vs_unconfigured_limit": {
       "status": "fail_or_unknown",
-      "note": "No firmware/hardware power gate on +5V_FUSED->display/analog was found in design/circuit.json (F1 passes +5V_FUSED to both the display header and U10/U11 unconditionally). If backlight+analog current at attach exceeds 100 mA before the host completes enumeration and grants the configured 500 mA, that violates the USB 2.0 default-port unconfigured limit. Whether it actually does depends on the display's un-cited backlight current and is UNKNOWN; if it is close to the 300 mA allowance, it very likely does. This is a design risk to resolve (soft-start/power-gate sequencing tied to USB enumeration state, e.g. GPIO24 VBUS-sense, or Pico VBUS-present detection before enabling F1's downstream load), not something this calculation can pass or fail outright."
-    }
+      "note": "No firmware/hardware power gate on +5V_FUSED->display/analog was found in design/circuit.json (F1 passes +5V_FUSED to both the display header and U10/U11 unconditionally). If backlight+analog current at attach exceeds 100 mA before the host completes enumeration and grants any configured allowance, that violates the USB 2.0 default-port unconfigured limit on an ordinary host port. Whether it actually does depends on the display's un-cited backlight current and is UNKNOWN; if it is close to the 300 mA allowance, it very likely does. Only a source meeting design/power-contract.json's source_contract (>=500 mA at 5 V from attach, not established by VBUS presence alone) is supported; see that file's honesty and decision_notes sections for why VBUS presence is not treated as a substitute for real USB configuration state, and for the recorded future configuration-gated load-switch option."
+    },
+    "source_contract": "A USB port or supply that delivers at least 500 mA at 5 V from attach, without relying on USB enumeration/configuration to grant that current."
   },
   "f1_branch_sizing": {
     "note": "F1 sits between VBUS_USB and +5V_FUSED (design/circuit.json parts[ref=F1]) and carries display+analog only; Pico's own supply branches upstream of F1 (scripts/make_design.py). A PPTC is not a precision USB current limiter.",
