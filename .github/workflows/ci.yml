@@ -32,13 +32,35 @@ jobs:
       - name: Host firmware tests
         run: python3 scripts/test_firmware.py
 
+      - name: Validation non-destructiveness regression (#23/#31)
+        run: python3 scripts/test_validate_nondestructive.py
+
       - name: Analytical checks
         run: python3 scripts/analyze.py
 
-      - name: Release guard must refuse (no gate may close from desk work)
+      - name: Release guard must refuse with exit code 2, production route (no gate may close from desk work)
         run: |
-          if python3 manufacturing/release_guard.py; then
-            echo "release_guard.py exited zero; a P0 release gate must never close from CI." >&2
+          set +e
+          python3 manufacturing/release_guard.py --route production
+          code=$?
+          set -e
+          if [ "$code" -ne 2 ]; then
+            echo "release_guard.py --route production exited $code; expected exit code 2 (intentional REFUSED). 0 would silently approve, and any other nonzero (crash/malformed) must not be treated as a considered refusal." >&2
             exit 1
           fi
-          echo "release_guard.py correctly exited nonzero; gates remain OPEN."
+          echo "release_guard.py --route production correctly exited 2 (REFUSED); gates remain OPEN."
+
+      - name: Release guard must refuse with exit code 2, prototype route (#24/#43; no prototype may be ordered from desk work)
+        run: |
+          set +e
+          python3 manufacturing/release_guard.py --route prototype
+          code=$?
+          set -e
+          if [ "$code" -ne 2 ]; then
+            echo "release_guard.py --route prototype exited $code; expected exit code 2 (intentional REFUSED). 0 would silently authorize a prototype order, and any other nonzero (crash/malformed) must not be treated as a considered refusal." >&2
+            exit 1
+          fi
+          echo "release_guard.py --route prototype correctly exited 2 (REFUSED); prototype prerequisites and approval remain unmet."
+
+      - name: Release guard unit tests (#28/#39/#24/#43)
+        run: python3 scripts/test_release_guard.py

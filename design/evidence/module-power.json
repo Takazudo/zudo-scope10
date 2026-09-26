@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "module": "Waveshare Pico-ResTouch-LCD-3.5",
+  "module_revision": "UNKNOWN: schematic PDF has modDate 2021-05-14 and no printed revision field; the physical module has not been checked (see design/evidence/g01-display-power.md open question #1).",
+  "source_evidence_doc": "design/evidence/g01-display-power.md",
+  "note": "One structured source for module-power claims, consumed by scripts/power_budget.py and the generated docs. status is one of verified-schematic / allowance / unknown / rejected. Nothing here is a bench measurement; G01 and G07 stay OPEN.",
+  "entries": [
+    {
+      "id": "module-vsys-capacitance",
+      "claim": "Bulk capacitance directly on module VSYS: C9 10uF + C10 1uF + C14 100nF + C15 100nF",
+      "value_uf": 11.2,
+      "status": "verified-schematic",
+      "citation": "design/evidence/g01-display-power.md, \"Current and inrush figures for G07\" (Sch p1 3A, 4D; 400-800 dpi image crop, not text extraction)",
+      "uncertainty": "Read from a rendered schematic image, not a physical module inspection. Fitted parts must still be confirmed on the received board."
+    },
+    {
+      "id": "carrier-5v-fused-capacitance",
+      "claim": "Carrier capacitance on +5V_FUSED: C30 1uF",
+      "value_uf": 1.0,
+      "status": "verified-schematic",
+      "citation": "design/circuit.json parts[ref=C30] (net +5V_FUSED); scripts/make_design.py add('C30','c1u',...)",
+      "uncertainty": "Carrier design value from the owning source file, not a physical measurement."
+    },
+    {
+      "id": "carrier-plus-module-known-subtotal",
+      "claim": "Known carrier+module nominal capacitance on the fused 5V path, before any Pico-side contribution",
+      "value_uf": 12.2,
+      "status": "verified-schematic",
+      "citation": "derived: module-vsys-capacitance (11.2uF) + carrier-5v-fused-capacitance (1uF)",
+      "uncertainty": "This is a known-figure nominal subtotal only. Pico's own onboard VBUS/VSYS bulk capacitance is not established from its datasheet text, and effective (not nominal) capacitance, fitted-part tolerance, source impedance and attach waveform are all unqualified. This subtotal is not a measured or claimed inrush-compliance result; overall inrush status stays unknown and G07 stays OPEN."
+    },
+    {
+      "id": "backlight-topology",
+      "claim": "CAT1 (5-pin regulator) output feeds LED-A; the three LED cathode returns each go to GND through R17/R18/R19 (~2 ohm each), not three resistors feeding LED-A directly from VSYS",
+      "value": null,
+      "status": "verified-schematic",
+      "citation": "design/evidence/g01-display-power.md, \"Current and inrush figures for G07\" (Sch p1 3A \"LCD BACKLIGHT\", 4A-C \"LCD\")",
+      "uncertainty": "Topology (regulator + cathode-return resistors) is read from the schematic image and treated as verified. The regulator's identity, output voltage and hence backlight current are not printed and remain unknown (see backlight-regulator-identity)."
+    },
+    {
+      "id": "backlight-regulator-identity",
+      "claim": "CAT1's exact part number and output voltage",
+      "value": null,
+      "status": "unknown",
+      "citation": "design/evidence/g01-display-power.md, open question #5",
+      "uncertainty": "Not printed on the schematic; backlight current cannot be derived without it. Requires the physical module or a higher-resolution schematic render."
+    },
+    {
+      "id": "backlight-regulator-en-thresholds",
+      "claim": "CAT1 EN (pin 3, the LCD_BL node) logic thresholds V_IH / V_IL and EN input current",
+      "value": null,
+      "status": "unknown",
+      "citation": "design/evidence/backlight-interface.md, \"What the table does not establish\"; Waveshare schematic p1 LCD BACKLIGHT (3A) shows CAT1 pins VIN/GND/EN/BYP/VOUT and R16 10K VSYS->LCD_BL/EN only, no part number (PDF text extraction and 300 dpi render, 2026-09-26)",
+      "uncertainty": "Without the regulator identity the thresholds cannot be cited. The #41 open-drain interface does not depend on them: off relies on LCD_BL being held within a few millivolts of GND by Q1, on relies on the module's own R16 pull-up to VSYS (the vendor's stacked arrangement). Read CAT1's marking on the received module and record the datasheet thresholds at G01."
+    },
+    {
+      "id": "module-max-current-180ma",
+      "claim": "\"5V 180mA\" as a manufacturer-stated module maximum current",
+      "value_ma": 180,
+      "status": "rejected",
+      "citation": "design/evidence/g01-display-power.md, \"Current and inrush figures for G07\"; scripts/power_budget.py waveshare_current_check_note",
+      "uncertainty": "The only prior support for this figure was an automated fetch summary describing an FAQ image on the Waveshare wiki. Both FAQ images at that URL were downloaded and visually inspected and show unrelated file-browser screenshots, not a power spec; no textual mA/current figure was found on either wiki page. Rejected rather than reported as unknown, since the specific claim was checked and not supported. Not used in any budget calculation."
+    },
+    {
+      "id": "display-planning-allowance",
+      "claim": "300 mA planning allowance for the screen/backlight module",
+      "value_ma": 300,
+      "status": "allowance",
+      "citation": "design/narrative-pages.json (architecture/power-and-module-interface, \"Provisional power allocation\")",
+      "uncertainty": "A design planning allowance, not a manufacturer or measured current. Independent of the rejected 180 mA claim (module-max-current-180ma) -- the allowance is not derived from it."
+    }
+  ]
+}

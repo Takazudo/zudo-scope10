@@ -11,7 +11,7 @@ static void drive(unsigned pin, bool level) {
 }
 
 void lcd_safe_pins_apply(void) {
-    drive(LCD_PIN_BL, false);
+    drive(LCD_PIN_BL, LCD_BL_LEVEL_OFF); /* Q1 on: LCD_BL pulled to 0 V, backlight OFF (#41) */
     drive(LCD_PIN_CS, true);
     drive(LCD_PIN_TP_CS, true);
     drive(LCD_PIN_SD_CS, true);

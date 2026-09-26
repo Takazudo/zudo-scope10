@@ -2,10 +2,25 @@
 """Generate a review schematic/netlist from an explicit pin-to-net circuit.
 This is NOT a routing or fabrication tool. Unqualified interfaces remain visible.
 Standard library only. Run from any working directory.
+
+Ownership split (#23/#31): everything below except the KiCad project (.kicad_pro)
+and the PCB (.kicad_pcb) is generator-owned and reproducible on every run --
+native schematic sheets, the netlist, the symbol library, sym-lib-table,
+design/circuit.json, design/gpio.json, design/connections.csv and
+manufacturing/bom-planning.csv are always rewritten from design/circuit.json's
+inputs. .kicad_pro and .kicad_pcb become developer-owned once they exist: an
+ordinary run never touches them (that is the destructive-overwrite bug fixed
+by #23), and they are (re)written only when missing or when --init-kicad is
+passed explicitly. Local placement, routing and project settings (LOCAL-
+HANDOFF.md's G03 step) live only in those two files and survive every
+ordinary regeneration and every scripts/validate.py run.
 """
 from pathlib import Path
-import json,uuid,math,csv,xml.etree.ElementTree as ET
+import argparse,json,uuid,math,csv,xml.etree.ElementTree as ET
 ROOT=Path(__file__).resolve().parents[1]
+_ap=argparse.ArgumentParser(description='Generate the P0 review schematic/netlist/BOM.')
+_ap.add_argument('--init-kicad',action='store_true',help='Also (re)write hardware/kicad/zudo-scope10-p0.kicad_pro and .kicad_pcb with a fresh minimal project and empty outline. Destroys any existing placement/routing/project settings. Without this flag, an ordinary run only creates those two files if they do not exist yet, and never touches them otherwise.')
+args=_ap.parse_args()
 CAT={r['id']:r for r in json.loads((ROOT/'catalog/components.json').read_text())['records']}
 parts=[]
 def add(ref,kind,nets,sheet,notes='',value=None):
@@ -86,12 +101,19 @@ displaymap={3:'GND',8:'GND',13:'GND',18:'GND',23:'GND',28:'GND',33:'GND',38:'GND
 # assignments above (displaymap) are unchanged per the G01 header-net rule (#13).
 add('J30','header20',{k:displaymap.get(k) for k in range(1,21)},'module-interfaces','Display left header: pin 1 = Pico position 1. Keep pos 4 (module SRAM_CS, PSRAM CE w/ 10k pull-up), pos 7 (module SDIO_CLK via H6 jumper) and pos 19 (module GPIO14 -> R14 NC -> 3V3 LDO EN) unconnected: carrier uses GP2/GP5/GP14 for mux address/timing. LCD_BL (pos 17) has module 10k pull-up to VSYS. G01 OPEN pending physical strap check.')
 add('J31','header20',{k:displaymap.get(41-k) for k in range(1,21)},'module-interfaces','Display right header: pin 1 = Pico position 40. Pin 2 (pos 39 VSYS) is the module\'s only 5 V entry (no diode; feeds RT9193-33 3V3 LDO and backlight regulator). Pos 40 VBUS, 36 Pico3V3 (R15 NC), 37 3V3_EN (R12 NC), 35 ADC_VREF unused by module; keep isolated so no strap variant can cause regulator contention. G01 OPEN pending physical strap check.')
+# GP13 backlight interface (#41, source #19): the module's R16 10k pulls LCD_BL (CAT1 EN) to
+# VSYS (~5 V), so the RP2040 pad must never be tied to LCD_BL directly. GP13 -> R64 drives
+# the gate of Q1 (N-channel logic-level MOSFET, open drain on LCD_BL); R88 is the gate
+# pull-down. Gate low (reset/BOOTSEL/undriven) = Q1 off = backlight ON via module R16;
+# GP13 high = Q1 on = LCD_BL ~0 V = backlight OFF. J30 pos 17 stays on net LCD_BL.
+# Evidence and voltage table: design/evidence/backlight-interface.md.
 for n,name in enumerate(['LCD_DC','LCD_CS','LCD_CLK','LCD_MOSI','LCD_BL','LCD_RST','ADDR0','ADDR1','ADDR2','ADDR3']):
- add(f'R{60+n}','r33',{1:name+'_SRC',2:name},'module-interfaces')
+ add(f'R{60+n}','r33',{1:name+'_SRC',2:'LCD_BL_GATE' if name=='LCD_BL' else name},'module-interfaces','GP13 reaches only the Q1 gate network, never LCD_BL (#41)' if name=='LCD_BL' else '')
 for n,name in enumerate(['ADDR0','ADDR1','ADDR2','ADDR3']):add(f'R{80+n}','r100k',{1:name,2:'GND'},'module-interfaces')
 for n,name in enumerate(['LCD_CS','TP_CS_N','SD_CS_N']):add(f'R{84+n}','r100k',{1:'+3V3D',2:name},'module-interfaces')
 add('R87','r100k',{1:'+3V3A',2:'MUX_DISABLE'},'module-interfaces')
-add('R88','r100k',{1:'LCD_BL',2:'GND'},'module-interfaces')
+add('R88','r100k',{1:'LCD_BL_GATE',2:'GND'},'module-interfaces','Q1 gate pull-down (was LCD_BL pull-down before #41): holds Q1 off, backlight ON, while GP13 is undriven')
+add('Q1','nmos-ll',{1:'LCD_BL_GATE',2:'GND',3:'LCD_BL'},'module-interfaces','Open-drain backlight stage (#41): drain on module LCD_BL/CAT1 EN (R16 10k to VSYS is the only pull-up), source GND. Generic logic-level N-MOSFET, exact part at G08. Backlight default ON; GP13 high = OFF.')
 add('TP30','testpoint',{1:'TIMING_TP'},'module-interfaces')
 # USB-only power; neither +/-12V nor PD input is allowed.
 add('F1','fuse',{1:'VBUS_USB',2:'+5V_FUSED'},'power','Protection component identity pending; not an inrush/load-switch substitute')
@@ -111,7 +133,7 @@ write=lambda path,obj:(ROOT/path).write_text(json.dumps(obj,indent=2)+'\n')
 # It is recorded here as pending proposals only; the local G01 procedure (issue #16's
 # LOCAL-HANDOFF.md) applies or rejects them after the physical module check.
 pending_g01_changes=[
- {'id':'g01-r88-backlight-default','target':'parts[ref=R88]','proposal':'Module R16 (10k, VSYS->LCD_BL) overrides carrier R88 (100k, LCD_BL->GND): the backlight node sits near 4.5 V with GP13 high-impedance, so the backlight defaults ON (not off) and the node exceeds the RP2040 GPIO abs max of IOVDD+0.5V (small clamp current, estimated <0.1 mA, unmeasured). Decide at G01/G06 whether to keep R88, remove it, or accept and document; no value is changed here.','status':'OPEN_PENDING_PHYSICAL_CHECK','citation':'design/evidence/g01-delta.json changes[op=review_decision, target=parts[ref=R88]]; Waveshare Pico-ResTouch-LCD-3.5 schematic p1 LCD BACKLIGHT (3A) R16 10K VSYS->LCD_BL/CAT1 EN; RP2040 datasheet Sec 5.5.3.1 Table 622 (PDF p615)'},
+ {'id':'g01-r88-backlight-default','target':'parts[ref=R88], parts[ref=R64], parts[ref=Q1]','proposal':'RESOLVED BY DESIGN CHANGE (#41, source #19), not by a measurement: GP13 no longer connects to LCD_BL. R64 (33R) now drives the gate of Q1 (generic logic-level N-channel MOSFET, open drain on LCD_BL, source GND) and R88 (100k) is repurposed as the Q1 gate pull-down. The RP2040 pad sees only its own drive or 0 V in every state; LCD_BL is pulled to VSYS by module R16 alone (Q1 off) or held near 0 V (Q1 on). Backlight default is ON (reset, BOOTSEL, undriven); GP13 HIGH = backlight OFF (inverted, firmware updated). The former options "keep R88 and accept a clamp current" and "remove R88" are both rejected: neither meets VPIN <= IOVDD+0.5 V without relying on an undocumented clamp. J30/J31 header nets are unchanged.','status':'DESIGN_APPLIED_BENCH_CHECK_PENDING','citation':'design/evidence/backlight-interface.md (voltage/current table, alternatives); design/evidence/g01-delta.json changes[op=review_decision, target=parts[ref=R88]] (superseded finding); Waveshare Pico-ResTouch-LCD-3.5 schematic p1 LCD BACKLIGHT (3A) R16 10K VSYS->LCD_BL/CAT1 EN pin 3; RP2040 datasheet Sec 5.5.3.1 Table 622 (PDF p615). Bench: LOCAL-HANDOFF.md G01 item 2/3 and G06 step 1 (LCD_BL and gate waveforms on the factory-assembled prototype) before G01/G06 closure.'},
  {'id':'g01-j30-notes','target':'parts[ref=J30].notes','proposal':'set_notes applied to J30.notes: spare display positions 4/7/19 stay open (null pins already implement this); LCD_BL module pull-up documented. No net change.','status':'APPLIED_NOTES_ONLY_NO_NET_CHANGE','citation':'design/evidence/g01-delta.json changes[op=set_notes, target=parts[ref=J30].notes]'},
  {'id':'g01-j31-notes','target':'parts[ref=J31].notes','proposal':'set_notes applied to J31.notes: position 39 (VSYS) is the module’s only 5V entry; isolating 35/36/37/40 is contention-free for every strap variant. No net change.','status':'APPLIED_NOTES_ONLY_NO_NET_CHANGE','citation':'design/evidence/g01-delta.json changes[op=set_notes, target=parts[ref=J31].notes]'},
 ]
@@ -203,9 +225,17 @@ for n,sh in enumerate(names):
 s.append('(sheet_instances (path "/" (page "1"))))');(ROOT/'hardware/kicad/zudo-scope10-p0.kicad_sch').write_text('\n'.join(s)+'\n')
 (ROOT/'hardware/libraries/ZudoScope10.kicad_sym').write_text('(kicad_symbol_lib (version 20231120) (generator "kicad_symbol_editor")\n'+''.join(libsym(id,False) for id in sorted(groups))+PWR_FLAG.format(name='PWR_FLAG')+')\n')
 (ROOT/'hardware/kicad/sym-lib-table').write_text('(sym_lib_table (lib (name "ZudoScope10") (type "KiCad") (uri "${KIPRJMOD}/../libraries/ZudoScope10.kicad_sym") (options "") (descr "P0 review symbols")))\n')
-write('hardware/kicad/zudo-scope10-p0.kicad_pro',{'meta':{'filename':'zudo-scope10-p0.kicad_pro','version':1},'text_variables':{'REVISION':'P0_PRELAYOUT_NOT_FOR_FAB'}})
-# Outline only; no fabricated electrical pads, tracks, or fake placements.
-pcb='''(kicad_pcb (version 20240108) (generator "pcbnew")
+# .kicad_pro/.kicad_pcb are developer-owned once created (#23/#31): only write them
+# when missing, or when --init-kicad explicitly asks to reset them. An ordinary run
+# must never erase local placement, routing or project settings.
+pro_path=ROOT/'hardware/kicad/zudo-scope10-p0.kicad_pro';pcb_path=ROOT/'hardware/kicad/zudo-scope10-p0.kicad_pcb'
+if args.init_kicad or not pro_path.exists():
+ write('hardware/kicad/zudo-scope10-p0.kicad_pro',{'meta':{'filename':'zudo-scope10-p0.kicad_pro','version':1},'text_variables':{'REVISION':'P0_PRELAYOUT_NOT_FOR_FAB'}})
+else:
+ print('kicad_pro exists; leaving developer-owned project settings untouched (pass --init-kicad to reset)')
+if args.init_kicad or not pcb_path.exists():
+ # Outline only; no fabricated electrical pads, tracks, or fake placements.
+ pcb='''(kicad_pcb (version 20240108) (generator "pcbnew")
  (general (thickness 1.6)) (paper "A4")
  (layers (0 "F.Cu" signal) (1 "In1.Cu" power) (2 "In2.Cu" power) (31 "B.Cu" signal)
  (44 "Edge.Cuts" user) (40 "Dwgs.User" user) (36 "B.SilkS" user "b.silkscreen") (37 "F.SilkS" user "f.silkscreen")
@@ -214,5 +244,7 @@ pcb='''(kicad_pcb (version 20240108) (generator "pcbnew")
  (gr_rect (start 50 50) (end 300 230) (stroke (width 0.1) (type default)) (fill none) (layer "Edge.Cuts") (uuid "'''+uid('pcb/outline')+'''"))
  (gr_text "OUTLINE STUDY ONLY - NO COMPONENTS OR ROUTING\\nP0 / DO NOT FABRICATE" (at 175 140) (layer "Dwgs.User") (uuid "'''+uid('pcb/warn')+'''") (effects (font (size 3 3) (thickness 0.5))))
 )'''
-(ROOT/'hardware/kicad/zudo-scope10-p0.kicad_pcb').write_text(pcb+'\n')
+ pcb_path.write_text(pcb+'\n')
+else:
+ print('kicad_pcb exists; leaving developer-owned board layout untouched (pass --init-kicad to reset)')
 print(f'{len(parts)} physical schematic instances / {len(nets)} nets / {len(names)+1} native sheets')

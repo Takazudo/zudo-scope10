@@ -48,15 +48,26 @@
 #define DRAIN_BATCH 1024u
 #define REPORT_INTERVAL_US 1000000u
 
+static void core1_step_irq_set(bool on);
+#define ACQ_EPOCH_IRQ_SAVE() save_and_disable_interrupts()
+#define ACQ_EPOCH_IRQ_RESTORE(s) restore_interrupts(s)
+#define ACQ_EPOCH_TICK() (timer_hw->timerawl)
+#define ACQ_EPOCH_DMB() __dmb()
+#define ACQ_EPOCH_PWM_ENABLE() pwm_set_mask_enabled((1u << SLOT_SLICE) | (1u << STEP_SLICE))
+#define ACQ_EPOCH_PWM_DISABLE() pwm_set_mask_enabled(0u)
+#define ACQ_EPOCH_SEV() __sev()
+#define ACQ_EPOCH_WAIT() tight_loop_contents()
+#define ACQ_EPOCH_STEP_IRQ_SET(on) core1_step_irq_set(on)
+#include "acq_epoch.h"
+
 static acq_engine eng;
 static scope_history hist[ACQ_CHANNELS];
 static uint32_t cs_table[ACQ_SLOTS_PER_FRAME];
 static const uint32_t *cs_table_addr = cs_table;
 static uint ch_start, ch_reload, ch_col[2];
 static volatile uint32_t col_halves;
-/* Time base for the core1 stepper: extended 1 us TIMER, converted to cycles. */
-static volatile uint32_t last_raw;
-static volatile uint64_t now_cycles_ext;
+/* Time base and arm/quiesce handshake for the core1 stepper (acq_epoch.h). */
+static acq_epoch epoch;
 
 static void out(unsigned pin, bool high) {
     gpio_init(pin);
@@ -64,28 +75,35 @@ static void out(unsigned pin, bool high) {
     gpio_put(pin, high);
 }
 
-static inline __attribute__((always_inline)) uint64_t now_lower_bound(void) {
-    uint32_t raw = timer_hw->timerawl;
-    now_cycles_ext += (uint64_t)((raw - last_raw) * ACQ_CYCLES_PER_US);
-    last_raw = raw;
-    uint64_t t = now_cycles_ext;
-    return t > ACQ_ORIGIN_SLACK_CYCLES ? t - ACQ_ORIGIN_SLACK_CYCLES : 0u;
-}
-
 static void __not_in_flash_func(on_mux_step)(void) {
     pwm_clear_irq(STEP_SLICE);
-    acq_step_result r = acq_step_plan(&eng, now_lower_bound());
+    if (!acq_epoch_enter(&epoch)) return; /* disarmed: leave engine and pins alone */
+    acq_step_result r = acq_step_plan(&eng, acq_epoch_lower_bound(&epoch, timer_hw->timerawl));
     if (r.addr >= 0) gpio_put_masked(ADDR_MASK, (uint32_t)r.addr << PIN_ADDR0);
     gpio_put(PIN_TIMING_TP, r.frame_pulse);
-    acq_step_commit(&eng, now_lower_bound());
+    acq_step_commit(&eng, acq_epoch_lower_bound(&epoch, timer_hw->timerawl));
+}
+
+/* Runs on core1 in thread mode only (acq_epoch_core1_service), never inside the handler. */
+static void core1_step_irq_set(bool on) {
+    if (on) {
+        irq_clear(PWM_IRQ_WRAP);
+        irq_set_enabled(PWM_IRQ_WRAP, true);
+    } else {
+        irq_set_enabled(PWM_IRQ_WRAP, false);
+        irq_clear(PWM_IRQ_WRAP);
+    }
 }
 
 static void __not_in_flash_func(core1_main)(void) {
     irq_set_exclusive_handler(PWM_IRQ_WRAP, on_mux_step);
     irq_set_priority(PWM_IRQ_WRAP, PICO_HIGHEST_IRQ_PRIORITY);
-    irq_set_enabled(PWM_IRQ_WRAP, true);
+    /* The step IRQ stays off until core0 requests it (acq_epoch_core1_request). */
     multicore_fifo_push_blocking(1u);
-    for (;;) __wfi();
+    for (;;) {
+        acq_epoch_core1_service(&epoch);
+        __wfe(); /* woken by core0's SEV and by every step IRQ */
+    }
 }
 
 static void on_collector_done(void) {
@@ -108,19 +126,13 @@ static uint64_t written_total(void) {
     return (uint64_t)h1 * HALF + (HALF - remaining);
 }
 
+/* RAM-resident so the interrupts-off tick-to-enable path never waits on XIP. */
 static void __not_in_flash_func(start_timers)(void) {
-    uint32_t r0 = timer_hw->timerawl, r;
-    while ((r = timer_hw->timerawl) == r0) tight_loop_contents();
-    pwm_set_mask_enabled((1u << SLOT_SLICE) | (1u << STEP_SLICE));
-    /* The first step IRQ is ACQ_STEP_OFFSET_CYCLES away; publishing afterwards is safe. */
-    last_raw = r;
-    now_cycles_ext = 0;
-    __dmb();
+    acq_epoch_start(&epoch);
 }
 
 static void acq_hw_stop(void) {
-    pwm_set_mask_enabled(0u);
-    busy_wait_us(20); /* let an in-flight core1 step IRQ finish */
+    acq_epoch_stop(&epoch); /* returns only once core1's step IRQ is confirmed off */
     pwm_clear_irq(STEP_SLICE);
     gpio_put(PIN_MUX_DISABLE, true);
     dma_channel_set_irq0_enabled(ch_col[0], false);
@@ -171,6 +183,7 @@ static void acq_hw_start(void) {
     gpio_put_masked(ADDR_MASK, (uint32_t)eng.step.driven_addr << PIN_ADDR0);
     gpio_put(PIN_MUX_DISABLE, false);
     busy_wait_us(10);
+    acq_epoch_core1_request(&epoch, true); /* after pwm_clear_irq, so nothing stale pends */
     start_timers();
 }
 
@@ -196,11 +209,13 @@ static void acq_hw_init(void) {
     irq_set_enabled(DMA_IRQ_0, true);
 }
 
+/* hold_pressed/link_pressed are the raw (active-low) button pins, not the renderer's
+ * latched HOLD/LINK modes that the display shows. */
 static void report_line(unsigned line) {
     const acq_counters *c = &eng.cnt;
     if (line == 0u) {
         printf("acq,uptime_ms=%lu,frames=%lu,missed_slots=%lu,overrun_events=%lu,overrun_samples=%lu,"
-               "fifo_errors=%lu,conversion_errors=%lu,held_samples=%lu,resyncs=%lu,hold=%u,link=%u\n",
+               "fifo_errors=%lu,conversion_errors=%lu,held_samples=%lu,resyncs=%lu,hold_pressed=%u,link_pressed=%u\n",
                (unsigned long)to_ms_since_boot(get_absolute_time()), (unsigned long)c->frames,
                (unsigned long)c->missed_slots, (unsigned long)c->overrun_events,
                (unsigned long)c->overrun_samples, (unsigned long)c->fifo_errors,
@@ -281,6 +296,9 @@ int main(void) {
             for (unsigned ch = 0; ch < ACQ_CHANNELS; ch++) {
                 in.time_code[ch] = eng.time_code[ch];
                 in.range[ch] = (int8_t)eng.range[ch].stable;
+                /* No calibration persistence exists (firmware/tools/calibrate.py only writes a
+                 * host JSON file), so every channel uses the nominal fallback: shown as UNCAL. */
+                in.cal[ch] = scope_calibration_nominal();
             }
             scope_render_step(&rs, &in, RENDER_ITEMS_PER_PASS);
         }

@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "note": "Single shared source for the USB/power source contract (#37, source #20). scripts/power_budget.py and scripts/validate_extra.py both read this file so the budget check, the descriptor-parity check and the docs cannot disagree. G07 stays OPEN regardless of anything in this file: everything here is a desk decision/declaration, not a bench measurement.",
+
+  "source_contract": {
+    "requirement": "A USB port or supply that delivers at least 500 mA at 5 V from attach, without relying on USB enumeration/configuration to grant that current.",
+    "rationale": "The carrier's display and analog rails power up as soon as +5V_FUSED is present (F1 passes it to both unconditionally; scripts/make_design.py). There is no firmware- or hardware-gated load switch tied to USB configured state (see honesty.unconditional_load below). Because that load is not enumeration-gated, the module cannot rely on a standard host port's staged 100 mA (unconfigured) / 500 mA (configured) allowance -- it needs the full budgeted current to be available from the moment 5 V is present. Only a source meeting this contract is supported; an ordinary enumerating host port that has not yet granted 500 mA is not.",
+    "supported_sources": [
+      "A USB port or wall adapter that is known, by its own specification or by direct test, to supply >=500 mA at 5 V continuously from the moment VBUS is presented, independent of USB enumeration state.",
+      "A dedicated 5 V supply (e.g. a USB power-only brick rated >=500 mA) wired through the same VBUS_USB path."
+    ],
+    "unsupported_sources": [
+      "An ordinary USB 2.0 host port relied upon to honor only its enumerated/negotiated allowance (100 mA unconfigured, 500 mA after configuration) -- this module draws more than the unconfigured limit before configuration completes (see honesty.unconditional_load).",
+      "Any source whose >=500 mA capability is inferred from VBUS presence (5 V detected) alone -- presence of 5 V proves nothing about the source's current capability or about USB configuration state; see decision_notes.rejected_gpio24_vbus_sense below."
+    ]
+  },
+
+  "declared_max_power_ma": 250,
+  "declared_max_power_basis": "This is the Pico SDK 2.1.1 pico_stdio_usb default USB configuration-descriptor value (bus-powered branch, PICO_STDIO_USB_DEVICE_SELF_POWERED not set), not a value chosen or overridden by this project. See override_investigation below for why a higher declared value (e.g. 500, matching the source contract) is not implemented in this pass and is tracked as follow-up work instead of being asserted without a working, verified override.",
+
+  "override_investigation": {
+    "goal": "Raise the compiled USB configuration descriptor's declared max-power field to a value >= the 420 mA budget allowance (e.g. 500 mA), consistent with the source contract above, via a CMake compile definition on every firmware target.",
+    "pinned_sdk_tag": "2.1.1",
+    "verified_files": [
+      "https://raw.githubusercontent.com/raspberrypi/pico-sdk/2.1.1/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c",
+      "https://raw.githubusercontent.com/raspberrypi/pico-sdk/2.1.1/src/rp2_common/pico_stdio_usb/CMakeLists.txt",
+      "https://raw.githubusercontent.com/raspberrypi/pico-sdk/2.1.1/src/rp2_common/pico_stdio_usb/stdio_usb.c"
+    ],
+    "verification_method": "Fetched the exact pinned-tag file content directly (raw.githubusercontent.com, byte content, not a paraphrase) and read it in full.",
+    "finding_guarded_by_ifndef": false,
+    "finding_detail": "stdio_usb_descriptors.c defines USBD_MAX_POWER_MA unconditionally based on PICO_STDIO_USB_DEVICE_SELF_POWERED: '#if !PICO_STDIO_USB_DEVICE_SELF_POWERED / #define USBD_MAX_POWER_MA (250) / #else / #define USBD_MAX_POWER_MA (1) / #endif'. Unlike USBD_VID/USBD_PID/USBD_MANUFACTURER/USBD_PRODUCT in the same file, USBD_MAX_POWER_MA has no '#ifndef USBD_MAX_POWER_MA' guard, so a project-supplied '#define USBD_MAX_POWER_MA <value>' ahead of this file (e.g. via a CMake compile definition) would trigger a macro-redefinition and does not reliably take effect at the intended value.",
+    "finding_library_boundary": "stdio_usb_descriptors.c is compiled inside the pico_stdio_usb INTERFACE library (pico_stdio_usb/CMakeLists.txt: target_sources(pico_stdio_usb INTERFACE .../stdio_usb_descriptors.c)), a separate translation unit built once for the whole SDK integration. A target_compile_definitions() on an application target (scope10_diagnostic, scope10_acq) does not reach that file's compilation at all; only a directory-scope definition set before pico_sdk_init() (so it is inherited by every add_subdirectory() the SDK performs) would reach it -- and even then the missing #ifndef guard above still applies. pico_stdio_usb/CMakeLists.txt exposes exactly one user-configurable define this way (PICO_STDIO_USB_CONNECT_WAIT_TIMEOUT_MS); USBD_MAX_POWER_MA is not offered as one.",
+    "supported_alternative_identified": "stdio_usb.c's own comments describe a second, genuinely supported mode: if the application links tinyusb_device directly and calls tud_init()/tud_task() itself, LIB_TINYUSB_DEVICE becomes defined, stdio_usb_descriptors.c compiles out entirely (guarded by '#if !defined(LIB_TINYUSB_HOST) && !defined(LIB_TINYUSB_DEVICE)'), and the application supplies its own tud_descriptor_device_cb/tud_descriptor_configuration_cb/tud_descriptor_string_cb with any USBD_MAX_POWER_MA it wants.",
+    "outcome": "not_implemented_this_pass",
+    "why_not_implemented_here": "That alternative replaces pico_stdio_usb's built-in TinyUSB init/IRQ/background-task wiring (stdio_usb.c's '#if !LIB_TINYUSB_DEVICE' blocks) with application-owned equivalents across every firmware target -- a firmware-architecture change, not a CMakeLists-only descriptor tweak. This project has no ARM toolchain/hardware bench available in this pass to compile and functionally verify a hand-written USB descriptor set (firmware.yml's CI only builds the target, it does not enumerate real hardware), so shipping one unverified would assert an unproven descriptor value exactly like a fabricated bench result. Per this project's evidence rules (no invented DRC/ERC/bench results), the declared value here is instead pinned to the one value that is actually verified to be what the compiled descriptor contains today (250 mA, the SDK default), and the budget check below is left to fail honestly against it.",
+    "tracked_as": "Open follow-up, not silently dropped: implementing and hardware-verifying the tinyusb_device-direct override (or an equivalent supported mechanism) so declared_max_power_ma can be honestly raised to meet the source contract. Until then this file's declared_max_power_ma equals the unmodified SDK default, and scripts/power_budget.py must show usb_budget.vs_declared_limit as 'fail' -- that FAIL is correct and expected, not a regression to silence. Tracked as https://github.com/Takazudo/zudo-scope10/issues/46."
+  },
+
+  "honesty": {
+    "unconditional_load": "The display and analog-rail load on +5V_FUSED is unconditional: it is not gated by USB configuration state, by suspend, or by any firmware action. Before USB configuration completes, during suspend, and while the RP2040 bootrom is in BOOTSEL mode, this module draws more current than the USB 2.0 unconfigured (100 mA) and suspend (2.5 mA) limits allow on an ordinary host port. Only a source meeting source_contract above is supported for any of those states; an ordinary host port is not guaranteed to tolerate this and may current-limit, fault, or refuse enumeration.",
+    "rom_descriptor": "During BOOTSEL, the RP2040's own bootrom (not this project's firmware) enumerates the device and presents its own USB descriptors, including its own declared max-power value. This project has not inspected or cited the bootrom's actual descriptor value; no number is stated for it here. Bench inspection of the BOOTSEL-mode descriptor (e.g. with a USB protocol analyzer or the host OS's descriptor dump) is listed as a G07 bench procedure in LOCAL-HANDOFF.md.",
+    "future_compliant_host_option": "A configuration-gated load switch -- hardware (e.g. a load switch IC on +5V_FUSED's display/analog branch) enabled only once firmware observes real USB configured state (tud_ready()/tud_mounted() equivalent, not VBUS presence) -- is recorded here as the future option that would let this module work within an ordinary compliant host port's staged power budget. No part, pin, or firmware mechanism for it is chosen or implemented in this pass; it is a named option, not a plan."
+  },
+
+  "decision_notes": {
+    "rejected_gpio24_vbus_sense": "An earlier draft (scripts/power_budget.py, LOCAL-HANDOFF.md) proposed GPIO24/VBUS-sense as a way to gate the load on USB availability. Presence of 5 V on VBUS establishes only that a 5 V source is attached; it does not establish USB configuration, does not establish that the host has granted any current allowance, and is not a substitute for reading real USB device state. This suggestion is removed from scripts/power_budget.py and LOCAL-HANDOFF.md; see honesty.future_compliant_host_option for the option that would actually address configuration-aware enabling."
+  },
+
+  "power_states": {
+    "pre_configuration": {
+      "description": "5 V present at VBUS_USB, device attached but USB configuration not yet complete (address assigned, not yet configured, or configuration descriptor not yet accepted).",
+      "load_behavior": "Unconditional: the +5V_FUSED display/analog branch draws current immediately once 5 V is present, regardless of configuration state (honesty.unconditional_load).",
+      "compliant_with_ordinary_host_port": false,
+      "requires_source_contract": true,
+      "backlight_default": "ON until firmware runs, then OFF: the Q1 gate is held at 0 V by R88 while GP13 is undriven, so module R16 pulls LCD_BL to VSYS and the backlight is lit from the moment VSYS rises; the firmware early hook (lcd_safe_pins.c, both SCOPE_ENABLE_LCD states) then drives GP13 high and darkens it. The pre-hook lit interval is unmeasured.",
+      "gp13_pad_voltage": "0 V (R88 and the RP2040 reset pull-down, both to GND) then V_OH <= IOVDD once driven; never above IOVDD + 0.5 V (design/evidence/backlight-interface.md).",
+      "bench_procedure": "LOCAL-HANDOFF.md G07 bench item 1 (pre-configuration current); G01 item 2 / G06 step 1 (LCD_BL and gate waveforms)."
+    },
+    "configured": {
+      "description": "Host has completed enumeration and accepted the configuration descriptor.",
+      "load_behavior": "Full display+analog+Pico load is present; this is the state the 420 mA budget allowance in scripts/power_budget.py describes.",
+      "compliant_with_ordinary_host_port": "unknown_pending_declared_value",
+      "compliant_with_ordinary_host_port_note": "declared_max_power_ma (250, see override_investigation) is currently below the 420 mA allowance, so scripts/power_budget.py's usb_budget.vs_declared_limit reports 'fail'. This is the honest state of an unmodified SDK descriptor; only a source meeting source_contract, not an ordinary host's configured grant, is supported today.",
+      "requires_source_contract": true,
+      "backlight_default": "Firmware-controlled, active-low on GP13: scope10_acq drives GP13 high (OFF) from the early hook onward in both SCOPE_ENABLE_LCD states; the LCD-enabled build drives GP13 low (ON) only after scope_display_init() reports the init sequence sent. scope10_diagnostic does not link lcd_safe_pins.c and never drives GP13, so under it the backlight stays ON (gate 0 V via R88); the pad is unaffected.",
+      "gp13_pad_voltage": "Driven: V_OL or V_OH, within 0 V .. IOVDD.",
+      "bench_procedure": "LOCAL-HANDOFF.md G07 bench item 2 (configured current, no display / dark display / bright display)."
+    },
+    "suspend_or_deconfigured": {
+      "description": "Host has suspended the bus (no traffic for the USB-defined suspend interval) or the device has been deconfigured (e.g. SET_CONFIGURATION(0)).",
+      "load_behavior": "Unconditional: nothing in this design reduces the +5V_FUSED display/analog load on suspend or deconfiguration; firmware does not currently implement USB suspend current reduction.",
+      "compliant_with_ordinary_host_port": false,
+      "compliant_with_ordinary_host_port_note": "USB 2.0 suspend current limit (2.5 mA) is far below this module's unconditional load.",
+      "requires_source_contract": true,
+      "backlight_default": "Unchanged from the configured state: firmware does not react to suspend/deconfiguration, so GP13 keeps whatever level it was driven to (backlight stays on or off as it was).",
+      "gp13_pad_voltage": "Driven: within 0 V .. IOVDD.",
+      "bench_procedure": "LOCAL-HANDOFF.md G07 bench item 3 (suspend/deconfigured current)."
+    },
+    "reset": {
+      "description": "USB bus reset (host-initiated) or RP2040 device reset/power-on-reset, prior to firmware re-establishing USB.",
+      "load_behavior": "Unconditional: the +5V_FUSED display/analog load is not tied to firmware or USB state at all, so it persists across a bus or device reset as long as 5 V is present.",
+      "compliant_with_ordinary_host_port": false,
+      "requires_source_contract": true,
+      "backlight_default": "ON during a device reset / power-on reset: GP13 returns to its reset state (input, pull-down), R88 holds the Q1 gate at 0 V, module R16 pulls LCD_BL to VSYS. A USB bus reset alone does not touch GP13, so the backlight keeps its firmware-set state.",
+      "gp13_pad_voltage": "0 V while in reset (reset pull-down 50-80 kOhm plus R88 to GND); never above IOVDD + 0.5 V.",
+      "bench_procedure": "LOCAL-HANDOFF.md G07 bench item 4 (current across a bus/device reset); G01 item 2 (LCD_BL waveform through a RUN-button reset)."
+    },
+    "bootsel_rom": {
+      "description": "RP2040 bootrom BOOTSEL mode (mass-storage UF2 bootloader), before this project's firmware runs.",
+      "load_behavior": "Unconditional carrier load persists (it is not gated by firmware). The bootrom's own USB descriptor (max-power, device class, etc.) is presented by the bootrom, not this project's firmware; see honesty.rom_descriptor.",
+      "compliant_with_ordinary_host_port": "unknown",
+      "compliant_with_ordinary_host_port_note": "No citation for the bootrom's declared max-power value is available in this pass; not stated rather than guessed.",
+      "requires_source_contract": true,
+      "backlight_default": "Expected ON for the whole BOOTSEL session: this project's firmware does not run, GP13 is expected to stay in its reset state (gate 0 V via R88, LCD_BL at VSYS via R16). Even if the bootrom drove GP13, the pad could only reach its own V_OH. Confirm on the bench; the bootrom's GPIO handling is not cited here.",
+      "gp13_pad_voltage": "Expected 0 V (reset pull-down plus R88); bounded to 0 V .. IOVDD in any case.",
+      "bench_procedure": "LOCAL-HANDOFF.md G07 bench item 5 (BOOTSEL descriptor inspection and current); G01 item 2 (LCD_BL state in BOOTSEL)."
+    },
+    "unpowered": {
+      "description": "No 5 V present at VBUS_USB.",
+      "load_behavior": "No load; the module draws nothing.",
+      "compliant_with_ordinary_host_port": true,
+      "requires_source_contract": false,
+      "backlight_default": "OFF (no VSYS, so no backlight supply). During the power-up ramp, before the Pico's IOVDD is up but with VSYS already present, the backlight is ON and the GP13 pad still sits at 0 V through R88: the IOVDD + 0.5 V limit holds even at IOVDD = 0.",
+      "gp13_pad_voltage": "0 V.",
+      "bench_procedure": "LOCAL-HANDOFF.md G07 bench item 6 (leakage/back-power check with the module unpowered, already covered by the G04 no-back-power procedure)."
+    }
+  },
+
+  "backlight_interface": {
+    "source": "#41 (source #19); design/evidence/backlight-interface.md",
+    "circuit": "GP13 -> R64 33R -> LCD_BL_GATE -> gate of Q1 (generic logic-level N-channel MOSFET, catalog record nmos-ll, exact part at G08); R88 100k gate pull-down; Q1 drain = LCD_BL (J30 pos 17, header net unchanged), source = GND. Module R16 10k to VSYS is the only pull-up on LCD_BL.",
+    "default_state": "ON whenever GP13 is low or undriven (reset, BOOTSEL/ROM, before the firmware hook, both power-up orders).",
+    "enable_polarity": "Active-low on GP13: high = backlight OFF, low = ON. Firmware: firmware/src/lcd_safe_pins.h LCD_BL_LEVEL_OFF/LCD_BL_LEVEL_ON.",
+    "pad_limit_argument": "The GP13 pad connects only to the gate network, so it lies within 0 V .. V_OH (<= IOVDD) in every state listed in power_states; no GPIO protection clamp and no fault-tolerant-IO assumption is used. scripts/validate_extra.py asserts no resistive DC path below 1 MOhm from GP13's net to +5V_FUSED, VBUS_USB or LCD_BL.",
+    "unknowns": "CAT1 EN thresholds and EN input current (design/evidence/module-power.json backlight-regulator-en-thresholds); pre-hook lit interval; actual module population. Bench check on the factory-assembled prototype before G01/G06 closure."
+  },
+
+  "extension_note_for_sub_19": "Applied by #41: the backlight_default and gp13_pad_voltage fields above extend each power_states entry; backlight_interface summarises the circuit. No second per-state table exists."
+}

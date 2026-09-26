@@ -49,7 +49,7 @@ static void bus_delay_ms(void *ctx, uint32_t ms) {
 static const lcd_bus bus = {NULL, bus_frame_begin, bus_write, bus_frame_end, bus_reset, bus_delay_ms};
 
 bool scope_display_init(void) {
-    lcd_safe_pins_apply(); /* backlight off, all SPI1 slaves deselected, panel in reset */
+    lcd_safe_pins_apply(); /* backlight off (GP13 high, #41), all SPI1 slaves deselected, panel in reset */
     gpio_init(LCD_PIN_DC);
     gpio_set_dir(LCD_PIN_DC, GPIO_OUT);
     gpio_put(LCD_PIN_DC, true);
@@ -69,7 +69,8 @@ bool scope_display_rect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const ui
 
 void scope_display_backlight(uint8_t percent) {
     /* On/off only: the module's backlight regulator (CAT1) is unidentified, so PWM dimming
-     * on its EN pin is not assumed. GP13 is always driven, never released (see
-     * lcd_safe_pins.h: module R16 pulls LCD_BL to VSYS). */
-    gpio_put(LCD_PIN_BL, ready && percent > 0u);
+     * on its EN pin is not assumed (any later PWM would be inverted too). Polarity is
+     * inverted by the Q1 open-drain stage (#41, lcd_safe_pins.h): GP13 low = backlight ON,
+     * GP13 high = OFF. GP13 stays driven; releasing it would also mean ON (R88 -> Q1 off). */
+    gpio_put(LCD_PIN_BL, (ready && percent > 0u) ? LCD_BL_LEVEL_ON : LCD_BL_LEVEL_OFF);
 }

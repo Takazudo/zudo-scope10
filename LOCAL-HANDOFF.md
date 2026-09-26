@@ -53,26 +53,30 @@ Header nets to the display (J30/J31) are committed only after this gate is resol
 1. Physically inspect the received Waveshare Pico-ResTouch-LCD-3.5 (SKU 19907): read its silked
    revision marking and check which of its own strap resistors/jumpers (H1–H6, R11–R16 per the
    manufacturer schematic) are actually fitted on your unit.
-2. Confirm the desk finding in `design/circuit.json`'s `pending_g01_changes[id=
-   g01-r88-backlight-default]` and `design/evidence/g01-display-power.md`: module R16 (10k,
-   VSYS→LCD_BL) pulls the backlight-enable node toward the module's ~5 V VSYS rail, overriding
-   carrier R88 (100k, LCD_BL→GND). With GP13 left high-impedance, the node sits near an estimated
-   4.5 V — above the RP2040 GPIO absolute maximum (IOVDD+0.5 V) — and the backlight defaults ON,
-   not off. Firmware (`firmware/src/lcd_safe_pins.c` / the SDK init hook) now drives GP13 low
-   early, but the power-on / boot-ROM window before that init hook runs is unmeasured. **Bench
-   measure the actual GP13 node voltage and the backlight state during that window** on a real
-   unit before trusting the firmware mitigation.
-3. Decide, and apply exactly one of:
-   - **Keep R88** and accept the documented default-on/clamp behaviour (update
-     `design/evidence/g01-display-power.md` and this gate with the measured clamp current and the
-     accepted risk);
-   - **Remove R88** (requires a generator change in `scripts/make_design.py` +
-     `catalog/components.json`, regenerate, and re-run the full check suite — this is the only
-     kind of change the epic's file-ownership rule restricts to the generator owner, so if you are
-     not that person, hand this specific edit back rather than hand-editing outputs); or
-   - **Accept and document** as-is with no component change, recording the measured margin.
-   Whichever you choose, update `pending_g01_changes[id=g01-r88-backlight-default].status` from
-   `OPEN_PENDING_PHYSICAL_CHECK` to a resolved status and cite the actual measurement.
+2. **Backlight interface (#41, source #19) — bench check the applied design, do not re-decide it.**
+   Module R16 (10k, VSYS→LCD_BL) pulls the backlight-enable/CAT1-EN node to the module's ~5 V
+   VSYS rail. The carrier therefore no longer ties GP13 to that node: GP13 → R64 (33 Ω) → gate
+   of Q1 (generic logic-level N-channel MOSFET, record `nmos-ll`, exact part at G08), R88 (100k)
+   is the gate pull-down, Q1's drain is `LCD_BL` (J30 position 17, header net unchanged) and its
+   source is GND. The GPIO pad sits within 0 V…IOVDD in every state without any clamp assumption
+   (`design/evidence/backlight-interface.md`, voltage table). **Default is backlight ON; GP13
+   high = OFF** (`firmware/src/lcd_safe_pins.c` drives it high from the early SDK init hook in
+   both `SCOPE_ENABLE_LCD` states). Have the assembler/bench provider, on the factory-assembled
+   prototype: (a) confirm the module revision and that R16 and CAT1 are populated as drawn, and
+   read CAT1's marking / EN thresholds if legible (`design/evidence/module-power.json`,
+   `backlight-regulator-en-thresholds`); (b) capture GP13 (`LCD_BL_SRC`), `LCD_BL_GATE` and
+   `LCD_BL` from power-on through a RUN-button reset, BOOTSEL and a normal boot at the lowest and
+   highest USB voltage available within 4.75–5.25 V — GP13 and the gate must stay within
+   0 V…IOVDD, `LCD_BL` at VSYS while lit and below 50 mV while dark; (c) record the lit interval
+   before the hook. Fill `manufacturing/acceptance-results.csv` row `BACKLIGHT_GP13_INTERFACE`.
+3. If (b) passes, update `pending_g01_changes[id=g01-r88-backlight-default].status` from
+   `DESIGN_APPLIED_BENCH_CHECK_PENDING` to a closed status citing the captures. If CAT1 does not
+   turn off with `LCD_BL` held near 0 V, or the module population differs from the schematic, stop:
+   the fallback options (a documented **factory** modification of the module pull-up, or a
+   level-translating stage) are weighed in `design/evidence/backlight-interface.md` and require a
+   generator change in `scripts/make_design.py` + `catalog/components.json` by the generator
+   owner, never a hand edit of outputs and never home soldering. Do not fall back to "remove R88"
+   or "accept a clamp current": both were rejected in #19.
 4. Confirm GP2 stays on the on-module PSRAM CS/CE (module position 4) and is left open on the
    carrier — this is already correct in `design/circuit.json` (J30 notes) and must **not** be
    repurposed for the mux address line on the real header.
@@ -88,22 +92,35 @@ step is the real-part check the desk work could not do.
    `catalog/components.json`). L→1 and H→4 were applied by #13 but are **OPEN pending panel
    orientation** — confirm against the actual panel layout (which physical throw position reads
    as low vs. high once mounted) before trusting the schematic-to-panel sense.
-2. **Jack (SHOU HAN PJ-313 5JCJ):** the leg→contact map is OPEN — the manufacturer drawing does
+2. **Range switch contact suitability (#27/#38):** SS14MDP2 is a silver-contact part
+   (`catalog/components.json`'s `range.contact_material`) used in a near-zero-current dry sense
+   circuit; NKK's own page Z33 guidance recommends gold contacts for that regime
+   (`design/evidence/range-contact.md`). Concrete decision step before this switch is approved for
+   the application: (a) request NKK's written confirmation for this exact load (3.3 mA initial
+   transient, 100 µs RC decay to leakage/bias current, no continuous wetting current); (b) measure
+   contact resistance at the actual load, not a generic continuity check; (c) run a cycling/
+   durability check under that same load; (d) run an environmental/cleaning-exposure check against
+   the factory's actual flux/wash process. Record results against
+   `manufacturing/acceptance-results.csv`'s `RANGE_CONTACT_QUALIFICATION` row and update
+   `catalog/components.json`'s `application_suitability_status` only once real evidence exists. Not
+   substituted under the decided option (#27 option 2); a manufacturer-supported dry-circuit part
+   remains a listed OPEN alternative only.
+3. **Jack (SHOU HAN PJ-313 5JCJ):** the leg→contact map is OPEN — the manufacturer drawing does
    not say which physical leg carries which of the 3 logical contacts across its 5 physical legs.
    Get continuity with an ohmmeter on a sample part (no soldering needed), or get written
    confirmation from SHOU HAN/LCSC, before wiring any leg to a specific node.
-3. **Waveshare module:** mounting-hole drill diameter and the under-board standoff thread/bore
+4. **Waveshare module:** mounting-hole drill diameter and the under-board standoff thread/bore
    need a caliper check on the received module (STEP gives Ø4.30 through-hole, Ø5.5×4.0 mm
    standoff with Ø2.5 bore, but no thread spec).
-4. **Pico H:** header height is undefined by any Raspberry Pi source; measure a physical unit.
-5. **1×20 2.54 mm strips (J20/J21/J30/J31 mating hardware):** no orderable part is selected yet.
+5. **Pico H:** header height is undefined by any Raspberry Pi source; measure a physical unit.
+6. **1×20 2.54 mm strips (J20/J21/J30/J31 mating hardware):** no orderable part is selected yet.
    Once the Pico H header height and the module's standoff height are both measured, compute the
    stack: `design/evidence/g02-mechanical-pins.md` §5 shows the module's own standoffs likely fall
    short of the carrier by `h_ins + 5.0 mm`, meaning **extra spacers (or longer standoffs) will be
    needed** — budget for them in the mechanical BOM.
-6. Confirm button (XUNPU TS1088) foot dimensions against a real part; the drawn footprint
+7. Confirm button (XUNPU TS1088) foot dimensions against a real part; the drawn footprint
    candidate is provisional.
-7. Update `catalog/components.json`'s `fit_state`/`identity_state` fields and
+8. Update `catalog/components.json`'s `fit_state`/`identity_state` fields and
    `design/release-gates.json`'s G02 entry once each item above is actually checked.
 
 ## G03 — native KiCad validation (finish placement, routing, DRC/ERC)
@@ -112,15 +129,34 @@ Desk work already confirms: kicad-cli 9.0.9 loads the root 11-sheet hierarchy an
 PCB; hierarchy ERC is 0 unexplained; outline-board DRC is 0 errors; netlist parity is exact
 (224 instances / 134 nets, 0 differences). None of that is placement or routing.
 
-1. Open `hardware/kicad/zudo-scope10-p0.kicad_pro` in the KiCad 9 GUI.
+**Ownership (#23/#31): your placement/routing work is safe.** `hardware/kicad/zudo-scope10-p0
+.kicad_pro` and `.kicad_pcb` are developer-owned once they exist. `scripts/make_design.py`
+only (re)writes them when they are missing, or when explicitly run with `--init-kicad`; an
+ordinary run leaves them untouched. `python3 scripts/validate.py` never runs the generators
+against this checkout at all — it regenerates everything in a throwaway temp copy and compares
+there, so neither a passing nor a failing validation run can touch your PCB/project. Everything
+else under `hardware/kicad/` (native schematic sheets, the netlist, `sym-lib-table`) plus
+`design/circuit.json`/`gpio.json`/`connections.csv` and `manufacturing/bom-planning.csv` stay
+generator-owned and are rewritten on every run — do not hand-edit those.
+
+1. Open `hardware/kicad/zudo-scope10-p0.kicad_pro` in the KiCad 9 GUI. (First time only: if it
+   does not exist yet, run `python3 scripts/make_design.py --init-kicad` once to create it and
+   the empty-outline PCB.)
 2. Assign real footprints for every part still marked OPEN in
    `design/evidence/INTEGRATION.md`'s footprint-coverage table (range, jack, pot, fuse; pico-h/
    display are external modules, not carrier footprints) — only after their real-part fit is
    confirmed under G02.
-3. Place all components and route the board (currently outline-only, no copper).
+3. Place all components and route the board (currently outline-only, no copper). Save; it stays
+   exactly as saved through any later `make_design.py`/`analyze.py`/`build_docs.py` or
+   `validate.py` run.
 4. Run the final DRC and ERC on the placed/routed board (not the outline board this session's
    `kicad_check.py` DRC covered) and a schematic-vs-PCB parity check.
-5. Only after this passes clean does G03 become a candidate for CLOSED.
+5. When real placement/routing exists, set `design/release-gates.json`'s `design_phase` to
+   `"layout"` (and later `"qualification"`) so `scripts/validate.py`'s outline-only and
+   footprint/factory-approval checks stop assuming pre-layout emptiness and instead require a
+   review evidence reference on any record that flips `footprint_qualified` or
+   `factory_order_approved` true. This never closes a gate or sets `release_allowed` by itself.
+6. Only after this passes clean does G03 become a candidate for CLOSED.
 
 ## Assembler review (START_HERE step 5)
 
@@ -129,7 +165,52 @@ PCB; hierarchy ERC is 0 unexplained; outline-board DRC is 0 errors; netlist pari
    parts or fabrication before this review returns.
 3. Record the assembler's findings and resolve them before ordering.
 
-## Factory-assembled prototype (START_HERE step 6) — no home soldering
+## Prototype approval (START_HERE step 6)
+
+`manufacturing/release_guard.py` used to offer only one all-gates-closed release decision
+(`--route production`, the default), which cannot pass before the first assembled prototype exists
+because G01/G02/G03/G08's full CLOSED status needs bench work on that very prototype — the circular
+dependency #24 found. `--route prototype` is a second, separate decision
+(`design/release-gates.json`'s `decisions.prototype`) for ordering an **engineering prototype
+only**. It never reads or requires any G01–G10 gate's CLOSED status; instead it checks its own
+fixed prerequisite list plus an explicit human approval record, and refuses (exit 2) until every
+one of those is genuinely met:
+
+1. **`reviewed_power_and_pin_design`** (overlaps G01) — the display power/strap/backlight-interface
+   design has been reviewed on paper against the manufacturer schematic. This is the desk review
+   only; the GP13/gate/`LCD_BL` waveform bench capture still happens on the assembled prototype
+   itself (G01 items 1–2 above) and is never claimed here.
+2. **`actual_footprint_mapping`** (overlaps G02) — the real-part fit checks in the G02 section above
+   (range switch orientation, jack leg map, module drill/standoff, Pico H header height, 1×20 strip
+   orderables) are done.
+3. **`completed_layout_and_native_checks`** (overlaps G03) — placement and routing are complete on
+   the saved KiCad revision, with a final native DRC/ERC and schematic-to-PCB parity check on that
+   placed/routed board (not the outline-board checks already recorded).
+4. **`assembler_dfm_review`** (overlaps G08) — the "Assembler review" section immediately above has
+   returned and its findings are resolved.
+5. **`controlled_bring_up_plan`** (overlaps G07) — a current-limited-first-power, staged-enable
+   bring-up plan exists, following `design/power-contract.json`'s supported power states, for use
+   once the prototype arrives (the bench measurements themselves are G04/G05/G07 below, not a
+   prerequisite here).
+
+Each prerequisite in `design/release-gates.json`'s `decisions.prototype.prerequisites` has its own
+`met` flag and `evidence_files` list, resolved the same way a gate's `evidence_files` is. Set `met`
+to `true` only once you have added a real, on-disk evidence file for that item — never flip it
+without evidence, and never treat a listing or a desk model as evidence.
+
+Once every prerequisite is met, set `decisions.prototype.allowed` to `true` and fill
+`decisions.prototype.approval` — `approved: true` plus a real `approver`, `date` and `revision`.
+**This record is never auto-filled by any script or generator; a human enters it after
+independently reviewing every prerequisite and the final saved KiCad revision**, exactly like the
+production decision's evidence review. `decisions.prototype.record` (prototype revision, the
+manufacturing export's file-hash identity, unresolved risks accepted, assembly scope, test scope)
+is filled in alongside it once the prototype is actually ordered — leave it empty until then.
+
+`python3 manufacturing/release_guard.py --route prototype` must exit 2 (REFUSED) until this is
+done; it never authorizes fabrication by itself, and it never substitutes for the full production
+decision below.
+
+## Factory-assembled prototype (START_HERE step 7) — no home soldering
 
 Per the package `AGENTS.md` and epic invariants: **all electrical soldering, for prototypes too,
 happens at a factory or contracted assembler.** This includes every through-hole control (pots,
@@ -138,7 +219,8 @@ are pre-assembled plug-in modules that a factory (or the end user, unpowered, in
 already-populated board) plugs in — never a soldering task for the user.
 
 1. Use `manufacturing/RFQ.md` as the basis for a real RFQ once G01–G03 and G08 are resolved enough
-   to quote.
+   to quote, and the "Prototype approval" step above has recorded `decisions.prototype.allowed:
+   true` with a completed human approval record.
 2. Order a **completely factory/assembler-soldered** prototype. Reject any assembler proposal that
    defers any soldering, wire link, or header installation to the customer.
 3. Receive the assembled board; do not solder anything to it yourself.
@@ -147,6 +229,12 @@ already-populated board) plugs in — never a soldering task for the user.
 
 Desk evidence for all three is recorded (`reports/spice.json`, `reports/analog-analysis.json`,
 `firmware/ACQUISITION.md`, `reports/power-budget.json`); none of it is a bench measurement.
+
+`manufacturing/acceptance-results.csv`'s `result` column holds one of four values: `NOT_RUN`
+(no measurement attempted yet, the state of every row today), `PASS`, `FAIL`, or `BLOCKED`
+(attempted but could not be completed, e.g. missing fixture). `scripts/validate_extra.py`
+enforces this set, plus that any `PASS`/`FAIL` row has a nonempty, on-disk `evidence_file`
+along with `operator` and `date`.
 
 1. **G04 (input/protection):** using `manufacturing/acceptance-results.csv` as the recording
    template, test powered/unpowered faults, leakage, open-input bias (expect ≈+1.66 V on an
@@ -165,18 +253,51 @@ Desk evidence for all three is recorded (`reports/spice.json`, `reports/analog-a
    hardcoded `maximum_sequential_channel_skew_us` value, then regenerate `reports/analog-
    analysis.json` and the docs.
 3. **G07 (power/USB):** measure backlight/inrush current, Pico current and analog-rail current
-   separately (no display / dark display / bright display), and confirm the USB source contract.
-   `reports/power-budget.json` flags `vs_unconfigured_limit: fail_or_unknown` — there is no power
-   gate tying `+5V_FUSED` to USB enumeration state, and F1's derated PPTC hold current (630 mA) sits
-   above the USB 500 mA configured limit. Decide whether a soft-start/power-gate (e.g. VBUS-sense
-   before enabling the downstream load) is needed, and measure backlight current and module-side
-   VBUS bulk capacitance, both currently unknown.
+   separately (no display / dark display / bright display), and confirm the USB source contract in
+   `design/power-contract.json`. Only a source meeting that contract (>=500 mA at 5 V from attach,
+   not established by VBUS presence alone) is supported for bring-up; do not power the board from an
+   ordinary host port expecting it to honor a staged enumeration allowance. `reports/power-
+   budget.json` flags `vs_unconfigured_limit: fail_or_unknown` and `vs_declared_limit: fail` — there
+   is no power gate tying `+5V_FUSED` to USB enumeration state, and the declared USB descriptor value
+   (250 mA, the unmodified Pico SDK default; see `design/power-contract.json`'s
+   `override_investigation`) is below the 420 mA planning allowance. F1 carries only the
+   display+analog branch (340 mA allowance; see `f1_branch_sizing` in the report), and its
+   1.5x-derated target of 510 mA sits 10 mA above the selected `1206L050YR` candidate's 500 mA
+   nominal (25C) hold rating, with no manufacturer temperature-derating curve retained to confirm
+   the part's actual derated hold current at operating temperature. Measure backlight current and
+   module-side VBUS bulk capacitance, both currently unknown. A configuration-gated hardware load
+   switch (using real USB configured state, not VBUS presence) is a recorded future option for
+   compliant-host operation (`design/power-contract.json`'s `honesty.future_compliant_host_option`),
+   not something to implement here.
+
+   **Bench procedures per supported power state** (factory-assembled prototype only; see
+   `design/power-contract.json`'s `power_states` for the full behaviour table):
+   1. **Pre-configuration:** power from a source meeting the source contract, capture current at the
+      instant 5 V appears, before the host completes enumeration.
+   2. **Configured:** measure current with no display, dark display and bright display, once the host
+      has completed enumeration and accepted the configuration descriptor. Compare against the 420 mA
+      allowance and the declared descriptor value.
+   3. **Suspend/deconfigured:** suspend the bus (or deconfigure the device) and measure whether the
+      unconditional display/analog load persists, as expected from the contract.
+   4. **Reset:** measure current across a host-initiated bus reset and a device power-on reset.
+   5. **BOOTSEL/ROM:** inspect the RP2040 bootrom's own USB descriptor (e.g. via the host OS's
+      descriptor dump or a USB protocol analyzer) and measure current in BOOTSEL mode. No number for
+      the bootrom's declared max-power is assumed ahead of this measurement.
+   6. **Unpowered:** confirm zero draw and no back-power with 5 V removed (shares the G04 no-back-power
+      procedure).
 
 ## G06 — firmware/display integration
 
 1. Confirm G01 is resolved first — do not enable `SCOPE_ENABLE_LCD` on real hardware before that.
+   In particular the backlight bench check (G01 item 2 above) must have passed: the backlight is
+   **active-low on GP13 and default ON** through the carrier's Q1 open-drain stage (#41), so a
+   lit panel before firmware runs is expected, and a panel that stays lit after the
+   `lcd,init_sequence_sent` line with `scope_display_backlight(0)` requested — or that never goes
+   dark in the LCD-off build — is a hardware finding, not a firmware polarity bug to "fix" by
+   flipping `LCD_BL_LEVEL_OFF`.
 2. Flash `firmware/build/lcd-enabled/scope10_acq.uf2` (built this session, 0 warnings) to a real
-   Pico H wired to a real Waveshare module.
+   Pico H wired to a real Waveshare module. Follow `firmware/LCD-BACKEND.md`'s local G06 procedure;
+   its step 1 repeats the GP13/gate/`LCD_BL` capture with this build.
 3. Verify all ten panes render, TIME/RANGE controls respond, and HOLD/LINK behave as specified in
    `design/narrative-pages.json`'s controls-and-UI narrative.
 4. `firmware/LCD-BACKEND.md` and `firmware/ACQUISITION.md` are the generated firmware how-tos for
@@ -202,14 +323,33 @@ Desk evidence for all three is recorded (`reports/spice.json`, `reports/analog-a
    time (a listing is not allocated stock).
 4. Confirm the external module/socket/knob supply chain (genuine Pico H, genuine Waveshare
    SKU 19907) and their exact header orientation with the assembler.
+5. **Range switch contact suitability (#27/#38):** same concrete decision step as G02 item 2 above
+   — request NKK's written confirmation for the actual 3.3 mA / 100 µs-decay dry-circuit load, then
+   run the contact-resistance, cycling/durability and environmental/cleaning-exposure checks
+   (`design/evidence/range-contact.md`) — must close before this switch is included in a factory
+   order. Zero stock at C6684954 (item 1's sibling concern) is a separate, still-OPEN sourcing
+   question; resolving stock does not resolve contact suitability, and resolving suitability does
+   not resolve stock.
 
 ## G09 — physical review
 
 1. Print `mechanical/print/panel-1to1.pdf` at 100% scale (verify your PDF viewer/printer are not
-   auto-scaling).
+   auto-scaling). **This checkout's PDF predates the renderer-capture image below** (no SVG->PDF
+   converter was available when it was added, #44 / #26 part 3) — print `mechanical/print/panel-1to1.svg`
+   from a browser at 1:1 instead, or regenerate the PDF first with `rsvg-convert`/`cairosvg` installed
+   (`python3 scripts/make_panel_print.py`).
 2. Follow `mechanical/print/README.md` for the review procedure: check real screen readability,
-   control spacing, and cable clearance against the print.
-3. Accept or reject the mechanical stack (including the G02 spacer/standoff findings above).
+   control spacing, and cable clearance against the print. The print's active-area rectangle is now
+   `reports/renderer-capture.png`, a deterministic host capture of the actual `scope_render.c` /
+   `scope_core.c` renderer (`scripts/capture_renderer.py`), at the module's physical pixel pitch —
+   read the real channel/RANGE/window-duration/UNCAL/VIEW CLIP/ADC SAT/HOLD/LINK text and waveforms
+   against the print, not a placeholder rectangle. It also carries the 2.68 mm long-axis active-area
+   offset from `design/evidence/g02-mechanical-pins.md` (#4a); the print labels which STEP-local edge
+   (E) the offset is toward but marks the physical mount **orientation (top/bottom of the sheet) as an
+   explicit, unconfirmed ASSUMPTION** — confirm it against the received module and correct the sign in
+   `mechanical/panel-layout-study.json` (`active_area_offset_*`) if it is wrong.
+3. Accept or reject the mechanical stack (including the G02 spacer/standoff findings above). The
+   active-area offset orientation above is part of what G02 leaves open, not a resolved fact.
 
 ## G10 — release approval
 
@@ -219,3 +359,45 @@ Desk evidence for all three is recorded (`reports/spice.json`, `reports/analog-a
 3. Explicitly record release approval in `design/release-gates.json` (`release_allowed: true` and
    every gate `status: "CLOSED"` with real `evidence_files`) only once a human has reviewed the
    real evidence for every gate. `manufacturing/release_guard.py` enforces this refusal until then.
+
+### `manufacturing/release_guard.py` exit-code contract (#28/#39/#24/#43)
+
+The guard is structured as testable functions (`scripts/test_release_guard.py`) with a fixed
+contract that CI and `scripts/validate.py` both assert on, for **both** routes below:
+
+- **`0`** — the selected route's decision is structurally complete and satisfied. For `--route
+  production` (default): the manifest is well-formed (exactly gates G01–G10, unique IDs, correctly
+  typed fields) and every gate is `CLOSED` with `evidence_files` that resolve to real files inside
+  the repo. For `--route prototype`: every entry in `decisions.prototype.prerequisites` is `met`
+  with resolvable `evidence_files`, `decisions.prototype.allowed` is `true`, and
+  `decisions.prototype.approval` carries `approved: true` plus a non-empty `approver`/`date`/
+  `revision`. Neither route's `0` is automated engineering approval — the guard's own success
+  message says so, and a human must still independently review the evidence before a quote or an
+  order is approved.
+- **`2`** — intentional REFUSED: the manifest is well-formed but the selected route's decision is
+  not warranted yet. Production: `release_allowed` is `false`, a gate is not `CLOSED`, or a
+  `CLOSED` gate's evidence does not resolve. Prototype: `decisions.prototype.allowed` is `false`,
+  a prerequisite is not `met` (or its evidence does not resolve), or the approval record is missing
+  or incomplete. CI and `validate.py` assert exactly this exit code for the checked-in manifest on
+  **both** routes, not merely "nonzero".
+- **`3`** — malformed manifest: invalid JSON, wrong top-level shape, a non-boolean
+  `release_allowed`, an invalid gate `status`, wrongly-typed `evidence_files`/`evidence_urls`, a
+  gate ID set that is not exactly G01–G10 (duplicates, missing, or unknown IDs), an unknown
+  `--route` value, or — for `--route prototype` — a missing/malformed `decisions.prototype` block
+  (no `decisions` key at all, a missing/duplicate prerequisite id, a non-boolean `met`/`allowed`/
+  `approved`, or a missing `approval` object).
+- **`1`** — the guard itself crashed. This must never be confused with `2`: a crash is not a
+  considered refusal.
+
+`evidence_urls` is the typed field for external references; per the contract it is never sufficient
+on its own to close a gate. `evidence_partial`/`evidence_partial_note` (added by #31) stay
+informational only and are not schema-validated.
+
+**Routes are independent decisions, never a shortcut between them (#24/#43).** `--route prototype`
+never reads or requires any gate's `CLOSED` status — that would recreate the exact circular
+dependency #24 found, since G01/G02/G03/G08's full closure needs bench work on the assembled
+prototype itself. `--route production` is completely unchanged from #39 and still requires every
+one of G01–G10 `CLOSED` with reviewed evidence; a prototype approval never relaxes it, and ordering
+a prototype never counts toward it. `design/release-gates.json`'s `decisions.production` block
+records the full required-gate list only for readability; the guard validates `release_allowed` and
+`gates` directly and does not re-read it.

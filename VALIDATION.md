@@ -9,7 +9,12 @@ session on this tree; results and report paths are current as of this commit.
   instances, 134 named nets, module/contact maps, native-file S-expression structure, XML graph
   equivalence, 11-sheet inventory, source-file hashes, local HTML references and deterministic
   regeneration. (`markdown-it-py` absent in this container; `offline/*.html` regenerates in its
-  fallback mode, which the check tolerates.)
+  fallback mode, which the check tolerates.) Regeneration is checked in an isolated temp copy of
+  the repository (#23/#31), so a mismatch or a generator bug cannot mutate or destroy this
+  checkout's PCB, project or any other file; `hardware/kicad/zudo-scope10-p0.kicad_pro`/
+  `.kicad_pcb` are developer-owned once created and `scripts/make_design.py` only writes them on
+  first creation or with `--init-kicad`. `python3 scripts/test_validate_nondestructive.py` is the
+  regression fixture for this behavior.
 - `python3 scripts/test_firmware.py`: the portable C core (including the real `acq_engine.c`,
   `scope_core.c`, `lcd_bridge.c`, `scope_render.c`) compiled under the host C compiler with
   warnings as errors and passed calibration, 4,096-point logarithmic time, range/debounce/
@@ -57,7 +62,7 @@ session on this tree; results and report paths are current as of this commit.
 |---|---|
 | KiCad GUI footprint placement, PCB routing, final DRC/ERC on a populated board | NOT RUN: needs a local KiCad GUI session (G03). Native load + hierarchy ERC + outline DRC + netlist parity are RUN and PASS (above); that is not placement or routing. |
 | Actual footprints / real-part fit for range, jack, pot, fuse, pico-h, display, socket20/header20 mating | NOT RUN: needs the physical parts (G02). Vendor-drawing facts and 24/30 candidate footprints are RUN and recorded; see `design/evidence/g02-mechanical-pins.md` and `design/evidence/INTEGRATION.md`. |
-| G01 physical module revision/strap check and the pending R88 backlight-default decision | NOT RUN: needs the physical Waveshare module (G01). Desk evidence and the pending proposal are RUN and recorded; see `design/evidence/g01-display-power.md` and `design/circuit.json`'s `pending_g01_changes`. |
+| G01 physical module revision/strap/population check and the GP13 backlight-interface waveform capture | NOT RUN: needs the physical Waveshare module and a factory-assembled prototype (G01). Desk evidence and the applied open-drain design (#41) are RUN and recorded; see `design/evidence/g01-display-power.md`, `design/evidence/backlight-interface.md` and `design/circuit.json`'s `pending_g01_changes` (`DESIGN_APPLIED_BENCH_CHECK_PENDING`). |
 | SPICE with the vendor TLV9064 model; powered/unpowered fault, leakage, injection, recovery bench tests | NOT RUN: no confirmed redistributable TLV9064 SPICE model, and all of this needs bench equipment (G04). The ideal-buffer ngspice run is RUN and PASSES against the analytic model (above). |
 | Acquisition bench measurement: mux settling, real sample cadence, missed-slot counters on hardware, alias response, cross-talk | NOT RUN: needs bench equipment (G05). The host-tested cycle-level model of the real engine is RUN and PASSES (above); it is a model, not a measurement. |
 | Real LCD bring-up: ten panes, time/range, controls, HOLD, LINK on the actual display | NOT RUN: needs the physical display and G01 resolved first (G06). The clean-room backend builds clean against the real SDK with `SCOPE_ENABLE_LCD=1` (RUN, above); nothing was flashed or observed. |

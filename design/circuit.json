@@ -2572,10 +2572,10 @@
       "value": "33",
       "pins": {
         "1": "LCD_BL_SRC",
-        "2": "LCD_BL"
+        "2": "LCD_BL_GATE"
       },
       "sheet": "module-interfaces",
-      "notes": "",
+      "notes": "GP13 reaches only the Q1 gate network, never LCD_BL (#41)",
       "footprint": "Resistor_SMD:R_0603_1608Metric"
     },
     {
@@ -2739,12 +2739,25 @@
       "record": "r100k",
       "value": "100k",
       "pins": {
-        "1": "LCD_BL",
+        "1": "LCD_BL_GATE",
         "2": "GND"
       },
       "sheet": "module-interfaces",
-      "notes": "",
+      "notes": "Q1 gate pull-down (was LCD_BL pull-down before #41): holds Q1 off, backlight ON, while GP13 is undriven",
       "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "Q1",
+      "record": "nmos-ll",
+      "value": "N-MOSFET LL (UNSELECTED)",
+      "pins": {
+        "1": "LCD_BL_GATE",
+        "2": "GND",
+        "3": "LCD_BL"
+      },
+      "sheet": "module-interfaces",
+      "notes": "Open-drain backlight stage (#41): drain on module LCD_BL/CAT1 EN (R16 10k to VSYS is the only pull-up), source GND. Generic logic-level N-MOSFET, exact part at G08. Backlight default ON; GP13 high = OFF.",
+      "footprint": ""
     },
     {
       "ref": "TP30",
@@ -3036,10 +3049,10 @@
   "pending_g01_changes": [
     {
       "id": "g01-r88-backlight-default",
-      "target": "parts[ref=R88]",
-      "proposal": "Module R16 (10k, VSYS->LCD_BL) overrides carrier R88 (100k, LCD_BL->GND): the backlight node sits near 4.5 V with GP13 high-impedance, so the backlight defaults ON (not off) and the node exceeds the RP2040 GPIO abs max of IOVDD+0.5V (small clamp current, estimated <0.1 mA, unmeasured). Decide at G01/G06 whether to keep R88, remove it, or accept and document; no value is changed here.",
-      "status": "OPEN_PENDING_PHYSICAL_CHECK",
-      "citation": "design/evidence/g01-delta.json changes[op=review_decision, target=parts[ref=R88]]; Waveshare Pico-ResTouch-LCD-3.5 schematic p1 LCD BACKLIGHT (3A) R16 10K VSYS->LCD_BL/CAT1 EN; RP2040 datasheet Sec 5.5.3.1 Table 622 (PDF p615)"
+      "target": "parts[ref=R88], parts[ref=R64], parts[ref=Q1]",
+      "proposal": "RESOLVED BY DESIGN CHANGE (#41, source #19), not by a measurement: GP13 no longer connects to LCD_BL. R64 (33R) now drives the gate of Q1 (generic logic-level N-channel MOSFET, open drain on LCD_BL, source GND) and R88 (100k) is repurposed as the Q1 gate pull-down. The RP2040 pad sees only its own drive or 0 V in every state; LCD_BL is pulled to VSYS by module R16 alone (Q1 off) or held near 0 V (Q1 on). Backlight default is ON (reset, BOOTSEL, undriven); GP13 HIGH = backlight OFF (inverted, firmware updated). The former options \"keep R88 and accept a clamp current\" and \"remove R88\" are both rejected: neither meets VPIN <= IOVDD+0.5 V without relying on an undocumented clamp. J30/J31 header nets are unchanged.",
+      "status": "DESIGN_APPLIED_BENCH_CHECK_PENDING",
+      "citation": "design/evidence/backlight-interface.md (voltage/current table, alternatives); design/evidence/g01-delta.json changes[op=review_decision, target=parts[ref=R88]] (superseded finding); Waveshare Pico-ResTouch-LCD-3.5 schematic p1 LCD BACKLIGHT (3A) R16 10K VSYS->LCD_BL/CAT1 EN pin 3; RP2040 datasheet Sec 5.5.3.1 Table 622 (PDF p615). Bench: LOCAL-HANDOFF.md G01 item 2/3 and G06 step 1 (LCD_BL and gate waveforms on the factory-assembled prototype) before G01/G06 closure."
     },
     {
       "id": "g01-j30-notes",

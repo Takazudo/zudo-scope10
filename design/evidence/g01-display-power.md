@@ -61,7 +61,7 @@ The carrier uses GP2–GP5 for the mux address and GP14 for the timing test poin
 | 6 | GP4 | GPIO4 (green) | none | open | none found |
 | 7 | **GP5** | **SDIO_CLK** | H6 pin 1, a 3-way solder jumper selecting the TF-card clock between SDIO_CLK and SCLK (Sch p1 2D–3D; silkscreen legend "A SPI / B SDIO", Sch p2 right) | open | **Strap-dependent.** In the SDIO jumper position, mux ADDR3 would clock the TF card. In the SPI position it has no load. |
 | 9, 10 | GP6, GP7 | GPIO6/7 (green) | none | open | none found (carrier GP7 = MUX_DISABLE stays Pico-only) |
-| 17 | GP13 | LCD_BL | CAT1 EN, **R16 10K pull-up to VSYS** (Sch p1 3A) | connected (R64 33 Ω, R88 100k to GND) | see the backlight finding below |
+| 17 | GP13 | LCD_BL | CAT1 EN, **R16 10K pull-up to VSYS** (Sch p1 3A) | connected to the Q1 open-drain stage only; GP13 drives the Q1 gate through R64 33 Ω with R88 100k gate pull-down (#41) | see the backlight finding below and `backlight-interface.md` |
 | 19 | **GP14** | **GPIO14** | R14 (NC) to `VCC_EN` (Sch p1 4D) | open | **Strap-dependent.** With R14 and R11 both fitted, GP14 would be tied to VSYS (5 V). With R14 NC it has no load. |
 | 22 | GP17 | TP_IRQ | XPT2046 PENIRQ, R2 100K pull-up to 3V3 (Sch p1 1B–2C) | open | none. Touch firmware must poll, because the IRQ is not routed. |
 | 24–27 | GP18–21 | SDIO_CMD/D0/D1/D2 | H1/H2/H3/H5 jumpers (Sch p1 2D–3D) | open | none. In the SDIO jumper position the TF card would be unusable on the carrier. |
@@ -81,15 +81,17 @@ R16 10K runs from `VSYS` to `LCD_BL`, which is the CAT1 EN pin (Sch p1 3A, confi
 - The node settles near 5 V × 100k / 110k ≈ 4.5 V. That is above RP2040's absolute maximum pin voltage of IOVDD + 0.5 V (rp2040-ds §5.5.3.1, Table 622, PDF p615). The pin's protection structure conducts at roughly (4.5 V − ~3.8 V) / 9.1 kΩ, which is below 0.1 mA. This is an estimate, not a measurement.
 - The backlight is **on** by default, not off. The carrier doc's statement "LCD backlight has a pull-down" does not give a backlight-off default with this module.
 
-The same R16-to-VSYS arrangement exists when the Pico is stacked on the module as Waveshare intends, so this is vendor design behaviour, not a carrier error. It is listed here as a decision for G01/G06 (see the delta), with no net change proposed.
+The same R16-to-VSYS arrangement exists when the Pico is stacked on the module as Waveshare intends, so this is vendor design behaviour, not a carrier error.
+
+**Superseded by #41 (source #19):** the paragraph above describes the carrier as it was when this evidence was written. The carrier now drives the gate of an N-channel open-drain MOSFET (Q1) from GP13 instead of tying GP13 to `LCD_BL`; R88 is the gate pull-down and the header net `LCD_BL` (J30 position 17) is unchanged. The GPIO pad no longer sees the R16 node in any state, and the clamp estimate above is no longer part of any argument. Default state (backlight ON) and polarity (GP13 high = OFF) plus the per-state voltage/current table are in `design/evidence/backlight-interface.md`. The bench check of the real module population and the `LCD_BL`/gate waveforms remains a G01/G06 item.
 
 ### Current and inrush figures for G07
 
-- **Module maximum:** "5V 180mA" (wiki FAQ, manufacturer statement, not a measurement). The carrier's 300 mA planning allowance covers it.
+- **Module maximum: REJECTED, not a citable figure.** "5V 180mA" was reported by an earlier automated fetch summary of a wiki FAQ image; both FAQ images at that URL were downloaded and visually inspected in a later pass and show unrelated file-browser screenshots, not a power spec, and no textual mA/current figure was found on either wiki page. This claim is rejected, not carried as a manufacturer maximum. See `design/evidence/module-power.json` (`module-max-current-180ma`, status `rejected`) — that file is the single source of truth for this claim so `scripts/power_budget.py` and this document cannot disagree. The carrier's 300 mA planning allowance (`display-planning-allowance`, status `allowance`) is independent of the rejected claim.
 - **Module 3V3 rail:** RT9193 limit of 300 mA (rt9193-ds p1).
-- **Backlight:** CAT1 (5-pin regulator: VIN, GND, EN, BYP, VOUT) feeds `LED-A` (FPC pin 33). The three LED cathode returns, FPC pins 34/35/36, each go to GND through R17/R18/R19 **2R** (Sch p1 3A, 4A–C "LCD").
+- **Backlight:** CAT1 (5-pin regulator: VIN, GND, EN, BYP, VOUT) feeds `LED-A` (FPC pin 33). The three LED cathode returns, FPC pins 34/35/36, each go to GND through R17/R18/R19 **2R** (Sch p1 3A, 4A–C "LCD"). Recorded structurally in `design/evidence/module-power.json` (`backlight-topology`, status `verified-schematic`).
   - **UNRESOLVED:** CAT1's part number and output voltage are not printed, and the LED forward voltage is unknown. The backlight current cannot be derived from the schematic.
-- **Bulk capacitance on VSYS (inrush-relevant):** C9 10 µF + C10 1 µF + C14 100 nF + C15 100 nF ≈ **11.2 µF** (Sch p1 3A, 4D).
+- **Bulk capacitance on VSYS (inrush-relevant):** C9 10 µF + C10 1 µF + C14 100 nF + C15 100 nF ≈ **11.2 µF** (Sch p1 3A, 4D). Recorded in `design/evidence/module-power.json` (`module-vsys-capacitance`, status `verified-schematic`); combined with carrier C30 (1 µF, on `+5V_FUSED`) that gives a **12.2 µF** known carrier+module nominal subtotal (`carrier-plus-module-known-subtotal`) — a known-figure subtotal against the informal ≤10 µF inrush guidance, not a claim of measured inrush compliance. Pico-side bulk capacitance is still unknown, so overall inrush status stays UNKNOWN and G07 stays OPEN.
 - **Other module capacitors:**
   - On 3V3: C11 1 µF plus 100 nF decouplers C1, C2, C7, C8, C18, C19, C20, C21.
   - On LED-A: C17 100 nF.
@@ -113,6 +115,7 @@ Keep position 39 fed from `+5V_FUSED`, and keep positions 35, 36, 37 and 40 isol
 2. Fitted straps: R11 = 0R fitted; R12, R14, R15 not fitted; R13 = 100K.
 3. Position of solder jumpers H1–H6, SPI (A) versus SDIO (B). The carrier needs SPI.
 4. Whether U8 (PSRAM) is fitted, and the R20 value.
-5. CAT1 part marking, which gives the backlight regulator identity and output voltage, and from those the backlight current.
+5. CAT1 part marking, which gives the backlight regulator identity, output voltage and EN thresholds, and from those the backlight current (`module-power.json` `backlight-regulator-identity`, `backlight-regulator-en-thresholds`).
+8. (#41) GP13, `LCD_BL_GATE` and `LCD_BL` waveforms from power-on through reset, BOOTSEL and normal boot, plus R16/CAT1 population, per `backlight-interface.md`.
 6. Which SD pull-up option is fitted: R6/R10 "NC/10K", R7/R8/R9 "4K7/NC".
 7. Measured VSYS current at power-up and in steady state (bench, G07). No figure here is a measurement.

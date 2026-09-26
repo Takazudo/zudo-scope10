@@ -1,5 +1,73 @@
 {
   "release_allowed": false,
+  "design_phase": "pre-layout",
+  "design_phase_values": ["pre-layout", "layout", "qualification"],
+  "design_phase_note": "Drives scripts/validate.py's phase-aware checks (outline-only PCB, no fabricated footprint/factory-approval flags). pre-layout keeps those checks exactly as strict as before this field existed. Advancing this value does not itself close any gate above or set release_allowed; it only lets validate.py require review evidence instead of emptiness once real placement/routing/qualification work begins.",
+  "decisions": {
+    "decisions_note": "#24/#43: two separate, explicit release decisions. `release_allowed` above and the gates list are the single production decision (#28/#39) and are unchanged -- production still requires the full reviewed hardware evidence across every gate. `prototype` below is a second, narrower decision for ordering a factory-assembled engineering prototype; it never reads or requires any gate's CLOSED status above, because G01/G02/G03/G08's full closure needs bench work on the very prototype this decision would authorize (that circular dependency is exactly what #24 found). manufacturing/release_guard.py --route production|prototype evaluates one or the other; neither route ever authorizes fabrication by itself, and this file records no bench result for either route.",
+    "prototype": {
+      "allowed": false,
+      "prerequisites": [
+        {
+          "id": "reviewed_power_and_pin_design",
+          "gate_overlap": "G01",
+          "description": "Reviewed power and pin design: the display power/strap/backlight-interface design (carrier Q1 open-drain stage, R88 pull-down, J30/J31 header nets) has been reviewed on paper against the manufacturer schematic -- not the bench waveform capture, which needs the assembled prototype itself (LOCAL-HANDOFF.md G01 items 1-2).",
+          "met": false,
+          "evidence_files": []
+        },
+        {
+          "id": "actual_footprint_mapping",
+          "gate_overlap": "G02",
+          "description": "Actual footprint/pad mapping confirmed against real parts (range switch terminal map/orientation, jack leg-to-contact map, Waveshare module drill/standoff, Pico H header height, 1x20 strip orderables) -- LOCAL-HANDOFF.md G02.",
+          "met": false,
+          "evidence_files": []
+        },
+        {
+          "id": "completed_layout_and_native_checks",
+          "gate_overlap": "G03",
+          "description": "Completed placement and routing on the saved KiCad revision, plus a final native DRC/ERC and schematic-to-PCB parity check on that placed/routed board (not the outline-board checks already recorded) -- LOCAL-HANDOFF.md G03.",
+          "met": false,
+          "evidence_files": []
+        },
+        {
+          "id": "assembler_dfm_review",
+          "gate_overlap": "G08",
+          "description": "The contracted assembler's design-for-manufacture (DFM) review of the final saved KiCad revision has returned and its findings are resolved before any order is placed -- LOCAL-HANDOFF.md \"Assembler review\".",
+          "met": false,
+          "evidence_files": []
+        },
+        {
+          "id": "controlled_bring_up_plan",
+          "gate_overlap": "G07",
+          "description": "A controlled bring-up plan exists for the assembled prototype: current-limited first power from a source meeting design/power-contract.json's source contract, then staged enable through the pre-configuration/configured/suspend/reset/BOOTSEL/unpowered states in that same contract, before any full-rate or display-on operation -- LOCAL-HANDOFF.md G04/G05/G07.",
+          "met": false,
+          "evidence_files": []
+        }
+      ],
+      "approval": {
+        "approved": false,
+        "approver": null,
+        "date": null,
+        "revision": null,
+        "note": "Explicit human approval record. Never auto-filled by any script or generator -- a human sets approved/approver/date/revision here only after independently reviewing every prerequisite above and the final saved KiCad revision."
+      },
+      "record": {
+        "record_note": "Filled in by a human alongside the approval above, once the prototype is actually ordered. Left empty until then; no field here is a bench result.",
+        "prototype_revision": null,
+        "manufacturing_export_identity": {
+          "note": "The exact BOM/CPL/Gerber export used for this prototype run, identified by file hash (see the SHA256SUMS.txt convention in scripts/package.py) so a later prototype run cannot be confused with this one.",
+          "files": {}
+        },
+        "unresolved_risks_accepted": [],
+        "assembly_scope": "Factory or contracted assembler only: every fitted electrical item, including all header/socket installation and any wiring, is soldered there -- never at home, per AGENTS.md and LOCAL-HANDOFF.md's \"Factory-assembled prototype\" step. No exceptions for a prototype quantity.",
+        "test_scope": null
+      }
+    },
+    "production": {
+      "allowed_note": "Mirrors the top-level release_allowed and the gates list above; recorded here only so the two routes read as parallel, explicit decisions. manufacturing/release_guard.py --route production validates release_allowed and the gates list directly and does not re-read this block.",
+      "required_gates": ["G01", "G02", "G03", "G04", "G05", "G06", "G07", "G08", "G09", "G10"]
+    }
+  },
   "gates": [
     {
       "id": "G01",
@@ -10,10 +78,11 @@
         "design/evidence/g01-display-power.md",
         "design/evidence/g01-delta.json",
         "design/circuit.json (pending_g01_changes[id=g01-r88-backlight-default], parts[ref=J30/J31].notes)",
-        "design/narrative-pages.json (architecture/power-and-module-interface.mdx, \"G01/G06 pending decision\" section)",
-        "design/evidence/INTEGRATION.md (\"G01 — pending proposal only, header nets unchanged\")"
+        "design/narrative-pages.json (architecture/power-and-module-interface.mdx, \"Backlight interface (GP13)\" section)",
+        "design/evidence/INTEGRATION.md (\"G01 — pending proposal only, header nets unchanged\")",
+        "design/evidence/backlight-interface.md (#41: GP13 open-drain stage, per-state voltage table, alternatives)"
       ],
-      "evidence_partial_note": "Desk-only: module R16 (10k VSYS->LCD_BL) vs carrier R88 (100k LCD_BL->GND) backlight-default-on conflict recorded as a pending proposal, not applied. No net changed. Physical module revision/strap check and the pending R88 decision remain local (LOCAL-HANDOFF.md)."
+      "evidence_partial_note": "Desk-only. #41 replaced the direct GP13->LCD_BL tie with a carrier-side open-drain stage (Q1 nmos-ll, R88 as gate pull-down; J30/J31 header nets unchanged): the pad stays within 0 V..IOVDD in every state without a clamp assumption; backlight default ON, GP13 high = OFF. Physical module revision/strap/population check (R11, R16, CAT1) and the LCD_BL/gate waveform capture remain local (LOCAL-HANDOFF.md G01 items 1-3)."
     },
     {
       "id": "G02",
@@ -75,7 +144,7 @@
         "reports/firmware-target-build.json (scope10_acq+lcd target)",
         "reports/firmware-host-tests.json (LCD bridge framing/clipping/pane-layout/renderer host tests)"
       ],
-      "evidence_partial_note": "Clean-room Waveshare LCD backend; scope10_acq+lcd builds with SCOPE_ENABLE_LCD=1 against the real Pico SDK (0 warnings). A few vendor panel-tuning numbers (gamma/VCOM/frame-rate/scan/inversion) are used; LCD_VENDOR_PANEL_TUNING=0 excludes them (user decision, LOCAL-HANDOFF.md). SPI clocked conservatively at 15 MHz. No display was flashed or observed; G01's backlight-default decision must be resolved before enabling SCOPE_ENABLE_LCD locally."
+      "evidence_partial_note": "Clean-room Waveshare LCD backend; scope10_acq+lcd builds with SCOPE_ENABLE_LCD=1 against the real Pico SDK (0 warnings). A few vendor panel-tuning numbers (gamma/VCOM/frame-rate/scan/inversion) are used; LCD_VENDOR_PANEL_TUNING=0 excludes them (user decision, LOCAL-HANDOFF.md). SPI clocked conservatively at 15 MHz. No display was flashed or observed. Backlight polarity is inverted by #41 (GP13 high = OFF, default ON; lcd_safe_pins drives it high early); the LCD_BL/gate waveforms and the pre-hook lit interval must be captured on a factory-assembled prototype (LCD-BACKEND.md G06 step 1) before enabling SCOPE_ENABLE_LCD is treated as verified."
     },
     {
       "id": "G07",
@@ -84,9 +153,11 @@
       "required_evidence": "Measure display backlight/inrush + Pico + analog rail; satisfy USB source contract and power sequencing.",
       "evidence_partial": [
         "reports/power-budget.json",
-        "scripts/power_budget.py"
+        "scripts/power_budget.py",
+        "design/evidence/module-power.json",
+        "design/power-contract.json"
       ],
-      "evidence_partial_note": "Desk arithmetic only. No power gate ties +5V_FUSED to USB enumeration state, so the display/analog load path is unconditioned on the host granting the configured 500 mA limit (vs_unconfigured_limit: fail_or_unknown). PPTC F1's derated hold current (630 mA) vs the USB 500 mA configured limit is a tension, not a measured fault. Backlight current and module-side VBUS bulk capacitance are unknown. Bench measurement is a local gate."
+      "evidence_partial_note": "Desk arithmetic only. design/power-contract.json now holds the explicit supported-source contract (>=500 mA at 5 V from attach, not established by enumeration or VBUS presence). No power gate ties +5V_FUSED to USB enumeration state, so the display/analog load path is unconditioned on the host granting any configured allowance (vs_unconfigured_limit: fail_or_unknown). The declared USB descriptor value is 250 mA (the unmodified Pico SDK 2.1.1 default; see power-contract.json's override_investigation for why a project override is not implemented), so the 420 mA planning allowance now correctly reports vs_declared_limit: fail rather than a masked pass against a fixed constant. F1 carries only the display+analog branch (340 mA); its 1.5x-derated target (510 mA) sits 10 mA above the selected 1206L050YR candidate's 500 mA nominal hold rating, with no manufacturer temperature-derating curve retained -- a tension, not a measured fault (see f1_branch_sizing in reports/power-budget.json). Backlight current and module-side VBUS bulk capacitance are unknown. Bench measurement of every supported power state (power-contract.json's power_states) is a local gate."
     },
     {
       "id": "G08",

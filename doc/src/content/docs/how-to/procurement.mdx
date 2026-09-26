@@ -4,6 +4,10 @@ title: "Sourcing and no-home-soldering contract"
 sidebar_position: 3
 ---
 
+## Prototype approval precedes any prototype order
+
+An RFQ for a **prototype** quantity still needs the separate prototype-approval decision recorded first: `design/release-gates.json`'s `decisions.prototype.allowed` set `true`, every listed prerequisite `met` with real evidence, and an explicit human `approval` record (approver/date/revision, never auto-filled). `manufacturing/release_guard.py --route prototype` refuses (exit 2) until then. This is separate from, and never a substitute for, the full production release decision (`--route production`, G01-G10) below -- ordering an approved prototype authorizes exactly one factory-soldered prototype board, not a production run.
+
 ## Factory scope
 
 Deliver the custom carrier with every fitted electrical item soldered: all passives, six op amps, three muxes, reference/regulator, ten jacks, ten pots, ten range switches, two buttons and all four module connector strips. No “hand-fit after delivery” connector, wire link or programming header is acceptable.
@@ -14,7 +18,7 @@ Supply a genuine preheadered Pico H and an assembled Waveshare SKU 19907. Either
 
 ## Current sourcing gaps
 
-The catalogue identifies TLV9064IDR/C388176, 74HC4067PW,118/C179326, TLV75533PDBVR/C404027, BAV199/C40919, the ALPS pot, XUNPU button and SHOU HAN jack. Recheck stock and tiers at quotation. NKK SS14MDP2/C6684954 was listed with zero stock: select pre-order/global sourcing or an approved external supply. Its numerical terminal map remains open.
+The catalogue identifies TLV9064IDR/C388176, 74HC4067PW,118/C179326, TLV75533PDBVR/C404027, BAV199/C40919, the ALPS pot, XUNPU button and SHOU HAN jack. Recheck stock and tiers at quotation. NKK SS14MDP2/C6684954 was listed with zero stock: select pre-order/global sourcing or an approved external supply. Its numerical terminal map remains open. Separately, SS14MDP2 is a silver-contact part used in this design's near-zero-current dry sense circuit; the manufacturer's own dry-circuit guidance recommends gold contacts for that regime, so it is `OPEN_REQUIRES_MANUFACTURER_CONFIRMATION_AND_QUALIFICATION` (catalogue record `range`; see `design/evidence/range-contact.md`) rather than sourcing-approved for this application, independent of the stock question.
 
 REF3330AIDBZR is an exact proposed MPN, but no JLC assembly availability was established. Resistor/capacitor records deliberately include unselected supplier identities rather than invented C-numbers. The Pico sockets, display headers, fuse, knob caps, spacers and mounting screws also need exact mechanical/orderable selection.
 

@@ -365,25 +365,34 @@
       },
       "source_ids": [
         "range",
-        "range-jlc"
+        "range-jlc",
+        "range-contact-finish",
+        "range-z33",
+        "range-operating-range"
       ],
       "facts": [
         "Manufacturer states SP3T On-On-On, top actuation, straight PC terminals, break-before-make.",
         "Listing showed zero stock; price is not an availability guarantee.",
         "Terminal spacing code D (0.100 in): single row 1-2-3 at 2.54 mm, 3-4 at 5.08 mm; recommended PCB hole (0.8) dia; terminal section (0.4) x (0.6) mm.",
         "Body (15.8) x (4.0) mm, (4.5) mm high; terminals (3.0) mm below body per H48 ((3.4) in H47 isometric; conflict unresolved); actuator (1.2) x (1.5) mm protruding (2.0) mm above body; (2.0) mm travel per step. Actuator top about 6.5 mm above PCB (derived). All reference dims, no tolerances.",
-        "Terminal 3 lies on the body and actuator centreline (centre marks, not toleranced). Four corner standoff bosses on the underside; no PCB mounting pegs."
+        "Terminal 3 lies on the body and actuator centreline (centre marks, not toleranced). Four corner standoff bosses on the underside; no PCB mounting pegs.",
+        "Contact material is silver, not gold: the NKK product page's General Specifications table states \"Contact Finish: Silver Plating\" (source range-contact-finish).",
+        "NKK Electrical Ratings page Z33 (source range-z33) defines Low Level / dry circuits as <=0.4 VA at <=28 V AC or DC max, and recommends gold-plated contacts there because no arc forms to break down tarnish; it recommends silver for Power Level (~100 mA-10 A @125 V AC), stating an arc only develops above about 12 VDC / 0.5 A, which is what keeps a silver contact's oxidation cleaned off. The companion operating-range page (source range-operating-range) restates the same gold-for-dry-circuit recommendation.",
+        "Actual sense path (scripts/make_design.py ~47-49): switch COMMON -> 1 k-ohm -> 100 nF -> mux/buffer. For a full 0<->3.3 V throw: initial capacitor current = 3.3 V / 1 k-ohm = 3.3 mA; RC time constant tau = 1 k-ohm x 100 nF = 100 microseconds. Current then decays to leakage/input-bias current; the centre throw additionally sources through the R40/R41 divider, about 5 k-ohm source impedance. There is no continuous wetting current. The manufacturer's 100 mA / 30 V maximum rating is a ceiling, not evidence that this near-zero-current dry circuit is a suitable application for a silver contact."
       ],
       "open_questions": [
         "STOP: pad geometry and 2 mm lever/panel access are not qualified; numeric terminal map resolved from NKK catalogue H46/H47, still needs a drawn footprint and real-part fit check.",
         "OPEN: terminal 2/3 (M/C) mapping is a vendor fact (C->3 is COM, M->2); terminal 1/4 (L/H) follows NKK Left/Right naming but the panel-legend direction is a layout decision, not yet confirmed. Swap to L->4 / H->1 if the panel reads the other way at layout.",
-        "Approve signal-level switching and cleaning process (not process sealed: hand clean locally, NKK H44); price/lead time via RFQ."
+        "OPEN_REQUIRES_MANUFACTURER_CONFIRMATION_AND_QUALIFICATION (#27/#38): SS14MDP2's silver contacts sit in a near-zero-current dry sense circuit (3.3 mA initial transient decaying in ~100 us to leakage/bias current, no continuous wetting current) that NKK's own page Z33 describes as the case gold contacts are recommended for. Not substituted under the decided option (#27 option 2): keep SS14MDP2, do not invent a substitute MPN. Before this switch is approved for this application: get NKK's specific confirmation for this exact load, and run application-level qualification (contact-resistance measurement at the actual load, a cycling/durability run, and an environmental/cleaning exposure check per the factory process) beyond initial continuity. See design/evidence/range-contact.md. A maintained break-before-make SP3T with manufacturer-supported dry-circuit (e.g. gold) contacts remains a listed OPEN alternative, not a decision -- any real substitute needs its own exact pin map, footprint, actuator-height and factory-process review.",
+        "Cleaning process not process sealed (hand clean locally, NKK H44); price/lead time via RFQ."
       ],
       "footprint_candidate": "",
       "identity_state": "EXACT_MPN",
       "fit_state": "PROPOSED_NOT_ASSEMBLED",
       "footprint_qualified": false,
       "factory_order_approved": false,
+      "contact_material": "silver (NKK product page General Specifications: \"Contact Finish: Silver Plating\")",
+      "application_suitability_status": "OPEN_REQUIRES_MANUFACTURER_CONFIRMATION_AND_QUALIFICATION",
       "assets": []
     },
     {
@@ -1310,6 +1319,41 @@
       "assets": [],
       "value": "10uF",
       "nominal": 1e-05
+    },
+    {
+      "id": "nmos-ll",
+      "mpn": null,
+      "manufacturer": "UNSELECTED",
+      "kind": "Transistor",
+      "package": "small-signal SMD (SOT-23 class expected); exact package follows the part chosen at G08",
+      "jlc_code": null,
+      "jlc_url": null,
+      "role": "GP13 backlight open-drain stage (#41): N-channel logic-level MOSFET between the module's LCD_BL / CAT1 EN node and GND so the RP2040 pad never sees the module's 10k pull-up to VSYS",
+      "pins": {
+        "1": "GATE",
+        "2": "SOURCE",
+        "3": "DRAIN"
+      },
+      "source_ids": [],
+      "facts": [
+        "Generic record with NO manufacturer part, LCSC code or footprint: the numbers below are this design's requirements for the part to be selected at G08, not a datasheet of a chosen device. Pin numbers 1/2/3 are logical (GATE/SOURCE/DRAIN) and do not assert any package pinout; the exact part's pin assignment is applied when its footprint is drawn.",
+        "Requirement: logic-level gate. Vgs(th) maximum well below the RP2040 minimum V_OH at IOVDD 3.3 V, and a datasheet Rds(on) specification at Vgs = 2.5 V (or lower) so the on-state is guaranteed from a 3.3 V GPIO with margin, not inferred from a 4.5 V / 10 V curve.",
+        "Requirement: Vds rating >= 20 V (drain sits at the module's VSYS, USB 4.75-5.25 V, when off); Vgs rating >= +/-8 V; continuous Id >= 10 mA. The on-state current is only (VSYS / module R16 10k) <= 0.53 mA, so dissipation is negligible; Rds(on) <= 10 ohm at Vgs = 2.5 V keeps the on-state LCD_BL node below 10 mV.",
+        "Requirement: gate leakage Igss <= 1 uA at the rated Vgs, so the 100k gate pull-down (R88) holds the gate below 0.1 V when GP13 is undriven.",
+        "Behaviour on the carrier (design/evidence/backlight-interface.md): gate low (reset, BOOTSEL, undriven, or GP13 driven low) = MOSFET off = LCD_BL pulled to VSYS by module R16 = backlight ON. GP13 driven high = MOSFET on = LCD_BL near 0 V = backlight OFF. Enable polarity as seen by firmware is therefore inverted (active-low backlight)."
+      ],
+      "open_questions": [
+        "G08: select a real, maintained logic-level N-channel MOSFET meeting the requirements above, record its MPN/LCSC page and datasheet, and only then assign a footprint. Do not infer the pinout from a generic SOT-23 drawing.",
+        "Rds(on) at Vgs = 2.5 V, Vgs(th) max and Igss must be read from the selected part's datasheet; none of these values is established here.",
+        "The module CAT1 backlight regulator's EN thresholds are unknown (design/evidence/module-power.json backlight-regulator-en-thresholds); the off-state relies only on LCD_BL being pulled to a few millivolts, the on-state on the module's own R16 behaviour."
+      ],
+      "footprint_candidate": "",
+      "identity_state": "SPECIFICATION_ONLY",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": [],
+      "value": "N-MOSFET LL (UNSELECTED)"
     },
     {
       "id": "testpoint",
