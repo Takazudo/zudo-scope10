@@ -46,6 +46,16 @@
       "url": "design/circuit.json",
       "retrieved_local": null
     },
+    "module-power-json": {
+      "title": "design/evidence/module-power.json (structured module-power evidence: capacitance, backlight topology, the 180 mA claim, verified-schematic/allowance/unknown/rejected status per item)",
+      "url": "design/evidence/module-power.json",
+      "retrieved_local": null
+    },
+    "fuse-catalog": {
+      "title": "catalog/components.json record id=fuse (F1 candidate: Littelfuse 1206L050YR, LCSC C163512)",
+      "url": "catalog/components.json",
+      "retrieved_local": null
+    },
     "usb2-default-port": {
       "title": "USB 2.0 default-port current limits (100 mA before configuration, 500 mA once configured with bMaxPower granted) and the no-inrush-limiting-circuit bulk-capacitance guidance (commonly cited as <=10 uF equivalent at a hot attach), as stated in issue #8",
       "url": "https://github.com/Takazudo/zudo-scope10/issues/8",
@@ -56,9 +66,10 @@
     "TLV9064 IQ is specified at VS=5.5V (datasheet Table 6.6); this project's analog rail runs at 3.3V, so the real per-amplifier IQ is likely lower than used here. Using the 5.5V-spec number is a deliberately conservative stand-in, not a 3.3V-specific figure.",
     "74HC4067 static ICC is specified at VCC=4.5V-5.5V; this project runs the mux at 3.3V (inside the device's 2.0-10.0V rated range but below the tested bracket). The 4.5-5.5V figures are used as the closest available bracket, not a 3.3V-specific figure.",
     "TLV75533 ground current's -40C to 85C maximum was not separately broken out in the extracted table beyond the 25C max (31 uA); 31 uA is used as a worst-case stand-in pending a full re-read of that datasheet table.",
-    "PPTC (F1) hold-current derating factor of 1.5x is a common application margin, not sourced from a specific vendor datasheet, because F1's exact part is still TBD (see design/circuit.json note on F1: 'Protection component identity pending').",
+    "F1's hold-current sizing factor of 1.5x is a common PPTC application margin, not sourced from a specific vendor datasheet. It is applied to the F1 branch's own 340 mA (display+analog) current, not the 420 mA total USB allowance, because F1 sits between VBUS_USB and +5V_FUSED and does not carry Pico's own supply branch (scripts/make_design.py).",
+    "The 1206L050YR candidate's actual temperature-derated hold current is unknown (no manufacturer curve retained in this pass); its 500 mA figure is the datasheet-style nominal rating from the catalog listing, not a derated value.",
     "Waveshare module backlight/total current has no citable manufacturer figure found in this pass (see waveshare_current_check_note); the 300 mA display allowance is carried forward from the architecture doc unverified.",
-    "Downstream capacitance for the USB inrush check only sums the carrier-side capacitor(s) on +5V_FUSED found in design/circuit.json (C30, 1uF). The Waveshare module's and Pico's own onboard VBUS/VSYS-side bulk capacitance are not established here (see waveshare_schematic_notes and pico_notes) -- the inrush verdict is PASS only for the known figure, UNKNOWN overall.",
+    "Downstream capacitance for the USB inrush check sums the verified-schematic module VSYS capacitance and the carrier's own C30 on +5V_FUSED, both from design/evidence/module-power.json. Pico's own onboard VBUS/VSYS-side bulk capacitance is not established here (see pico_notes) -- the known-figure comparison against the informal 10 uF guidance is not a measured inrush compliance claim, and the overall status stays UNKNOWN.",
     "Pico datasheet has no scenario matching this project's firmware; the BOOTSEL and Popcorn/VGA figures are cited only as a plausibility bracket around the existing 80 mA allowance, not a substitute measurement."
   ],
   "component_counts": {
@@ -137,22 +148,28 @@
   ],
   "waveshare_module": {
     "current_ma": null,
-    "current_check_note": "Checked https://www.waveshare.com/wiki/Pico-ResTouch-LCD-3.5 (raw HTML) and https://www.waveshare.com/pico-restouch-lcd-3.5.htm (raw HTML): no textual mA/current figure found. A prior automated fetch reported '5V 180mA' from an FAQ image on the wiki page; both FAQ images (Pico-ResTouch-LCD-3.5-faq.png, -faq2.png) were downloaded and visually inspected in this pass and show unrelated file-browser screenshots, not a power figure. That claim is REJECTED, not used. The 300 mA display allowance therefore remains an allowance with no manufacturer current citation found.",
+    "current_check_note": "module-power.json[module-max-current-180ma]: status=rejected. The only prior support for this figure was an automated fetch summary describing an FAQ image on the Waveshare wiki. Both FAQ images at that URL were downloaded and visually inspected and show unrelated file-browser screenshots, not a power spec; no textual mA/current figure was found on either wiki page. Rejected rather than reported as unknown, since the specific claim was checked and not supported. Not used in any budget calculation. The 300 mA display allowance (display-planning-allowance, status=allowance) is independent of the rejected claim.",
     "schematic_notes": [
-      "Backlight LED anode (net LED-A) is fed from VSYS through three parallel resistors silkscreened '2R' (R17/R18/R19, ~2 ohm each if read correctly) -- a resistor-limited backlight drive, not a dedicated LED driver IC. LED count, forward voltage and hence backlight current are NOT recoverable from text extraction alone; G01 already flags this module's power strapping as requiring visual/physical verification.",
-      "The module carries its own onboard 3.3V LDO (U7, marked 'RT9193-33') taking VSYS as input, with a 1uF capacitor (C11) shown near it; several 100nF ceramics (C1/C2/C7/C8/C14/C16/C17/C18) appear near VSYS/3V3/LED-A nets. Exact pin association of each part could not be confirmed from text-only PDF extraction (no page-image render tool was available in this environment). Reported as an observation, not a bill-of-materials fact."
+      "Backlight topology (module-power.json[backlight-topology], status=verified-schematic): CAT1 (5-pin regulator) output feeds LED-A; the three LED cathode returns each go to GND through R17/R18/R19 (~2 ohm each), not three resistors feeding LED-A directly from VSYS. Topology (regulator + cathode-return resistors) is read from the schematic image and treated as verified. The regulator's identity, output voltage and hence backlight current are not printed and remain unknown (see backlight-regulator-identity).",
+      "Backlight regulator identity (module-power.json[backlight-regulator-identity], status=unknown): Not printed on the schematic; backlight current cannot be derived without it. Requires the physical module or a higher-resolution schematic render.",
+      "The module carries its own onboard 3.3V LDO (U7, marked 'RT9193-33') taking VSYS as input, with a 1uF capacitor (C11) shown near it; several 100nF ceramics (C1/C2/C7/C8/C14/C16/C17/C18) appear near VSYS/3V3/LED-A nets. Reported as an observation from the schematic image, not a bill-of-materials fact -- fitted parts still need a physical check."
     ]
   },
   "downstream_capacitance_5v_fused": {
-    "known_carrier_side_uf": 1.0,
-    "known_carrier_side_refs": [
-      "C30"
-    ],
-    "citation": "circuit-json",
+    "known_module_uf": 11.2,
+    "known_carrier_uf": 1.0,
+    "known_carrier_plus_module_uf": 12.2,
+    "citation": "module-power-json",
+    "evidence_status": {
+      "module": "verified-schematic",
+      "carrier": "verified-schematic",
+      "combined_subtotal": "verified-schematic"
+    },
     "inrush_guidance_uf": 10.0,
-    "status_known_figure_only": "pass",
+    "status_known_figure_only": "exceeds_guidance_figure",
     "status_overall": "unknown",
-    "overall_status_reason": "Module- and Pico-side VBUS/VSYS bulk capacitance are not established (see waveshare_schematic_notes and pico_notes)."
+    "overall_status_reason": "This is a known-figure nominal subtotal only. Pico's own onboard VBUS/VSYS bulk capacitance is not established from its datasheet text, and effective (not nominal) capacitance, fitted-part tolerance, source impedance and attach waveform are all unqualified. This subtotal is not a measured or claimed inrush-compliance result; overall inrush status stays unknown and G07 stays OPEN.",
+    "not_a_measured_inrush_compliance_claim": true
   },
   "usb_budget": {
     "documented_allowance_total_ma": 420.0,
@@ -168,12 +185,23 @@
       "note": "No firmware/hardware power gate on +5V_FUSED->display/analog was found in design/circuit.json (F1 passes +5V_FUSED to both the display header and U10/U11 unconditionally). If backlight+analog current at attach exceeds 100 mA before the host completes enumeration and grants the configured 500 mA, that violates the USB 2.0 default-port unconfigured limit. Whether it actually does depends on the display's un-cited backlight current and is UNKNOWN; if it is close to the 300 mA allowance, it very likely does. This is a design risk to resolve (soft-start/power-gate sequencing tied to USB enumeration state, e.g. GPIO24 VBUS-sense, or Pico VBUS-present detection before enabling F1's downstream load), not something this calculation can pass or fail outright."
     }
   },
-  "pptc_f1_requirement": {
-    "part_status": "TBD (design/circuit.json: 'Protection component identity pending; not an inrush/load-switch substitute')",
-    "derating_factor_assumption": 1.5,
-    "worst_case_load_used_ma": 420.0,
-    "min_hold_current_ma": 630.0,
-    "tension_with_usb_configured_limit": true,
-    "tension_note": "A hold current of derating_factor x the 420 mA design allowance (630.0 mA) exceeds the 500 mA USB configured-port limit's usual safety margin. Either the 420 mA system allowance needs to come down (most likely by getting a real display current figure), or F1 must be selected nearer the USB limit itself with a smaller derating margin -- a choice that belongs to whoever selects F1, not to this script."
+  "f1_branch_sizing": {
+    "note": "F1 sits between VBUS_USB and +5V_FUSED (design/circuit.json parts[ref=F1]) and carries display+analog only; Pico's own supply branches upstream of F1 (scripts/make_design.py). A PPTC is not a precision USB current limiter.",
+    "total_source_current_ma": 420.0,
+    "total_source_current_citation": "power-mdx",
+    "f1_branch_current_ma": 340.0,
+    "f1_branch_current_note": "display allowance (300.0 mA) + analog allowance (40.0 mA); excludes the Pico allowance (80.0 mA), which does not cross F1.",
+    "sizing_factor_assumption": 1.5,
+    "target_hold_current_ma": 510.0,
+    "selected_candidate": {
+      "mpn": "1206L050YR",
+      "citation": "fuse-catalog",
+      "hold_current_rating_ma": 500.0,
+      "rating_basis": "manufacturer nominal (25C, no temperature curve retained)",
+      "derating_from_temperature_curve_ma": null,
+      "derating_note": "No manufacturer temperature-derating curve for the 1206L050YR was retained in this pass (catalog/components.json's fuse record cites the LCSC/JLC listing only, not a datasheet PDF). Actual derated hold current at the carrier's operating temperature is UNKNOWN; do not assume 500 mA nominal holds at temperature. A PPTC is not a precision USB current limiter."
+    },
+    "target_vs_candidate_margin_ma": -10.0,
+    "target_vs_candidate_note": "The 1.5x-derated target of 510.0 mA is 10.0 mA above the candidate's 500 mA nominal (25C, undetermined temperature) hold rating. This is a nominal-vs-nominal comparison, not a qualified fit: whoever selects/confirms F1 must reconcile the sizing margin against the part's actual temperature-derated hold current once that curve is retained."
   }
 }

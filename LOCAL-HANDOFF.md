@@ -173,10 +173,13 @@ along with `operator` and `date`.
 3. **G07 (power/USB):** measure backlight/inrush current, Pico current and analog-rail current
    separately (no display / dark display / bright display), and confirm the USB source contract.
    `reports/power-budget.json` flags `vs_unconfigured_limit: fail_or_unknown` — there is no power
-   gate tying `+5V_FUSED` to USB enumeration state, and F1's derated PPTC hold current (630 mA) sits
-   above the USB 500 mA configured limit. Decide whether a soft-start/power-gate (e.g. VBUS-sense
-   before enabling the downstream load) is needed, and measure backlight current and module-side
-   VBUS bulk capacitance, both currently unknown.
+   gate tying `+5V_FUSED` to USB enumeration state. F1 carries only the display+analog branch
+   (340 mA allowance; see `f1_branch_sizing` in the report), and its 1.5x-derated target of 510 mA
+   sits 10 mA above the selected `1206L050YR` candidate's 500 mA nominal (25C) hold rating, with no
+   manufacturer temperature-derating curve retained to confirm the part's actual derated hold
+   current at operating temperature. Decide whether a soft-start/power-gate (e.g. VBUS-sense before
+   enabling the downstream load) is needed, and measure backlight current and module-side VBUS bulk
+   capacitance, both currently unknown.
 
 ## G06 — firmware/display integration
 

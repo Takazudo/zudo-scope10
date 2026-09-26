@@ -85,11 +85,11 @@ The same R16-to-VSYS arrangement exists when the Pico is stacked on the module a
 
 ### Current and inrush figures for G07
 
-- **Module maximum:** "5V 180mA" (wiki FAQ, manufacturer statement, not a measurement). The carrier's 300 mA planning allowance covers it.
+- **Module maximum: REJECTED, not a citable figure.** "5V 180mA" was reported by an earlier automated fetch summary of a wiki FAQ image; both FAQ images at that URL were downloaded and visually inspected in a later pass and show unrelated file-browser screenshots, not a power spec, and no textual mA/current figure was found on either wiki page. This claim is rejected, not carried as a manufacturer maximum. See `design/evidence/module-power.json` (`module-max-current-180ma`, status `rejected`) — that file is the single source of truth for this claim so `scripts/power_budget.py` and this document cannot disagree. The carrier's 300 mA planning allowance (`display-planning-allowance`, status `allowance`) is independent of the rejected claim.
 - **Module 3V3 rail:** RT9193 limit of 300 mA (rt9193-ds p1).
-- **Backlight:** CAT1 (5-pin regulator: VIN, GND, EN, BYP, VOUT) feeds `LED-A` (FPC pin 33). The three LED cathode returns, FPC pins 34/35/36, each go to GND through R17/R18/R19 **2R** (Sch p1 3A, 4A–C "LCD").
+- **Backlight:** CAT1 (5-pin regulator: VIN, GND, EN, BYP, VOUT) feeds `LED-A` (FPC pin 33). The three LED cathode returns, FPC pins 34/35/36, each go to GND through R17/R18/R19 **2R** (Sch p1 3A, 4A–C "LCD"). Recorded structurally in `design/evidence/module-power.json` (`backlight-topology`, status `verified-schematic`).
   - **UNRESOLVED:** CAT1's part number and output voltage are not printed, and the LED forward voltage is unknown. The backlight current cannot be derived from the schematic.
-- **Bulk capacitance on VSYS (inrush-relevant):** C9 10 µF + C10 1 µF + C14 100 nF + C15 100 nF ≈ **11.2 µF** (Sch p1 3A, 4D).
+- **Bulk capacitance on VSYS (inrush-relevant):** C9 10 µF + C10 1 µF + C14 100 nF + C15 100 nF ≈ **11.2 µF** (Sch p1 3A, 4D). Recorded in `design/evidence/module-power.json` (`module-vsys-capacitance`, status `verified-schematic`); combined with carrier C30 (1 µF, on `+5V_FUSED`) that gives a **12.2 µF** known carrier+module nominal subtotal (`carrier-plus-module-known-subtotal`) — a known-figure subtotal against the informal ≤10 µF inrush guidance, not a claim of measured inrush compliance. Pico-side bulk capacitance is still unknown, so overall inrush status stays UNKNOWN and G07 stays OPEN.
 - **Other module capacitors:**
   - On 3V3: C11 1 µF plus 100 nF decouplers C1, C2, C7, C8, C18, C19, C20, C21.
   - On LED-A: C17 100 nF.

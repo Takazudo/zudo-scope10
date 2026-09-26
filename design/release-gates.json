@@ -84,9 +84,10 @@
       "required_evidence": "Measure display backlight/inrush + Pico + analog rail; satisfy USB source contract and power sequencing.",
       "evidence_partial": [
         "reports/power-budget.json",
-        "scripts/power_budget.py"
+        "scripts/power_budget.py",
+        "design/evidence/module-power.json"
       ],
-      "evidence_partial_note": "Desk arithmetic only. No power gate ties +5V_FUSED to USB enumeration state, so the display/analog load path is unconditioned on the host granting the configured 500 mA limit (vs_unconfigured_limit: fail_or_unknown). PPTC F1's derated hold current (630 mA) vs the USB 500 mA configured limit is a tension, not a measured fault. Backlight current and module-side VBUS bulk capacitance are unknown. Bench measurement is a local gate."
+      "evidence_partial_note": "Desk arithmetic only. No power gate ties +5V_FUSED to USB enumeration state, so the display/analog load path is unconditioned on the host granting the configured 500 mA limit (vs_unconfigured_limit: fail_or_unknown). F1 carries only the display+analog branch (340 mA); its 1.5x-derated target (510 mA) sits 10 mA above the selected 1206L050YR candidate's 500 mA nominal hold rating, with no manufacturer temperature-derating curve retained -- a tension, not a measured fault (see f1_branch_sizing in reports/power-budget.json). Backlight current and module-side VBUS bulk capacitance are unknown. Bench measurement is a local gate."
     },
     {
       "id": "G08",

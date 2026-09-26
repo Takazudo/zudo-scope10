@@ -318,6 +318,111 @@ def _pane_numbering_parity(check, ctx):
 EXTRA_CHECKS.append(_pane_numbering_parity)
 
 
+def _module_power_evidence_consistency(check, ctx):
+    """#35: one structured module-power evidence source, consumed correctly.
+
+    - design/evidence/module-power.json has an entry for every claim #35 lists.
+    - reports/power-budget.json's branch totals add up (F1 branch + Pico = total).
+    - reports/power-budget.json's F1/capacitance fields match the evidence file.
+    - No "630" / "derated hold" leftover wording anywhere in the checked files.
+    """
+    import json
+
+    R = ctx['R']
+    evidence = json.loads((R / 'design/evidence/module-power.json').read_text())
+    by_id = {e['id']: e for e in evidence['entries']}
+
+    required_ids = {
+        'module-vsys-capacitance',
+        'carrier-5v-fused-capacitance',
+        'carrier-plus-module-known-subtotal',
+        'backlight-topology',
+        'backlight-regulator-identity',
+        'module-max-current-180ma',
+        'display-planning-allowance',
+    }
+    check(
+        'module-power.json has an entry for every #35 claim',
+        required_ids <= set(by_id),
+        f'missing: {required_ids - set(by_id)}',
+    )
+    check(
+        'module-power.json entries carry status/citation/uncertainty',
+        all({'status', 'citation', 'uncertainty'} <= set(e) for e in evidence['entries']),
+    )
+    check(
+        '180 mA claim is unknown/rejected, not carried as a manufacturer maximum',
+        by_id['module-max-current-180ma']['status'] in ('unknown', 'rejected'),
+    )
+    check(
+        'display allowance is labelled an allowance, not a manufacturer/measured figure',
+        by_id['display-planning-allowance']['status'] == 'allowance',
+    )
+
+    report_path = R / 'reports/power-budget.json'
+    if not report_path.exists():
+        check('reports/power-budget.json exists for module-power cross-check', False, 'run scripts/analyze.py')
+        return
+    report = json.loads(report_path.read_text())
+
+    cap = report.get('downstream_capacitance_5v_fused', {})
+    check(
+        'report capacitance matches module-power.json (module, carrier, combined)',
+        cap.get('known_module_uf') == by_id['module-vsys-capacitance']['value_uf']
+        and cap.get('known_carrier_uf') == by_id['carrier-5v-fused-capacitance']['value_uf']
+        and cap.get('known_carrier_plus_module_uf') == by_id['carrier-plus-module-known-subtotal']['value_uf'],
+        json.dumps(cap),
+    )
+    check(
+        'combined capacitance is exactly module + carrier',
+        abs(cap.get('known_carrier_plus_module_uf', 0) - (cap.get('known_module_uf', 0) + cap.get('known_carrier_uf', 0))) < 1e-9,
+    )
+    check(
+        'inrush status_overall stays unknown (no measured-compliance claim)',
+        cap.get('status_overall') == 'unknown',
+    )
+
+    f1 = report.get('f1_branch_sizing', {})
+    check(
+        'F1 branch current excludes the Pico allowance (branch + pico == total source current)',
+        f1.get('f1_branch_current_ma') is not None
+        and f1.get('total_source_current_ma') is not None
+        and abs(f1['f1_branch_current_ma'] + 80.0 - f1['total_source_current_ma']) < 1e-9,
+        json.dumps(f1),
+    )
+    check(
+        'F1 target hold current is the branch current times the sizing factor',
+        abs(f1.get('target_hold_current_ma', -1) - f1.get('f1_branch_current_ma', -1) * f1.get('sizing_factor_assumption', -1)) < 1e-9,
+    )
+    check(
+        'F1 selected candidate is the catalog fuse record (1206L050YR, 500 mA)',
+        f1.get('selected_candidate', {}).get('mpn') == '1206L050YR'
+        and f1.get('selected_candidate', {}).get('hold_current_rating_ma') == 500.0,
+    )
+
+    leftover_targets = [
+        R / 'scripts/power_budget.py',
+        R / 'LOCAL-HANDOFF.md',
+        R / 'design/release-gates.json',
+        R / 'design/narrative-pages.json',
+        R / 'reports/power-budget.json',
+        R / 'design/evidence/g01-display-power.md',
+    ]
+    # The literal old wrong figure (630 mA, allow_total_ma * 1.5) is the tell:
+    # the new, correct F1-branch derating discussion legitimately still says
+    # "derated hold current" (of the 1206L050YR, currently unknown), so only
+    # the number itself is checked for, not that phrase.
+    leftovers = []
+    for f in leftover_targets:
+        text = f.read_text()
+        if '630' in text:
+            leftovers.append(str(f.relative_to(R)))
+    check('No leftover "630 mA derated hold" figure in checked files', not leftovers, str(leftovers))
+
+
+EXTRA_CHECKS.append(_module_power_evidence_consistency)
+
+
 def run(check, ctx):
     for extra in EXTRA_CHECKS:
         extra(check, ctx)
