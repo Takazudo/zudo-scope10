@@ -31,7 +31,8 @@
  * (ADC/input limit), else VIEW CLIP when converted volts exceed +-range (only the view
  * clips), else nothing. UNCAL has its own slot, so neither hides the other.
  * LINK makes every pane use CH1's TIME window: a time-link of views, not phase sync. The
- * channels are still sampled sequentially. HOLD freezes the plots; text keeps updating. */
+ * channels are still sampled sequentially. HOLD freezes the plots; text keeps updating,
+ * except the RANGE label and signal token, which describe the frozen plot. */
 #include "scope_core.h"
 #include <stdbool.h>
 #include <stdint.h>
