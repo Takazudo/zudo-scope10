@@ -1,0 +1,133 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TLV9064IDR · SCOPE10</title><link rel="stylesheet" href="style.css"><header><div class="tag">ZUDO / SCOPE 10 / P0</div><a href="index.html">Project catalogue</a> · <a href="../doc/public/prototype/index.html">UI simulation</a></header><main><div class="crumb">components/records/tlv9064</div><h1>TLV9064IDR</h1><h2>Identity</h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Record</td>
+<td>tlv9064</td>
+</tr>
+<tr>
+<td>Manufacturer</td>
+<td>Texas Instruments</td>
+</tr>
+<tr>
+<td>Orderable identity</td>
+<td>TLV9064IDR</td>
+</tr>
+<tr>
+<td>JLC/LCSC</td>
+<td>C388176</td>
+</tr>
+<tr>
+<td>Package</td>
+<td>SOIC-14</td>
+</tr>
+<tr>
+<td>Identity</td>
+<td>EXACT_MPN</td>
+</tr>
+<tr>
+<td>Fit</td>
+<td>PROPOSED_NOT_ASSEMBLED</td>
+</tr>
+<tr>
+<td>References</td>
+<td>U1 U2 U3 U4 U5 U6</td>
+</tr>
+<tr>
+<td>Footprint candidate</td>
+<td>Package_SO:SOIC-14_3.9x8.7mm_P1.27mm</td>
+</tr>
+</tbody>
+</table>
+<h2>Intended function</h2>
+<p>Six quad amplifiers: two stages per input plus three ADC buffers and reference buffer</p>
+<h2>Recorded findings</h2>
+<p>Quad RRIO amplifier on +3V3A. Supply range 1.8-5.5 V. 10 MHz is a nominal device property, not system bandwidth.</p>
+<p>The exact D package uses no shutdown pin. Catalog descriptions of an enable/shutdown feature apply to other variants.</p>
+<h2>Pin map</h2>
+<p>Pin assignments below are electrical evidence or explicitly logical placeholders. They are not footprint qualification.</p>
+<table>
+<thead>
+<tr>
+<th>Pin</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>OUT_A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>IN_A_MINUS</td>
+</tr>
+<tr>
+<td>3</td>
+<td>IN_A_PLUS</td>
+</tr>
+<tr>
+<td>4</td>
+<td>VCC</td>
+</tr>
+<tr>
+<td>5</td>
+<td>IN_B_PLUS</td>
+</tr>
+<tr>
+<td>6</td>
+<td>IN_B_MINUS</td>
+</tr>
+<tr>
+<td>7</td>
+<td>OUT_B</td>
+</tr>
+<tr>
+<td>8</td>
+<td>OUT_C</td>
+</tr>
+<tr>
+<td>9</td>
+<td>IN_C_MINUS</td>
+</tr>
+<tr>
+<td>10</td>
+<td>IN_C_PLUS</td>
+</tr>
+<tr>
+<td>11</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>12</td>
+<td>IN_D_PLUS</td>
+</tr>
+<tr>
+<td>13</td>
+<td>IN_D_MINUS</td>
+</tr>
+<tr>
+<td>14</td>
+<td>OUT_D</td>
+</tr>
+</tbody>
+</table>
+<h2>Documents and models</h2>
+<p>No original model or source binary was recovered for this record in this package. See the sources and the local download manifest; no nominal model is presented as an exact replacement.</p>
+<h2>Coverage and unresolved questions</h2>
+<p><strong>Footprint independently qualified: NO. Factory order approved: NO. Bench result: NOT TESTED.</strong></p>
+<ul>
+<li>Check worst-case offset and output drive at actual 3.3 V supply; stability with PCB parasitics.</li>
+</ul>
+<p>The presence of a part number, datasheet or model closes none of these remaining gates automatically.</p>
+<h2>Sources</h2>
+<h3>TI TLV906x datasheet</h3>
+<p><a href="https://www.ti.com/lit/ds/symlink/tlv9064.pdf">https://www.ti.com/lit/ds/symlink/tlv9064.pdf</a></p>
+<p>Evidence state: <code>read_online</code>. D/SOIC14 pin diagram visually inspected; 1.8-5.5 V, RRIO, unity stable; overload-current limiting discussion. Parsed version N vs cached figure version M recorded: reacquire one consistent revision before release.</p>
+<footer>Pre-layout evidence. No factory approval or hardware measurements are implied.</footer></main></html>

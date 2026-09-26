@@ -1,0 +1,65 @@
+{
+  "release_allowed": false,
+  "gates": [
+    {
+      "id": "G01",
+      "title": "Exact display power/straps and module revision",
+      "status": "OPEN",
+      "required_evidence": "Inspect manufacturer schematic page image, actual module; prove 5V input and no regulator contention."
+    },
+    {
+      "id": "G02",
+      "title": "Mechanical parts and footprint/pad mapping",
+      "status": "OPEN",
+      "required_evidence": "Resolve NKK numerical pins, jack duplicate terminals, button feet, connector orderables and actuator heights."
+    },
+    {
+      "id": "G03",
+      "title": "Native KiCad validation",
+      "status": "OPEN",
+      "required_evidence": "Open generated sheets, independently inspect connectivity and ERC; finalize footprint assignments and PCB routing; DRC and schematic parity."
+    },
+    {
+      "id": "G04",
+      "title": "Input/protection qualification",
+      "status": "OPEN",
+      "required_evidence": "Test powered/unpowered faults, leakage, open-input bias, multiple channel injection, recovery and loading."
+    },
+    {
+      "id": "G05",
+      "title": "Acquisition qualification",
+      "status": "OPEN",
+      "required_evidence": "Scope mux settling and ADC start, actual uniform sample cadence, missed-slot counters, alias response and cross-talk."
+    },
+    {
+      "id": "G06",
+      "title": "Firmware/display integration",
+      "status": "OPEN",
+      "required_evidence": "Build with actual Pico SDK; integrate exact vendor bridge driver; verify ten panes, time/range, controls, HOLD and LINK."
+    },
+    {
+      "id": "G07",
+      "title": "Power and USB budget",
+      "status": "OPEN",
+      "required_evidence": "Measure display backlight/inrush + Pico + analog rail; satisfy USB source contract and power sequencing."
+    },
+    {
+      "id": "G08",
+      "title": "Exact sourcing and factory route",
+      "status": "OPEN",
+      "required_evidence": "Resolve every specification-only BOM row, external module/socket/knob supply, factory test and all soldering."
+    },
+    {
+      "id": "G09",
+      "title": "Physical review",
+      "status": "OPEN",
+      "required_evidence": "Print panel at 100%; test real screen readability and control/cable clearance; accept stack and support."
+    },
+    {
+      "id": "G10",
+      "title": "Release approval",
+      "status": "OPEN",
+      "required_evidence": "Generate BOM/CPL/Gerbers from final saved KiCad revision and explicitly approve quote. No current order export."
+    }
+  ]
+}

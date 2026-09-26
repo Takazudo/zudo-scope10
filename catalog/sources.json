@@ -1,0 +1,189 @@
+{
+  "checked_on": "2026-09-26",
+  "sources": [
+    {
+      "id": "lamp",
+      "title": "Lamp component-first documentation",
+      "url": "https://github.com/Takazudo/zudo-led-lamp/blob/main/doc/CLAUDE.md",
+      "evidence_note": "Repository read; SHA fb9e529e31e2540a0122bddd3d87fe7250ccfd8e.",
+      "local_path": null,
+      "retrieval": "read_online"
+    },
+    {
+      "id": "zudo-doc",
+      "title": "create-zudo-doc usage",
+      "url": "https://github.com/zudolab/zudo-doc/blob/main/packages/create-zudo-doc/README.md",
+      "evidence_note": "Repository read; SHA 5a48acfe84aebe153c1814134fe4fadc9b23faba.",
+      "local_path": null,
+      "retrieval": "read_online"
+    },
+    {
+      "id": "display",
+      "title": "Waveshare SKU 19907",
+      "url": "https://www.waveshare.com/Pico-ResTouch-LCD-3.5.htm",
+      "evidence_note": "Manufacturer page: 480x320, 5 V, installed female Pico headers, 86x57.2 mm module.",
+      "local_path": null,
+      "retrieval": "read_online"
+    },
+    {
+      "id": "display-wiki",
+      "title": "Waveshare interface and resources",
+      "url": "https://www.waveshare.net/wiki/Pico-ResTouch-LCD-3.5",
+      "evidence_note": "Manufacturer pin assignment table and 16-bit parallel-to-SPI bridge explanation; RGB565.",
+      "local_path": null,
+      "retrieval": "read_online"
+    },
+    {
+      "id": "display-sch",
+      "title": "Waveshare module schematic",
+      "url": "https://files.waveshare.com/upload/8/85/Pico-ResTouch-LCD-3.5_Sch.pdf",
+      "evidence_note": "Parsed online. Page-image retrieval failed. Module regulator straps and power connections require visual verification locally.",
+      "local_path": null,
+      "retrieval": "read_online"
+    },
+    {
+      "id": "display-cad",
+      "title": "Waveshare module CAD archive",
+      "url": "https://files.waveshare.com/upload/e/e4/Pico-ResTouch-LCD-3_5.zip",
+      "evidence_note": "Official link; binary download failed in this environment. NOT included.",
+      "local_path": null,
+      "retrieval": "download_unavailable"
+    },
+    {
+      "id": "display-code",
+      "title": "Waveshare example code",
+      "url": "https://files.waveshare.com/upload/f/fc/Pico-ResTouch-LCD-X_X_Code.zip",
+      "evidence_note": "Official link; binary download failed. Vendor driver integration remains open; do not use generic ILI9488 serial driver.",
+      "local_path": null,
+      "retrieval": "download_unavailable"
+    },
+    {
+      "id": "pico",
+      "title": "Raspberry Pi Pico / Pico H",
+      "url": "https://www.raspberrypi.com/products/raspberry-pi-pico/",
+      "evidence_note": "Manufacturer product page. Order H version with installed headers, not an unsoldered Pico.",
+      "local_path": null,
+      "retrieval": "read_online"
+    },
+    {
+      "id": "pico-pins",
+      "title": "Pico pinout",
+      "url": "https://datasheets.raspberrypi.com/pico/Pico-R3-A4-Pinout.pdf",
+      "evidence_note": "Pinout inspected online as page image. Same header numbering used for both carrier interfaces.",
+      "local_path": null,
+      "retrieval": "read_online"
+    },
+    {
+      "id": "pico-ds",
+      "title": "Pico datasheet",
+      "url": "https://datasheets.raspberrypi.com/pico/pico-datasheet.pdf",
+      "evidence_note": "Local download required for module dimensions, VBUS limits, ADC supply and power sequencing review.",
+      "local_path": null,
+      "retrieval": "download_unavailable"
+    },
+    {
+      "id": "adc",
+      "title": "Pico SDK ADC documentation",
+      "url": "https://www.raspberrypi.com/documentation/pico-sdk/hardware.html",
+      "evidence_note": "RP2040: 12-bit ADC, 500 ksample/s aggregate; 8.7 ENOB. Sequential channels, not simultaneous sample-and-hold.",
+      "local_path": null,
+      "retrieval": "read_online"
+    },
+    {
+      "id": "opamp",
+      "title": "TI TLV906x datasheet",
+      "url": "https://www.ti.com/lit/ds/symlink/tlv9064.pdf",
+      "evidence_note": "D/SOIC14 pin diagram visually inspected; 1.8-5.5 V, RRIO, unity stable; overload-current limiting discussion. Parsed version N vs cached figure version M recorded: reacquire one consistent revision before release.",
+      "local_path": null,
+      "retrieval": "read_online"
+    },
+    {
+      "id": "mux",
+      "title": "Nexperia 74HC/HCT4067 datasheet",
+      "url": "https://assets.nexperia.com/documents/data-sheet/74HC_HCT4067.pdf",
+      "evidence_note": "PW/TSSOP24 pin diagram visually inspected; HC part selected, not HCT.",
+      "local_path": null,
+      "retrieval": "read_online"
+    },
+    {
+      "id": "ldo",
+      "title": "TI TLV755P datasheet",
+      "url": "https://www.ti.com/lit/ds/symlink/tlv755p.pdf",
+      "evidence_note": "DBV pin table parsed; ratings page visually inspected. 5.5 V recommended maximum input, 6 V absolute maximum.",
+      "local_path": null,
+      "retrieval": "read_online"
+    },
+    {
+      "id": "ref",
+      "title": "TI REF33 datasheet",
+      "url": "https://www.ti.com/lit/ds/symlink/ref33.pdf",
+      "evidence_note": "DBZ/SOT23 pin table parsed: 1 IN, 2 OUT, 3 GND. Pin diagram screenshot unavailable; independent visual check open.",
+      "local_path": null,
+      "retrieval": "read_online"
+    },
+    {
+      "id": "diode",
+      "title": "Nexperia BAV199 datasheet",
+      "url": "https://assets.nexperia.com/documents/data-sheet/BAV199.pdf",
+      "evidence_note": "Pin diagram visually inspected: 1 A1, 2 K2, 3 K1/A2. Low-leakage silicon, NOT Schottky.",
+      "local_path": null,
+      "retrieval": "read_online"
+    },
+    {
+      "id": "pot",
+      "title": "ALPS RK09L1140A5L",
+      "url": "https://tech.alpsalpine.com/e/products/detail/RK09L1140A5L/",
+      "evidence_note": "10k linear, 15mm flat shaft. Detailed original CAD/drawings imported from previous user-supplied archive; permissions retained.",
+      "local_path": null,
+      "retrieval": "read_online"
+    },
+    {
+      "id": "range",
+      "title": "NKK SS14MDP2",
+      "url": "https://www.nkkswitches.eu/products/Slides/Slides%20SS/SS14MDP2/",
+      "evidence_note": "Exact SP3T On-On-On, top-actuated, straight PC terminals, non-shorting. Numerical terminal map and mounting drawing NOT acquired.",
+      "local_path": null,
+      "retrieval": "read_online"
+    },
+    {
+      "id": "range-jlc",
+      "title": "JLC NKK SS14MDP2",
+      "url": "https://jlcpcb.com/partdetail/NKKSwitches-SS14MDP2/C6684954",
+      "evidence_note": "Listing exists; observed zero stock. This is a pre-order/external sourcing candidate, not allocated inventory.",
+      "local_path": null,
+      "retrieval": "read_online"
+    },
+    {
+      "id": "hs-display",
+      "title": "Cost-down display HS35B01A",
+      "url": "https://jlcpcb.com/partdetail/HS-HS35B01A/C19632787",
+      "evidence_note": "Listing exists; interface, header and model unresolved. Earlier $8.72 suggestion is superseded for P0. Observed 1pc price $9.2646, not a board quote.",
+      "local_path": null,
+      "retrieval": "read_online"
+    },
+    {
+      "id": "assembly",
+      "title": "JLC assembly capabilities",
+      "url": "https://jlcpcb.com/capabilities/pcb-assembly-capabilities",
+      "evidence_note": "Policy must be rechecked at quote; mixed SMD/through-hole required.",
+      "local_path": null,
+      "retrieval": "read_online"
+    },
+    {
+      "id": "global",
+      "title": "JLC global sourcing",
+      "url": "https://jlcpcb.com/help/article/how-to-use-jlcpcb-global-sourcing-parts-service",
+      "evidence_note": "Service route, not acceptance of this exact board or component.",
+      "local_path": null,
+      "retrieval": "read_online"
+    },
+    {
+      "id": "consign",
+      "title": "JLC consignment",
+      "url": "https://jlcpcb.com/help/article/how-to-consign-parts-to-jlcpcb",
+      "evidence_note": "Only arrange shipment after part/process approval. No part or order submitted in this project.",
+      "local_path": null,
+      "retrieval": "read_online"
+    }
+  ]
+}

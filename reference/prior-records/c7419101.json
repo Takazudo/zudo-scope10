@@ -1,0 +1,820 @@
+{
+  "id": "c7419101",
+  "kind": "rotary",
+  "name": "RK09L1140A5L",
+  "manufacturer": "Alps Alpine",
+  "identity": "exact_mpn",
+  "mpn": "RK09L1140A5L",
+  "jlc_code": "C7419101",
+  "jlc_url": "https://jlcpcb.com/partdetail/ALPSALPINE-RK09L1140A5L/C7419101",
+  "value": "10 kΩ · linear",
+  "geometry": "15 mm flat shaft; threaded bushing; top access",
+  "application": "Primary continuous rotary CV control",
+  "evidence": {
+    "mpn": "RK09L1140A5L",
+    "jlc_code": "C7419101",
+    "manufacturer": "Alps Alpine",
+    "role": "Primary continuous rotary performance control; buffered 0–5 V CV divider",
+    "package": "Through hole / Plugin",
+    "jlc_url": "https://jlcpcb.com/partdetail/ALPSALPINE-RK09L1140A5L/C7419101",
+    "manufacturer_url": "https://tech.alpsalpine.com/e/products/detail/RK09L1140A5L/",
+    "lcsc_url": "https://www.lcsc.com/de/product-detail/C7419101.html",
+    "geometry_notes": "Manufacturer: vertical; screw fixing bushing; flat shaft length 15 mm; single gang; no detent; 300° ±5° travel. Confirm shaft diameter/flat, bushing thread, PCB-to-panel height and nut/washer contents from drawing before CAD freeze.",
+    "electrical_notes": "10 kΩ ±20%, linear 1B, 0.05 W; maximum 50 VAC / 10 VDC. 15,000 operating cycles. Do not connect directly across ±12 V rails.",
+    "assembly": "JLC listing: Wave Soldering; Economic and Standard; Extended; MSL1. Quote and geometry review pending.",
+    "stock_status": "JLC public page did not expose an actual stock quantity. LCSC German page showed 461; separate distributor snapshot only, not JLC allocated stock.",
+    "open_questions": [
+      "JLC available-to-order quantity and lead time",
+      "Exact knob cap and panel hardware supply",
+      "PCB-to-panel mechanical stack and shaft torque feel"
+    ],
+    "category": "Controls and connectors",
+    "record_basis": "named_part_and_assembly_listing",
+    "listing_checked": "2026-09-25",
+    "listing_checked_timezone": "UTC (2026-09-26 in Japan)",
+    "qualification_status": "Research candidate; no design-specific footprint, assembled sample, or order-specific acceptance established.",
+    "manufacturer_process_status": "Exact soldering limits, cleaning restrictions and the chosen factory process still require a documented review."
+  },
+  "scope": "primary",
+  "original_catalog_record": {
+    "id": "c7419101",
+    "kind": "rotary",
+    "name": "RK09L1140A5L",
+    "manufacturer": "Alps Alpine",
+    "identity": "exact_mpn",
+    "mpn": "RK09L1140A5L",
+    "jlc_code": "C7419101",
+    "jlc_url": "https://jlcpcb.com/partdetail/ALPSALPINE-RK09L1140A5L/C7419101",
+    "value": "10 kΩ · linear",
+    "geometry": "15 mm flat shaft; threaded bushing; top access",
+    "application": "Primary continuous rotary CV control",
+    "evidence": {
+      "mpn": "RK09L1140A5L",
+      "jlc_code": "C7419101",
+      "manufacturer": "Alps Alpine",
+      "role": "Primary continuous rotary performance control; buffered 0–5 V CV divider",
+      "package": "Through hole / Plugin",
+      "jlc_url": "https://jlcpcb.com/partdetail/ALPSALPINE-RK09L1140A5L/C7419101",
+      "manufacturer_url": "https://tech.alpsalpine.com/e/products/detail/RK09L1140A5L/",
+      "lcsc_url": "https://www.lcsc.com/de/product-detail/C7419101.html",
+      "geometry_notes": "Manufacturer: vertical; screw fixing bushing; flat shaft length 15 mm; single gang; no detent; 300° ±5° travel. Confirm shaft diameter/flat, bushing thread, PCB-to-panel height and nut/washer contents from drawing before CAD freeze.",
+      "electrical_notes": "10 kΩ ±20%, linear 1B, 0.05 W; maximum 50 VAC / 10 VDC. 15,000 operating cycles. Do not connect directly across ±12 V rails.",
+      "assembly": "JLC listing: Wave Soldering; Economic and Standard; Extended; MSL1. Quote and geometry review pending.",
+      "stock_status": "JLC public page did not expose an actual stock quantity. LCSC German page showed 461; separate distributor snapshot only, not JLC allocated stock.",
+      "open_questions": [
+        "JLC available-to-order quantity and lead time",
+        "Exact knob cap and panel hardware supply",
+        "PCB-to-panel mechanical stack and shaft torque feel"
+      ],
+      "category": "Controls and connectors",
+      "record_basis": "named_part_and_assembly_listing",
+      "listing_checked": "2026-09-25",
+      "listing_checked_timezone": "UTC (2026-09-26 in Japan)",
+      "qualification_status": "Research candidate; no design-specific footprint, assembled sample, or order-specific acceptance established.",
+      "manufacturer_process_status": "Exact soldering limits, cleaning restrictions and the chosen factory process still require a documented review."
+    }
+  },
+  "listing_record": {
+    "mpn": "RK09L1140A5L",
+    "jlc_code": "C7419101",
+    "manufacturer": "Alps Alpine",
+    "role": "Primary continuous rotary performance control; buffered 0–5 V CV divider",
+    "package": "Through hole / Plugin",
+    "jlc_url": "https://jlcpcb.com/partdetail/ALPSALPINE-RK09L1140A5L/C7419101",
+    "manufacturer_url": "https://tech.alpsalpine.com/e/products/detail/RK09L1140A5L/",
+    "lcsc_url": "https://www.lcsc.com/de/product-detail/C7419101.html",
+    "geometry_notes": "Manufacturer: vertical; screw fixing bushing; flat shaft length 15 mm; single gang; no detent; 300° ±5° travel. Confirm shaft diameter/flat, bushing thread, PCB-to-panel height and nut/washer contents from drawing before CAD freeze.",
+    "electrical_notes": "10 kΩ ±20%, linear 1B, 0.05 W; maximum 50 VAC / 10 VDC. 15,000 operating cycles. Do not connect directly across ±12 V rails.",
+    "assembly": "JLC listing: Wave Soldering; Economic and Standard; Extended; MSL1. Quote and geometry review pending.",
+    "stock_status": "JLC public page did not expose an actual stock quantity. LCSC German page showed 461; separate distributor snapshot only, not JLC allocated stock.",
+    "open_questions": [
+      "JLC available-to-order quantity and lead time",
+      "Exact knob cap and panel hardware supply",
+      "PCB-to-panel mechanical stack and shaft torque feel"
+    ],
+    "category": "Controls and connectors",
+    "record_basis": "named_part_and_assembly_listing",
+    "listing_checked": "2026-09-25",
+    "listing_checked_timezone": "UTC (2026-09-26 in Japan)",
+    "qualification_status": "Research candidate; no design-specific footprint, assembled sample, or order-specific acceptance established.",
+    "expanded_control_record_id": "c7419101"
+  },
+  "research": {
+    "record_id": "c7419101",
+    "mpn": "RK09L1140A5L",
+    "source_page": "https://tech.alpsalpine.com/e/products/detail/RK09L1140A5L/?download=1",
+    "downloaded_files": [
+      {
+        "path": "component-assets/e1b63c0709434be1/product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+        "source_url": "https://tech.alpsalpine.com/cms.media/product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+        "content_type": "application/zip",
+        "model_match": "exact_product_page_asset",
+        "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+        "provenance": "Official manufacturer download",
+        "source_date": "2026-09-25",
+        "size_bytes": 610290,
+        "sha256": "e1b63c0709434be1aeea9db8d1f5a33f135b89535fd858f6a580b3bc6a8bdea3",
+        "notes": "Public official asset linked by exact manufacturer PN page."
+      },
+      {
+        "path": "component-assets/8876b93a81abf812/Read-me-first.rtf",
+        "source_url": "https://tech.alpsalpine.com/cms.media/product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+        "content_type": "application/rtf",
+        "model_match": "exact_product_page_asset",
+        "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+        "provenance": "Official manufacturer download",
+        "source_date": "2026-09-25",
+        "size_bytes": 8712,
+        "sha256": "8876b93a81abf812c3aaf52b3801bea233ec49905c763754a60a43b26d315ec8",
+        "notes": "Original ZIP Read me first; explains STEP and PDF software requirements. No separate open redistribution license stated.",
+        "archive_member": "RK09L1140A5L/Read me first.rtf"
+      },
+      {
+        "path": "component-assets/43f87b03b11193d7/RK09L1140-F15.pdf",
+        "source_url": "https://tech.alpsalpine.com/cms.media/product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+        "content_type": "application/pdf",
+        "model_match": "exact_product_page_asset",
+        "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+        "provenance": "Official manufacturer download",
+        "source_date": "2026-09-25",
+        "size_bytes": 437987,
+        "sha256": "43f87b03b11193d752628ff4c6174ec4f20524e07c2a3268bec712505f147553",
+        "notes": "Original CAD archive PDF preview, not the dimensional drawing.",
+        "archive_member": "RK09L1140A5L/RK09L1140-F15.pdf"
+      },
+      {
+        "path": "component-assets/a67271ce2e6911ab/RK09L1140-F15.STEP",
+        "source_url": "https://tech.alpsalpine.com/cms.media/product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+        "content_type": "model/step",
+        "model_match": "exact",
+        "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+        "provenance": "Official manufacturer download",
+        "source_date": "2026-09-25",
+        "size_bytes": 1861371,
+        "sha256": "a67271ce2e6911aba3a23c88eb34c7b514f74ccd99545806524535efde795d43",
+        "notes": "Public official asset linked by exact manufacturer PN page.",
+        "archive_member": "RK09L1140A5L/RK09L1140-F15.STEP",
+        "validation": {
+          "path": "component-assets/a67271ce2e6911ab/RK09L1140-F15.STEP",
+          "valid_import": true,
+          "solid_count": 1,
+          "bbox_mm": {
+            "x": 12.1,
+            "y": 12.500000100000012,
+            "z": 28.500000100000005
+          }
+        }
+      },
+      {
+        "path": "component-assets/45176642b75760db/product_catalog_rv_01_rk09l_en_b8437bd47d.pdf",
+        "source_url": "https://tech.alpsalpine.com/cms.media/product_catalog_rv_01_rk09l_en_b8437bd47d.pdf",
+        "content_type": "application/pdf",
+        "model_match": "manufacturer_family",
+        "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+        "provenance": "Official manufacturer download",
+        "source_date": "2026-09-25",
+        "size_bytes": 399193,
+        "sha256": "45176642b75760db42093394f6204a127e7abac542df13ab4312f11ff51d4c3f",
+        "notes": "Public official asset linked by exact manufacturer PN page."
+      },
+      {
+        "path": "component-assets/626d3d204b16f181/product_detail_fig_rk09l_c_101_en_acab65d7d7.gif",
+        "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_c_101_en_acab65d7d7.gif",
+        "content_type": "image/gif",
+        "model_match": "exact_product_page_asset",
+        "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+        "provenance": "Official manufacturer download",
+        "source_date": "2026-09-25",
+        "size_bytes": 11653,
+        "sha256": "626d3d204b16f181ca063eaa6311d53d001d7f29e63aceda29c5e2219ed83147",
+        "notes": "Public official asset linked by exact manufacturer PN page."
+      },
+      {
+        "path": "component-assets/08137933b50c3896/product_detail_fig_rk09l_c_1_en_60d88f1440.gif",
+        "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_c_1_en_60d88f1440.gif",
+        "content_type": "image/gif",
+        "model_match": "exact_product_page_asset",
+        "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+        "provenance": "Official manufacturer download",
+        "source_date": "2026-09-25",
+        "size_bytes": 7777,
+        "sha256": "08137933b50c389638c33b04b2339ec1a98bbc9b2e4f346bf4b5805440cec498",
+        "notes": "Public official asset linked by exact manufacturer PN page."
+      },
+      {
+        "path": "component-assets/97e4f667d4e67568/product_detail_fig_rk09l_d_222_en_34014d0696.gif",
+        "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_d_222_en_34014d0696.gif",
+        "content_type": "image/gif",
+        "model_match": "exact_product_page_asset",
+        "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+        "provenance": "Official manufacturer download",
+        "source_date": "2026-09-25",
+        "size_bytes": 17566,
+        "sha256": "97e4f667d4e6756804d7ef7b5e6d5a6a92cde9a91e19a6a2f89805df73894ae8",
+        "notes": "Public official asset linked by exact manufacturer PN page."
+      },
+      {
+        "path": "component-assets/3d9b8dca14fdc9ef/product_detail_fig_rk09l_d_231_en_08e696475d.gif",
+        "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_d_231_en_08e696475d.gif",
+        "content_type": "image/gif",
+        "model_match": "exact_product_page_asset",
+        "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+        "provenance": "Official manufacturer download",
+        "source_date": "2026-09-25",
+        "size_bytes": 7241,
+        "sha256": "3d9b8dca14fdc9ef2dfde4254382b86838ba1777c10c7234157f5cc47796a112",
+        "notes": "Public official asset linked by exact manufacturer PN page."
+      },
+      {
+        "path": "component-assets/f82eac4aa6bb40c5/product_detail_main_rk09l1140a5l_8ddc7a3c2d.jpg",
+        "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_main_rk09l1140a5l_8ddc7a3c2d.jpg",
+        "content_type": "image/jpeg",
+        "model_match": "exact_product_page_asset",
+        "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+        "provenance": "Official manufacturer download",
+        "source_date": "2026-09-25",
+        "size_bytes": 10453,
+        "sha256": "f82eac4aa6bb40c52b05ee951f214a2da5d7de14ce992cfddd76be0423bb2518",
+        "notes": "Public official asset linked by exact manufacturer PN page."
+      },
+      {
+        "path": "component-assets/2836f211115c8f18/manufacturer-page.html",
+        "source_url": "https://tech.alpsalpine.com/e/products/detail/RK09L1140A5L/?download=1",
+        "content_type": "text/html",
+        "model_match": "exact_product_page",
+        "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+        "provenance": "Official manufacturer download",
+        "source_date": "2026-09-25",
+        "size_bytes": 67341,
+        "sha256": "2836f211115c8f18f8e0b003ca1cf49ab276ea940324c17d3deb284d78f2ea08",
+        "notes": "Saved official product-page HTML."
+      },
+      {
+        "path": "component-assets/d482505ccd5d1c05/product_detail_fig_rk09l_d_231_en_08e696475d.png",
+        "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_d_231_en_08e696475d.gif",
+        "content_type": "image/png",
+        "model_match": "derived_preview",
+        "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+        "provenance": "Official manufacturer download",
+        "source_date": "2026-09-25",
+        "size_bytes": 6291,
+        "sha256": "d482505ccd5d1c05711567af2f92f08ffd507ba91d1084f04934ce3053dee3cd",
+        "notes": "Rendered unchanged from downloaded manufacturer GIF/PDF; source asset retained."
+      },
+      {
+        "path": "component-assets/b62efb72f486db96/product_detail_fig_rk09l_c_101_en_acab65d7d7.png",
+        "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_c_101_en_acab65d7d7.gif",
+        "content_type": "image/png",
+        "model_match": "derived_preview",
+        "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+        "provenance": "Official manufacturer download",
+        "source_date": "2026-09-25",
+        "size_bytes": 9737,
+        "sha256": "b62efb72f486db96f15a64020694b2227dcbbec22104b52f2a4bc8a83c7466d8",
+        "notes": "Rendered unchanged from downloaded manufacturer GIF/PDF; source asset retained."
+      },
+      {
+        "path": "component-assets/86e7960f3ebd3a73/product_detail_fig_rk09l_d_222_en_34014d0696.png",
+        "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_d_222_en_34014d0696.gif",
+        "content_type": "image/png",
+        "model_match": "derived_preview",
+        "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+        "provenance": "Official manufacturer download",
+        "source_date": "2026-09-25",
+        "size_bytes": 14521,
+        "sha256": "86e7960f3ebd3a7342e68768090ce4e2a76160b06a1b4b8b11ff7c52f31a00aa",
+        "notes": "Rendered unchanged from downloaded manufacturer GIF/PDF; source asset retained."
+      },
+      {
+        "path": "component-assets/93c623969b52bc5a/product_detail_fig_rk09l_c_1_en_60d88f1440.png",
+        "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_c_1_en_60d88f1440.gif",
+        "content_type": "image/png",
+        "model_match": "derived_preview",
+        "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+        "provenance": "Official manufacturer download",
+        "source_date": "2026-09-25",
+        "size_bytes": 6542,
+        "sha256": "93c623969b52bc5a6b0170fddb8b0d2967cdc8d9b493be73510cdf86bc9c1034",
+        "notes": "Rendered unchanged from downloaded manufacturer GIF/PDF; source asset retained."
+      },
+      {
+        "path": "component-assets/21a820e5b524e302/RK09L1140-F15.png",
+        "source_url": "https://tech.alpsalpine.com/cms.media/product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+        "content_type": "image/png",
+        "model_match": "derived_preview",
+        "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+        "provenance": "Official manufacturer download",
+        "source_date": "2026-09-25",
+        "size_bytes": 104676,
+        "sha256": "21a820e5b524e30264eadd9c1c3e436bb876a5c5e3230d1a9573743ad1899f47",
+        "notes": "Rendered unchanged from downloaded manufacturer GIF/PDF; source asset retained."
+      }
+    ],
+    "model_status": "exact_manufacturer_step",
+    "facts": {
+      "electrical": [
+        "Single 10 kΩ linear 1B; ±20%; 0.05 W; max 50 VAC / 10 VDC.",
+        "Pins 1 and 3 are track ends; pin 2 is wiper."
+      ],
+      "mechanical": [
+        "Vertical flat metal shaft, L1=15 mm; diameter 6 mm with drawing tolerances, flat dimension 4.5 mm.",
+        "M9×0.75 bushing; LB=5 mm; flat length l1=7 mm.",
+        "Drawing body width 12.1 mm; mounting-side hole drawing has three 1 mm electrical holes across a 5 mm span and 11.3 mm support spacing.",
+        "300° ±5° rotation, no detent; drawing shows full CCW shaft position."
+      ],
+      "soldering": [
+        "Manufacturer product page: dip 260±5 °C max, 5±1 s, max 2 passes; preheat underside 100 °C max, 2 min.",
+        "Hand solder reference 350 °C max, 3 s, once; factory process must be agreed."
+      ],
+      "source": [
+        "Exact product-page dimensional GIF and official RK09L catalog drawing 3."
+      ]
+    },
+    "gaps": [
+      "Footprint must still be checked against the exact drawing and board stack.",
+      "Factory process acceptance and current availability are not established by these files."
+    ],
+    "attempts": [],
+    "notes": [
+      "Manufacturer supplied STEP originates from the exact PN page, despite shorter mechanical filenames; resistance markings/internal detail may be simplified.",
+      "ALPS ZIP readme retained. Product page requests formal supply specifications before production."
+    ],
+    "name": "RK09L1140A5L",
+    "catalog_identity": "exact_mpn",
+    "retrieved_date_utc": "2026-09-25",
+    "notes_path": "component-assets/efedf8fd61120d49/ASSET-NOTES.md"
+  },
+  "remote_assets": [],
+  "assets": [
+    {
+      "path": "component-assets/e1b63c0709434be1/product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+      "source_url": "https://tech.alpsalpine.com/cms.media/product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+      "content_type": "application/zip",
+      "model_match": "exact_product_page_asset",
+      "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "provenance": "Official manufacturer download",
+      "source_date": "2026-09-25",
+      "size_bytes": 610290,
+      "sha256": "e1b63c0709434be1aeea9db8d1f5a33f135b89535fd858f6a580b3bc6a8bdea3",
+      "notes": "Public official asset linked by exact manufacturer PN page.",
+      "bytes": 610290,
+      "filename": "product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+      "original_filename": "product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+      "kind": "archive",
+      "license": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "research_origin": "component-research/rotary/c7419101/product_3dcad_rk09l1140a5l_en_5f99b140b5.zip"
+    },
+    {
+      "path": "component-assets/8876b93a81abf812/Read-me-first.rtf",
+      "source_url": "https://tech.alpsalpine.com/cms.media/product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+      "content_type": "application/rtf",
+      "model_match": "exact_product_page_asset",
+      "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "provenance": "Official manufacturer download",
+      "source_date": "2026-09-25",
+      "size_bytes": 8712,
+      "sha256": "8876b93a81abf812c3aaf52b3801bea233ec49905c763754a60a43b26d315ec8",
+      "notes": "Original ZIP Read me first; explains STEP and PDF software requirements. No separate open redistribution license stated.",
+      "archive_member": "RK09L1140A5L/Read me first.rtf",
+      "bytes": 8712,
+      "filename": "Read-me-first.rtf",
+      "original_filename": "Read me first.rtf",
+      "kind": "license",
+      "license": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "research_origin": "component-research/rotary/c7419101/Read me first.rtf"
+    },
+    {
+      "path": "component-assets/43f87b03b11193d7/RK09L1140-F15.pdf",
+      "source_url": "https://tech.alpsalpine.com/cms.media/product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+      "content_type": "application/pdf",
+      "model_match": "exact_product_page_asset",
+      "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "provenance": "Official manufacturer download",
+      "source_date": "2026-09-25",
+      "size_bytes": 437987,
+      "sha256": "43f87b03b11193d752628ff4c6174ec4f20524e07c2a3268bec712505f147553",
+      "notes": "Original CAD archive PDF preview, not the dimensional drawing.",
+      "archive_member": "RK09L1140A5L/RK09L1140-F15.pdf",
+      "bytes": 437987,
+      "filename": "RK09L1140-F15.pdf",
+      "original_filename": "RK09L1140-F15.pdf",
+      "kind": "pdf",
+      "license": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "research_origin": "component-research/rotary/c7419101/RK09L1140-F15.pdf"
+    },
+    {
+      "path": "component-assets/a67271ce2e6911ab/RK09L1140-F15.STEP",
+      "source_url": "https://tech.alpsalpine.com/cms.media/product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+      "content_type": "model/step",
+      "model_match": "exact",
+      "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "provenance": "Official manufacturer download",
+      "source_date": "2026-09-25",
+      "size_bytes": 1861371,
+      "sha256": "a67271ce2e6911aba3a23c88eb34c7b514f74ccd99545806524535efde795d43",
+      "notes": "Public official asset linked by exact manufacturer PN page.",
+      "archive_member": "RK09L1140A5L/RK09L1140-F15.STEP",
+      "bytes": 1861371,
+      "filename": "RK09L1140-F15.STEP",
+      "original_filename": "RK09L1140-F15.STEP",
+      "kind": "step",
+      "license": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "research_origin": "component-research/rotary/c7419101/RK09L1140-F15.STEP"
+    },
+    {
+      "path": "component-assets/45176642b75760db/product_catalog_rv_01_rk09l_en_b8437bd47d.pdf",
+      "source_url": "https://tech.alpsalpine.com/cms.media/product_catalog_rv_01_rk09l_en_b8437bd47d.pdf",
+      "content_type": "application/pdf",
+      "model_match": "manufacturer_family",
+      "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "provenance": "Official manufacturer download",
+      "source_date": "2026-09-25",
+      "size_bytes": 399193,
+      "sha256": "45176642b75760db42093394f6204a127e7abac542df13ab4312f11ff51d4c3f",
+      "notes": "Public official asset linked by exact manufacturer PN page.",
+      "bytes": 399193,
+      "filename": "product_catalog_rv_01_rk09l_en_b8437bd47d.pdf",
+      "original_filename": "product_catalog_rv_01_rk09l_en_b8437bd47d.pdf",
+      "kind": "pdf",
+      "license": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "research_origin": "component-research/rotary/c7419101/product_catalog_rv_01_rk09l_en_b8437bd47d.pdf"
+    },
+    {
+      "path": "component-assets/626d3d204b16f181/product_detail_fig_rk09l_c_101_en_acab65d7d7.gif",
+      "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_c_101_en_acab65d7d7.gif",
+      "content_type": "image/gif",
+      "model_match": "exact_product_page_asset",
+      "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "provenance": "Official manufacturer download",
+      "source_date": "2026-09-25",
+      "size_bytes": 11653,
+      "sha256": "626d3d204b16f181ca063eaa6311d53d001d7f29e63aceda29c5e2219ed83147",
+      "notes": "Public official asset linked by exact manufacturer PN page.",
+      "bytes": 11653,
+      "filename": "product_detail_fig_rk09l_c_101_en_acab65d7d7.gif",
+      "original_filename": "product_detail_fig_rk09l_c_101_en_acab65d7d7.gif",
+      "kind": "image",
+      "license": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "research_origin": "component-research/rotary/c7419101/product_detail_fig_rk09l_c_101_en_acab65d7d7.gif"
+    },
+    {
+      "path": "component-assets/08137933b50c3896/product_detail_fig_rk09l_c_1_en_60d88f1440.gif",
+      "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_c_1_en_60d88f1440.gif",
+      "content_type": "image/gif",
+      "model_match": "exact_product_page_asset",
+      "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "provenance": "Official manufacturer download",
+      "source_date": "2026-09-25",
+      "size_bytes": 7777,
+      "sha256": "08137933b50c389638c33b04b2339ec1a98bbc9b2e4f346bf4b5805440cec498",
+      "notes": "Public official asset linked by exact manufacturer PN page.",
+      "bytes": 7777,
+      "filename": "product_detail_fig_rk09l_c_1_en_60d88f1440.gif",
+      "original_filename": "product_detail_fig_rk09l_c_1_en_60d88f1440.gif",
+      "kind": "image",
+      "license": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "research_origin": "component-research/rotary/c7419101/product_detail_fig_rk09l_c_1_en_60d88f1440.gif"
+    },
+    {
+      "path": "component-assets/97e4f667d4e67568/product_detail_fig_rk09l_d_222_en_34014d0696.gif",
+      "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_d_222_en_34014d0696.gif",
+      "content_type": "image/gif",
+      "model_match": "exact_product_page_asset",
+      "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "provenance": "Official manufacturer download",
+      "source_date": "2026-09-25",
+      "size_bytes": 17566,
+      "sha256": "97e4f667d4e6756804d7ef7b5e6d5a6a92cde9a91e19a6a2f89805df73894ae8",
+      "notes": "Public official asset linked by exact manufacturer PN page.",
+      "bytes": 17566,
+      "filename": "product_detail_fig_rk09l_d_222_en_34014d0696.gif",
+      "original_filename": "product_detail_fig_rk09l_d_222_en_34014d0696.gif",
+      "kind": "image",
+      "license": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "research_origin": "component-research/rotary/c7419101/product_detail_fig_rk09l_d_222_en_34014d0696.gif"
+    },
+    {
+      "path": "component-assets/3d9b8dca14fdc9ef/product_detail_fig_rk09l_d_231_en_08e696475d.gif",
+      "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_d_231_en_08e696475d.gif",
+      "content_type": "image/gif",
+      "model_match": "exact_product_page_asset",
+      "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "provenance": "Official manufacturer download",
+      "source_date": "2026-09-25",
+      "size_bytes": 7241,
+      "sha256": "3d9b8dca14fdc9ef2dfde4254382b86838ba1777c10c7234157f5cc47796a112",
+      "notes": "Public official asset linked by exact manufacturer PN page.",
+      "bytes": 7241,
+      "filename": "product_detail_fig_rk09l_d_231_en_08e696475d.gif",
+      "original_filename": "product_detail_fig_rk09l_d_231_en_08e696475d.gif",
+      "kind": "image",
+      "license": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "research_origin": "component-research/rotary/c7419101/product_detail_fig_rk09l_d_231_en_08e696475d.gif"
+    },
+    {
+      "path": "component-assets/f82eac4aa6bb40c5/product_detail_main_rk09l1140a5l_8ddc7a3c2d.jpg",
+      "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_main_rk09l1140a5l_8ddc7a3c2d.jpg",
+      "content_type": "image/jpeg",
+      "model_match": "exact_product_page_asset",
+      "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "provenance": "Official manufacturer download",
+      "source_date": "2026-09-25",
+      "size_bytes": 10453,
+      "sha256": "f82eac4aa6bb40c52b05ee951f214a2da5d7de14ce992cfddd76be0423bb2518",
+      "notes": "Public official asset linked by exact manufacturer PN page.",
+      "bytes": 10453,
+      "filename": "product_detail_main_rk09l1140a5l_8ddc7a3c2d.jpg",
+      "original_filename": "product_detail_main_rk09l1140a5l_8ddc7a3c2d.jpg",
+      "kind": "image",
+      "license": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "research_origin": "component-research/rotary/c7419101/product_detail_main_rk09l1140a5l_8ddc7a3c2d.jpg"
+    },
+    {
+      "path": "component-assets/2836f211115c8f18/manufacturer-page.html",
+      "source_url": "https://tech.alpsalpine.com/e/products/detail/RK09L1140A5L/?download=1",
+      "content_type": "text/html",
+      "model_match": "exact_product_page",
+      "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "provenance": "Official manufacturer download",
+      "source_date": "2026-09-25",
+      "size_bytes": 67341,
+      "sha256": "2836f211115c8f18f8e0b003ca1cf49ab276ea940324c17d3deb284d78f2ea08",
+      "notes": "Saved official product-page HTML.",
+      "bytes": 67341,
+      "filename": "manufacturer-page.html",
+      "original_filename": "manufacturer-page.html",
+      "kind": "document",
+      "license": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "research_origin": "component-research/rotary/c7419101/manufacturer-page.html"
+    },
+    {
+      "path": "component-assets/d482505ccd5d1c05/product_detail_fig_rk09l_d_231_en_08e696475d.png",
+      "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_d_231_en_08e696475d.gif",
+      "content_type": "image/png",
+      "model_match": "derived_preview",
+      "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "provenance": "Official manufacturer download",
+      "source_date": "2026-09-25",
+      "size_bytes": 6291,
+      "sha256": "d482505ccd5d1c05711567af2f92f08ffd507ba91d1084f04934ce3053dee3cd",
+      "notes": "Rendered unchanged from downloaded manufacturer GIF/PDF; source asset retained.",
+      "bytes": 6291,
+      "filename": "product_detail_fig_rk09l_d_231_en_08e696475d.png",
+      "original_filename": "product_detail_fig_rk09l_d_231_en_08e696475d.png",
+      "kind": "image",
+      "license": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "research_origin": "component-research/rotary/c7419101/product_detail_fig_rk09l_d_231_en_08e696475d.png"
+    },
+    {
+      "path": "component-assets/b62efb72f486db96/product_detail_fig_rk09l_c_101_en_acab65d7d7.png",
+      "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_c_101_en_acab65d7d7.gif",
+      "content_type": "image/png",
+      "model_match": "derived_preview",
+      "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "provenance": "Official manufacturer download",
+      "source_date": "2026-09-25",
+      "size_bytes": 9737,
+      "sha256": "b62efb72f486db96f15a64020694b2227dcbbec22104b52f2a4bc8a83c7466d8",
+      "notes": "Rendered unchanged from downloaded manufacturer GIF/PDF; source asset retained.",
+      "bytes": 9737,
+      "filename": "product_detail_fig_rk09l_c_101_en_acab65d7d7.png",
+      "original_filename": "product_detail_fig_rk09l_c_101_en_acab65d7d7.png",
+      "kind": "image",
+      "license": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "research_origin": "component-research/rotary/c7419101/product_detail_fig_rk09l_c_101_en_acab65d7d7.png"
+    },
+    {
+      "path": "component-assets/86e7960f3ebd3a73/product_detail_fig_rk09l_d_222_en_34014d0696.png",
+      "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_d_222_en_34014d0696.gif",
+      "content_type": "image/png",
+      "model_match": "derived_preview",
+      "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "provenance": "Official manufacturer download",
+      "source_date": "2026-09-25",
+      "size_bytes": 14521,
+      "sha256": "86e7960f3ebd3a7342e68768090ce4e2a76160b06a1b4b8b11ff7c52f31a00aa",
+      "notes": "Rendered unchanged from downloaded manufacturer GIF/PDF; source asset retained.",
+      "bytes": 14521,
+      "filename": "product_detail_fig_rk09l_d_222_en_34014d0696.png",
+      "original_filename": "product_detail_fig_rk09l_d_222_en_34014d0696.png",
+      "kind": "image",
+      "license": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "research_origin": "component-research/rotary/c7419101/product_detail_fig_rk09l_d_222_en_34014d0696.png"
+    },
+    {
+      "path": "component-assets/93c623969b52bc5a/product_detail_fig_rk09l_c_1_en_60d88f1440.png",
+      "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_c_1_en_60d88f1440.gif",
+      "content_type": "image/png",
+      "model_match": "derived_preview",
+      "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "provenance": "Official manufacturer download",
+      "source_date": "2026-09-25",
+      "size_bytes": 6542,
+      "sha256": "93c623969b52bc5a6b0170fddb8b0d2967cdc8d9b493be73510cdf86bc9c1034",
+      "notes": "Rendered unchanged from downloaded manufacturer GIF/PDF; source asset retained.",
+      "bytes": 6542,
+      "filename": "product_detail_fig_rk09l_c_1_en_60d88f1440.png",
+      "original_filename": "product_detail_fig_rk09l_c_1_en_60d88f1440.png",
+      "kind": "image",
+      "license": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "research_origin": "component-research/rotary/c7419101/product_detail_fig_rk09l_c_1_en_60d88f1440.png"
+    },
+    {
+      "path": "component-assets/21a820e5b524e302/RK09L1140-F15.png",
+      "source_url": "https://tech.alpsalpine.com/cms.media/product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+      "content_type": "image/png",
+      "model_match": "derived_preview",
+      "license_provenance": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "provenance": "Official manufacturer download",
+      "source_date": "2026-09-25",
+      "size_bytes": 104676,
+      "sha256": "21a820e5b524e30264eadd9c1c3e436bb876a5c5e3230d1a9573743ad1899f47",
+      "notes": "Rendered unchanged from downloaded manufacturer GIF/PDF; source asset retained.",
+      "bytes": 104676,
+      "filename": "RK09L1140-F15.png",
+      "original_filename": "RK09L1140-F15.png",
+      "kind": "image",
+      "license": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "research_origin": "component-research/rotary/c7419101/RK09L1140-F15.png"
+    },
+    {
+      "path": "component-assets/efedf8fd61120d49/ASSET-NOTES.md",
+      "source_url": "https://tech.alpsalpine.com/e/products/detail/RK09L1140A5L/?download=1",
+      "notes": "Authored research notes with source locators; not a manufacturer document.",
+      "license": "Authored research notes; CC BY 4.0.",
+      "sha256": "efedf8fd61120d49f70a32a51dfad20e8b4189ce1f2a6e1d2de63a830b4c33f3",
+      "bytes": 1271,
+      "filename": "ASSET-NOTES.md",
+      "original_filename": "ASSET-NOTES.md",
+      "kind": "document",
+      "research_origin": "component-research/rotary/c7419101/ASSET-NOTES.md"
+    }
+  ],
+  "facts": [
+    {
+      "label": "Facts / Electrical 1",
+      "value": "Single 10 kΩ linear 1B; ±20%; 0.05 W; max 50 VAC / 10 VDC.",
+      "source_urls": [
+        "https://tech.alpsalpine.com/e/products/detail/RK09L1140A5L/?download=1"
+      ]
+    },
+    {
+      "label": "Facts / Electrical 2",
+      "value": "Pins 1 and 3 are track ends; pin 2 is wiper.",
+      "source_urls": [
+        "https://tech.alpsalpine.com/e/products/detail/RK09L1140A5L/?download=1"
+      ]
+    },
+    {
+      "label": "Facts / Mechanical 1",
+      "value": "Vertical flat metal shaft, L1=15 mm; diameter 6 mm with drawing tolerances, flat dimension 4.5 mm.",
+      "source_urls": [
+        "https://tech.alpsalpine.com/e/products/detail/RK09L1140A5L/?download=1"
+      ]
+    },
+    {
+      "label": "Facts / Mechanical 2",
+      "value": "M9×0.75 bushing; LB=5 mm; flat length l1=7 mm.",
+      "source_urls": [
+        "https://tech.alpsalpine.com/e/products/detail/RK09L1140A5L/?download=1"
+      ]
+    },
+    {
+      "label": "Facts / Mechanical 3",
+      "value": "Drawing body width 12.1 mm; mounting-side hole drawing has three 1 mm electrical holes across a 5 mm span and 11.3 mm support spacing.",
+      "source_urls": [
+        "https://tech.alpsalpine.com/e/products/detail/RK09L1140A5L/?download=1"
+      ]
+    },
+    {
+      "label": "Facts / Mechanical 4",
+      "value": "300° ±5° rotation, no detent; drawing shows full CCW shaft position.",
+      "source_urls": [
+        "https://tech.alpsalpine.com/e/products/detail/RK09L1140A5L/?download=1"
+      ]
+    },
+    {
+      "label": "Facts / Soldering 1",
+      "value": "Manufacturer product page: dip 260±5 °C max, 5±1 s, max 2 passes; preheat underside 100 °C max, 2 min.",
+      "source_urls": [
+        "https://tech.alpsalpine.com/e/products/detail/RK09L1140A5L/?download=1"
+      ]
+    },
+    {
+      "label": "Facts / Soldering 2",
+      "value": "Hand solder reference 350 °C max, 3 s, once; factory process must be agreed.",
+      "source_urls": [
+        "https://tech.alpsalpine.com/e/products/detail/RK09L1140A5L/?download=1"
+      ]
+    }
+  ],
+  "pinmap": {},
+  "pinmap_source": "Use the source drawing and its stated view; no CAD pad coordinates have been qualified.",
+  "gaps": [
+    "Footprint must still be checked against the exact drawing and board stack.",
+    "Factory process acceptance and current availability are not established by these files."
+  ],
+  "assembly": "JLC listing: Wave Soldering; Economic and Standard; Extended; MSL1. Quote and geometry review pending.",
+  "models": [
+    {
+      "path": "component-previews/a67271ce2e6911ab.glb",
+      "preview": "component-previews/a67271ce2e6911ab.png",
+      "source_step": "component-assets/a67271ce2e6911ab/RK09L1140-F15.STEP",
+      "source_sha256": "a67271ce2e6911aba3a23c88eb34c7b514f74ccd99545806524535efde795d43",
+      "source_url": "https://tech.alpsalpine.com/cms.media/product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+      "label": "Manufacturer CAD linked to the exact part",
+      "model_match": "manufacturer_part",
+      "original_model_match": "exact",
+      "bbox_mm": {
+        "x": 12.1008,
+        "y": 12.5023,
+        "z": 28.5297
+      },
+      "notes": "Public official asset linked by exact manufacturer PN page.",
+      "license": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+      "inspection": {
+        "source_sha256": "a67271ce2e6911aba3a23c88eb34c7b514f74ccd99545806524535efde795d43",
+        "glb": "a67271ce2e6911ab.glb",
+        "png": "a67271ce2e6911ab.png",
+        "vertices": 50304,
+        "triangles": 84986,
+        "source_bounding_box_mm": {
+          "x": 12.1008,
+          "y": 12.5023,
+          "z": 28.5297
+        },
+        "bbox_basis": "Imported STEP geometry, including terminals/hardware represented in the file; not measured physical dimensions.",
+        "source_units": "mm (OpenCascade import normalization)",
+        "glb_units": "metres",
+        "glb_axis_mapping": "x,y,z -> x,z,-y",
+        "linear_tessellation_tolerance_mm": 0.07,
+        "angular_tessellation_tolerance_radians": 0.2,
+        "material": "Neutral inspection material; original STEP surface colours are not reproduced.",
+        "solids": 1,
+        "valid_shape": true,
+        "derivation": "Tessellation and preview only. The source STEP is retained unchanged with separate provenance.",
+        "glb_sha256": "1e52ae89ba85ab57cb2f979eb898a588014fe9e5ffa0f14b83f31c525c284f4d",
+        "png_sha256": "9b22e14620225e518d2e723464574e8077278b3cfbb749b6accaee8b723b87c8"
+      },
+      "generated": false
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://tech.alpsalpine.com/e/products/detail/RK09L1140A5L/?download=1",
+      "label": "tech.alpsalpine.com"
+    },
+    {
+      "url": "https://tech.alpsalpine.com/cms.media/product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+      "label": "tech.alpsalpine.com — product_3dcad_rk09l1140a5l_en_5f99b140b5.zip"
+    },
+    {
+      "url": "https://tech.alpsalpine.com/cms.media/product_catalog_rv_01_rk09l_en_b8437bd47d.pdf",
+      "label": "tech.alpsalpine.com — product_catalog_rv_01_rk09l_en_b8437bd47d.pdf"
+    },
+    {
+      "url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_c_101_en_acab65d7d7.gif",
+      "label": "tech.alpsalpine.com — product_detail_fig_rk09l_c_101_en_acab65d7d7.gif"
+    },
+    {
+      "url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_c_1_en_60d88f1440.gif",
+      "label": "tech.alpsalpine.com — product_detail_fig_rk09l_c_1_en_60d88f1440.gif"
+    },
+    {
+      "url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_d_222_en_34014d0696.gif",
+      "label": "tech.alpsalpine.com — product_detail_fig_rk09l_d_222_en_34014d0696.gif"
+    },
+    {
+      "url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_d_231_en_08e696475d.gif",
+      "label": "tech.alpsalpine.com — product_detail_fig_rk09l_d_231_en_08e696475d.gif"
+    },
+    {
+      "url": "https://tech.alpsalpine.com/cms.media/product_detail_main_rk09l1140a5l_8ddc7a3c2d.jpg",
+      "label": "tech.alpsalpine.com — product_detail_main_rk09l1140a5l_8ddc7a3c2d.jpg"
+    },
+    {
+      "url": "https://jlcpcb.com/partdetail/ALPSALPINE-RK09L1140A5L/C7419101",
+      "label": "jlcpcb.com"
+    },
+    {
+      "url": "https://tech.alpsalpine.com/e/products/detail/RK09L1140A5L/",
+      "label": "tech.alpsalpine.com"
+    },
+    {
+      "url": "https://www.lcsc.com/de/product-detail/C7419101.html",
+      "label": "www.lcsc.com — C7419101.html"
+    }
+  ],
+  "research_group": "rotary",
+  "coverage": {
+    "downloaded_pdf": true,
+    "downloaded_step": true,
+    "downloaded_model": true,
+    "viewer_models": 1,
+    "generated_envelope": false,
+    "best_model_match": "manufacturer_part",
+    "fit_qualified": false,
+    "production_footprint_qualified": false,
+    "factory_order_approved": false
+  }
+}

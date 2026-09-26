@@ -1,0 +1,359 @@
+{
+  "id": "c668607",
+  "name": "PJ-313 5JCJ",
+  "mpn": "PJ-313 5JCJ",
+  "manufacturer": "SHOU HAN",
+  "jlc_code": "C668607",
+  "jlc_url": "https://jlcpcb.com/partdetail/SHOUHAN-PJ_3135JCJ/C668607",
+  "kind": "jack",
+  "identity": "exact_mpn",
+  "geometry": "Jack axis parallel to PCB; rear/edge/raised patch strip layout, not Thonkiconn footprint. Two locating posts. Exact manufacturer page1 schematic visually checked: ONLY THREE electrical contact nodes; five legs include duplicated contacts and DO NOT imply normally closed switching contacts. Non-threaded5mm OD nose with3.6mm nominal opening in drawing;3.5mm audiojack class.",
+  "application": "Plain TRS3.5mm patch connector or audio output; NOT normalled input",
+  "scope": "primary",
+  "original_catalog_record": {
+    "mpn": "PJ-313 5JCJ",
+    "jlc_code": "C668607",
+    "manufacturer": "SHOU HAN",
+    "role": "Plain TRS3.5mm patch connector or audio output; NOT normalled input",
+    "package": "Through hole/right-angle,5physical solderlegs;14×6×5mm",
+    "jlc_url": "https://jlcpcb.com/partdetail/SHOUHAN-PJ_3135JCJ/C668607",
+    "manufacturer_url": null,
+    "lcsc_url": "https://item.szlcsc.com/698550.html",
+    "datasheet_url": "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf",
+    "geometry_notes": "Jack axis parallel to PCB; rear/edge/raised patch strip layout, not Thonkiconn footprint. Two locating posts. Exact manufacturer page1 schematic visually checked: ONLY THREE electrical contact nodes; five legs include duplicated contacts and DO NOT imply normally closed switching contacts. Non-threaded5mm OD nose with3.6mm nominal opening in drawing;3.5mm audiojack class.",
+    "electrical_notes": "DC30V0.5A,contactresistance≤30mΩ,5000cycles;insertion/extraction3–25N. TRS/TS plug behavior must be designed; TS plug shorts ring to sleeve.",
+    "assembly": "JLC listing: Wave Soldering; Economic and Standard; Extended. No manual soldering at home required if quote accepted.",
+    "stock_status": "JLC current stock quantity not captured.",
+    "open_questions": [
+      "Exact pin numbering vs duplicated mechanicallegs in footprint",
+      "Stress relief under patch cable insertion and leverage",
+      "Switched connector needed elsewhere for normalled signal path",
+      "Current JLC stock and accepted wave process"
+    ],
+    "category": "Controls and connectors",
+    "record_basis": "named_part_and_assembly_listing_exact_drawing_checked",
+    "listing_checked": "2026-09-25",
+    "listing_checked_timezone": "UTC (2026-09-26 in Japan)",
+    "qualification_status": "Research candidate; no design-specific footprint, assembled sample, or order-specific acceptance established."
+  },
+  "listing_record": {
+    "mpn": "PJ-313 5JCJ",
+    "jlc_code": "C668607",
+    "manufacturer": "SHOU HAN",
+    "role": "Plain TRS3.5mm patch connector or audio output; NOT normalled input",
+    "package": "Through hole/right-angle,5physical solderlegs;14×6×5mm",
+    "jlc_url": "https://jlcpcb.com/partdetail/SHOUHAN-PJ_3135JCJ/C668607",
+    "manufacturer_url": null,
+    "lcsc_url": "https://item.szlcsc.com/698550.html",
+    "datasheet_url": "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf",
+    "geometry_notes": "Jack axis parallel to PCB; rear/edge/raised patch strip layout, not Thonkiconn footprint. Two locating posts. Exact manufacturer page1 schematic visually checked: ONLY THREE electrical contact nodes; five legs include duplicated contacts and DO NOT imply normally closed switching contacts. Non-threaded5mm OD nose with3.6mm nominal opening in drawing;3.5mm audiojack class.",
+    "electrical_notes": "DC30V0.5A,contactresistance≤30mΩ,5000cycles;insertion/extraction3–25N. TRS/TS plug behavior must be designed; TS plug shorts ring to sleeve.",
+    "assembly": "JLC listing: Wave Soldering; Economic and Standard; Extended. No manual soldering at home required if quote accepted.",
+    "stock_status": "JLC current stock quantity not captured.",
+    "open_questions": [
+      "Exact pin numbering vs duplicated mechanicallegs in footprint",
+      "Stress relief under patch cable insertion and leverage",
+      "Switched connector needed elsewhere for normalled signal path",
+      "Current JLC stock and accepted wave process"
+    ],
+    "category": "Controls and connectors",
+    "record_basis": "named_part_and_assembly_listing_exact_drawing_checked",
+    "listing_checked": "2026-09-25",
+    "listing_checked_timezone": "UTC (2026-09-26 in Japan)",
+    "qualification_status": "Research candidate; no design-specific footprint, assembled sample, or order-specific acceptance established."
+  },
+  "research": {
+    "id": "c668607",
+    "manufacturer": "SHOU HAN",
+    "mpn": "PJ-313 5JCJ",
+    "files": [
+      {
+        "path": "component-assets/8c3be62265520873/PJ-313-5JCJ.pdf",
+        "relative_path": "component-assets/8c3be62265520873/PJ-313-5JCJ.pdf",
+        "source_url": "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf",
+        "content_type": "application/pdf",
+        "model_match": "exact_mpn_drawing",
+        "provenance": "Existing retrieved research/pj313.pdf reused byte-for-byte; exact titlePJ-3135JCJ; drawing revA dated2016-06-17, firstPDFpage.",
+        "license": "Manufacturer/supplier reference document; copyright remains with its owner. No open redistribution license identified.",
+        "date": "2026-09-25",
+        "downloaded": true,
+        "bytes": 1146441,
+        "sha256": "8c3be622655208735ec21158f79aba16f5b1ae0b6621efa6ea6e2e89ac0d7199",
+        "pages": 6
+      }
+    ],
+    "pins": {
+      "electrical_nodes": 3,
+      "solder_legs": 5,
+      "roles": {
+        "1": "Sleeve contact",
+        "2": "Ring contact",
+        "3": "Tip contact"
+      },
+      "switching": "TRS audio jack; no switched normal contact in manufacturer schematic.",
+      "view": "The footprint is explicitly shown from the bottom. Which physical legs duplicate which contact must be checked against the drawing and sample continuity."
+    },
+    "critical_dimensions": {
+      "units": "mm",
+      "body_overall_length": 14,
+      "body_rectangular_length": 11.5,
+      "nose_projection": 2.5,
+      "body_width": 6,
+      "body_height": 5,
+      "nose_outer_diameter": 5,
+      "opening_nominal_diameter": 3.6,
+      "solder_leg_length_below_case": 3.2,
+      "pin_side_to_side_span": 5.6,
+      "locating_posts_count": 2,
+      "locating_posts_diameter": 1,
+      "recommended_locating_holes_diameter": 1.3,
+      "locating_post_pitch": 6,
+      "solder_slot_size": [
+        1,
+        1.5
+      ],
+      "solder_rows_span": 5.8,
+      "notes": [
+        "Manufacturer drawing labels6-1x1.5 slots although drawing depictsfive populated contactlegs. Resolve extra-slot notation before manufacturing.",
+        "No threaded bushing; side-entry orientation is parallel toPCB."
+      ]
+    },
+    "facts": [
+      "RatedDC30V0.5A; contactresistance<=30mOhm; insulation>=100MOhm; withstand500VAC.",
+      "Insertion/extraction3-25N; life5,000cycles in drawing.",
+      "A TSplug will bridge ring and sleeve; ring must not be used as an independent switching-detect node."
+    ],
+    "gaps": [
+      "No exact publicSTEP/WRL/IGES acquired; EasyEDA public component request returned403.",
+      "Pin identity is schematic interpretation; perform continuity testincluding duplicatedlegs and TS/TRSplugs on assembledcoupon.",
+      "Package's otherPDFpages include supplier processing/context material; firstpage is geometry authority."
+    ],
+    "links": [
+      "https://jlcpcb.com/partdetail/SHOUHAN-PJ_3135JCJ/C668607",
+      "https://item.szlcsc.com/698550.html"
+    ],
+    "model_status": "no_model_downloaded"
+  },
+  "remote_assets": [],
+  "assets": [
+    {
+      "path": "component-assets/8c3be62265520873/PJ-313-5JCJ.pdf",
+      "source_url": "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf",
+      "content_type": "application/pdf",
+      "model_match": "exact_mpn_drawing",
+      "provenance": "Existing retrieved research/pj313.pdf reused byte-for-byte; exact titlePJ-3135JCJ; drawing revA dated2016-06-17, firstPDFpage.",
+      "license": "Manufacturer/supplier reference document; copyright remains with its owner. No open redistribution license identified.",
+      "date": "2026-09-25",
+      "downloaded": true,
+      "bytes": 1146441,
+      "sha256": "8c3be622655208735ec21158f79aba16f5b1ae0b6621efa6ea6e2e89ac0d7199",
+      "pages": 6,
+      "filename": "PJ-313-5JCJ.pdf",
+      "original_filename": "PJ-313-5JCJ.pdf",
+      "kind": "pdf",
+      "notes": "Existing retrieved research/pj313.pdf reused byte-for-byte; exact titlePJ-3135JCJ; drawing revA dated2016-06-17, firstPDFpage.",
+      "research_origin": "component-research/connectors/c668607/PJ-313-5JCJ.pdf"
+    }
+  ],
+  "facts": [
+    {
+      "label": "Facts 1",
+      "value": "RatedDC30V0.5A; contactresistance<=30mOhm; insulation>=100MOhm; withstand500VAC.",
+      "source_urls": [
+        "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf"
+      ]
+    },
+    {
+      "label": "Facts 2",
+      "value": "Insertion/extraction3-25N; life5,000cycles in drawing.",
+      "source_urls": [
+        "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf"
+      ]
+    },
+    {
+      "label": "Facts 3",
+      "value": "A TSplug will bridge ring and sleeve; ring must not be used as an independent switching-detect node.",
+      "source_urls": [
+        "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Units",
+      "value": "mm",
+      "source_urls": [
+        "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Body overall length",
+      "value": "14",
+      "source_urls": [
+        "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Body rectangular length",
+      "value": "11.5",
+      "source_urls": [
+        "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Nose projection",
+      "value": "2.5",
+      "source_urls": [
+        "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Body width",
+      "value": "6",
+      "source_urls": [
+        "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Body height",
+      "value": "5",
+      "source_urls": [
+        "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Nose outer diameter",
+      "value": "5",
+      "source_urls": [
+        "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Opening nominal diameter",
+      "value": "3.6",
+      "source_urls": [
+        "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Solder leg length below case",
+      "value": "3.2",
+      "source_urls": [
+        "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Pin side to side span",
+      "value": "5.6",
+      "source_urls": [
+        "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Locating posts count",
+      "value": "2",
+      "source_urls": [
+        "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Locating posts diameter",
+      "value": "1",
+      "source_urls": [
+        "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Recommended locating holes diameter",
+      "value": "1.3",
+      "source_urls": [
+        "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Locating post pitch",
+      "value": "6",
+      "source_urls": [
+        "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Solder slot size 1",
+      "value": "1",
+      "source_urls": [
+        "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Solder slot size 2",
+      "value": "1.5",
+      "source_urls": [
+        "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Solder rows span",
+      "value": "5.8",
+      "source_urls": [
+        "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Notes 1",
+      "value": "Manufacturer drawing labels6-1x1.5 slots although drawing depictsfive populated contactlegs. Resolve extra-slot notation before manufacturing.",
+      "source_urls": [
+        "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Notes 2",
+      "value": "No threaded bushing; side-entry orientation is parallel toPCB.",
+      "source_urls": [
+        "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf"
+      ]
+    }
+  ],
+  "pinmap": {
+    "electrical_nodes": 3,
+    "solder_legs": 5,
+    "roles": {
+      "1": "Sleeve contact",
+      "2": "Ring contact",
+      "3": "Tip contact"
+    },
+    "switching": "TRS audio jack; no switched normal contact in manufacturer schematic.",
+    "view": "The footprint is explicitly shown from the bottom. Which physical legs duplicate which contact must be checked against the drawing and sample continuity."
+  },
+  "pinmap_source": "Use the source drawing and its stated view; no CAD pad coordinates have been qualified.",
+  "gaps": [
+    "No exact publicSTEP/WRL/IGES acquired; EasyEDA public component request returned403.",
+    "Pin identity is schematic interpretation; perform continuity testincluding duplicatedlegs and TS/TRSplugs on assembledcoupon.",
+    "Package's otherPDFpages include supplier processing/context material; firstpage is geometry authority."
+  ],
+  "assembly": "JLC listing: Wave Soldering; Economic and Standard; Extended. No manual soldering at home required if quote accepted.",
+  "models": [],
+  "sources": [
+    {
+      "url": "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf",
+      "label": "atta.szlcsc.com — E3DA10C8A7633EC8E3E8BA226882FE17.pdf"
+    },
+    {
+      "url": "https://jlcpcb.com/partdetail/SHOUHAN-PJ_3135JCJ/C668607",
+      "label": "jlcpcb.com"
+    },
+    {
+      "url": "https://item.szlcsc.com/698550.html",
+      "label": "item.szlcsc.com — 698550.html"
+    }
+  ],
+  "research_group": "connectors",
+  "coverage": {
+    "downloaded_pdf": true,
+    "downloaded_step": false,
+    "downloaded_model": false,
+    "viewer_models": 0,
+    "generated_envelope": false,
+    "best_model_match": "unavailable",
+    "fit_qualified": false,
+    "production_footprint_qualified": false,
+    "factory_order_approved": false
+  }
+}

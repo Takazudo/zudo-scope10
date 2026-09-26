@@ -1,0 +1,17 @@
+{
+  "result": "PASS",
+  "mode": "Inline local HTML/JS bytes, no URL navigation",
+  "checks": [
+    "Inline offline catalogue search",
+    "Ten controls / three ranges / link restores local positions / hold freezes pixels",
+    "390px mobile viewport: no document horizontal overflow"
+  ],
+  "page_errors": [],
+  "not_run": [
+    "HTTP/file URL loading",
+    "Standalone ESM/GLB model viewer",
+    "Native zudo-doc build",
+    "Physical LCD"
+  ],
+  "environment_note": "Initial loopback navigation returned ERR_BLOCKED_BY_ADMINISTRATOR; no browser policy settings were changed."
+}

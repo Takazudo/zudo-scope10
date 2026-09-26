@@ -1,0 +1,15 @@
+{
+  "currency": "USD",
+  "quote_status": "NOT_REQUESTED",
+  "sample_quantity": 5,
+  "verified_display_unit_snapshot": 19.99,
+  "display_price_date": "2026-09-26",
+  "pico_h_unit": null,
+  "populated_carrier_unit": null,
+  "mechanical_per_unit": null,
+  "assembly_nre": null,
+  "fixture_and_calibration": null,
+  "shipping_and_taxes": null,
+  "grand_total": null,
+  "rule": "Do not treat null as zero. The display price excludes all other hardware and services."
+}

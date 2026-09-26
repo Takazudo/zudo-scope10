@@ -1,0 +1,1 @@
+(fp_lib_table (lib (name "ZudoScope10") (type "KiCad") (uri "${KIPRJMOD}/../libraries/ZudoScope10.pretty") (options "") (descr "Review-only local footprints")))

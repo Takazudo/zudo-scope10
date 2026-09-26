@@ -1,0 +1,1300 @@
+{
+  "schema_version": 1,
+  "project": "zudo-scope10",
+  "revision": "P0-prelayout",
+  "records": [
+    {
+      "id": "tlv9064",
+      "mpn": "TLV9064IDR",
+      "manufacturer": "Texas Instruments",
+      "kind": "IC",
+      "package": "SOIC-14",
+      "jlc_code": "C388176",
+      "jlc_url": "https://jlcpcb.com/partdetail/C388176",
+      "role": "Six quad amplifiers: two stages per input plus three ADC buffers and reference buffer",
+      "pins": {
+        "1": "OUT_A",
+        "2": "IN_A_MINUS",
+        "3": "IN_A_PLUS",
+        "4": "VCC",
+        "5": "IN_B_PLUS",
+        "6": "IN_B_MINUS",
+        "7": "OUT_B",
+        "8": "OUT_C",
+        "9": "IN_C_MINUS",
+        "10": "IN_C_PLUS",
+        "11": "GND",
+        "12": "IN_D_PLUS",
+        "13": "IN_D_MINUS",
+        "14": "OUT_D"
+      },
+      "source_ids": [
+        "opamp"
+      ],
+      "facts": [
+        "Quad RRIO amplifier on +3V3A. Supply range 1.8-5.5 V. 10 MHz is a nominal device property, not system bandwidth.",
+        "The exact D package uses no shutdown pin. Catalog descriptions of an enable/shutdown feature apply to other variants."
+      ],
+      "open_questions": [
+        "Check worst-case offset and output drive at actual 3.3 V supply; stability with PCB parasitics."
+      ],
+      "footprint_candidate": "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm",
+      "identity_state": "EXACT_MPN",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": []
+    },
+    {
+      "id": "mux",
+      "mpn": "74HC4067PW,118",
+      "manufacturer": "Nexperia",
+      "kind": "IC",
+      "package": "TSSOP-24",
+      "jlc_code": "C179326",
+      "jlc_url": "https://jlcpcb.com/partdetail/C179326",
+      "role": "Separate signal, TIME and RANGE mux banks with shared four-bit address",
+      "pins": {
+        "1": "Z",
+        "2": "Y7",
+        "3": "Y6",
+        "4": "Y5",
+        "5": "Y4",
+        "6": "Y3",
+        "7": "Y2",
+        "8": "Y1",
+        "9": "Y0",
+        "10": "S0",
+        "11": "S1",
+        "12": "GND",
+        "13": "S3",
+        "14": "S2",
+        "15": "E_N",
+        "16": "Y15",
+        "17": "Y14",
+        "18": "Y13",
+        "19": "Y12",
+        "20": "Y11",
+        "21": "Y10",
+        "22": "Y9",
+        "23": "Y8",
+        "24": "VCC"
+      },
+      "source_ids": [
+        "mux"
+      ],
+      "facts": [
+        "16:1 analog multiplexer; enable HIGH disconnects all channels.",
+        "The 80 ohm headline is not a guaranteed 3.3 V on-resistance; do not use it as such."
+      ],
+      "open_questions": [
+        "Measure full-scale channel-to-channel settling, charge injection and cross-talk at 3.3 V."
+      ],
+      "footprint_candidate": "Package_SO:TSSOP-24_4.4x7.8mm_P0.65mm",
+      "identity_state": "EXACT_MPN",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": []
+    },
+    {
+      "id": "ldo",
+      "mpn": "TLV75533PDBVR",
+      "manufacturer": "Texas Instruments",
+      "kind": "IC",
+      "package": "SOT-23-5",
+      "jlc_code": "C404027",
+      "jlc_url": "https://jlcpcb.com/partdetail/C404027",
+      "role": "Separate analog 3.3 V regulator",
+      "pins": {
+        "1": "IN",
+        "2": "GND",
+        "3": "EN",
+        "4": "NC",
+        "5": "OUT"
+      },
+      "source_ids": [
+        "ldo"
+      ],
+      "facts": [
+        "Recommended VIN at most 5.5 V; absolute max 6 V. No USB-PD voltages.",
+        "1 uF or larger input and output capacitors; actual effective capacitance must satisfy datasheet."
+      ],
+      "open_questions": [
+        "Thermal, inrush and reverse current/power-down checks."
+      ],
+      "footprint_candidate": "Package_TO_SOT_SMD:SOT-23-5",
+      "identity_state": "EXACT_MPN",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": []
+    },
+    {
+      "id": "ref",
+      "mpn": "REF3330AIDBZR",
+      "manufacturer": "Texas Instruments",
+      "kind": "IC",
+      "package": "SOT-23-3",
+      "jlc_code": null,
+      "jlc_url": null,
+      "role": "3.0 V reference buffered by U6D",
+      "pins": {
+        "1": "IN",
+        "2": "OUT",
+        "3": "GND"
+      },
+      "source_ids": [
+        "ref"
+      ],
+      "facts": [
+        "3.0 V version; 0.15% initial accuracy and 30 ppm/C maximum drift are family specifications.",
+        "LCSC C140329 found; JLC direct listing was not verified. External sourcing/RFQ required."
+      ],
+      "open_questions": [
+        "Visual pin review, full supply/headroom check; no claim that reference fixes RP2040 ADC nonlinearity."
+      ],
+      "footprint_candidate": "Package_TO_SOT_SMD:SOT-23",
+      "identity_state": "EXACT_MPN",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": []
+    },
+    {
+      "id": "clamp",
+      "mpn": "BAV199,215",
+      "manufacturer": "Nexperia",
+      "kind": "Diode",
+      "package": "SOT-23",
+      "jlc_code": "C40919",
+      "jlc_url": "https://jlcpcb.com/partdetail/C40919",
+      "role": "Low-leakage input clamp support",
+      "pins": {
+        "1": "ANODE_LOW",
+        "2": "CATHODE_HIGH",
+        "3": "JUNCTION"
+      },
+      "source_ids": [
+        "diode",
+        "opamp"
+      ],
+      "facts": [
+        "Two series silicon diodes, junction pin 3.",
+        "External diodes are not guaranteed to conduct before op-amp internal clamps; the 1 Mohm series resistor is the primary current limit."
+      ],
+      "open_questions": [
+        "Leakage at temperature; powered and unpowered \u00b124 V fault tests; combined-channel backfeed."
+      ],
+      "footprint_candidate": "Package_TO_SOT_SMD:SOT-23",
+      "identity_state": "EXACT_MPN",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": []
+    },
+    {
+      "id": "pico-h",
+      "mpn": "Raspberry Pi Pico H",
+      "manufacturer": "Raspberry Pi",
+      "kind": "Module",
+      "package": "51 x 21 mm board",
+      "jlc_code": null,
+      "jlc_url": null,
+      "role": "Socketed RP2040 module with factory-populated headers and USB",
+      "pins": {
+        "1": "GP0",
+        "2": "GP1",
+        "3": "GND",
+        "4": "GP2",
+        "5": "GP3",
+        "6": "GP4",
+        "7": "GP5",
+        "8": "GND",
+        "9": "GP6",
+        "10": "GP7",
+        "11": "GP8",
+        "12": "GP9",
+        "13": "GND",
+        "14": "GP10",
+        "15": "GP11",
+        "16": "GP12",
+        "17": "GP13",
+        "18": "GND",
+        "19": "GP14",
+        "20": "GP15",
+        "21": "GP16",
+        "22": "GP17",
+        "23": "GND",
+        "24": "GP18",
+        "25": "GP19",
+        "26": "GP20",
+        "27": "GP21",
+        "28": "GND",
+        "29": "GP22",
+        "30": "RUN",
+        "31": "GP26_ADC0",
+        "32": "GP27_ADC1",
+        "33": "AGND",
+        "34": "GP28_ADC2",
+        "35": "ADC_VREF",
+        "36": "3V3_OUT",
+        "37": "3V3_EN",
+        "38": "GND",
+        "39": "VSYS",
+        "40": "VBUS"
+      },
+      "source_ids": [
+        "pico",
+        "pico-pins",
+        "adc"
+      ],
+      "facts": [
+        "Factory H version only; the ordinary bare-header Pico does not meet the no-soldering purchase specification.",
+        "Pico ADC inputs are GP26-28; GP29 is not a free external ADC pin on this board.",
+        "500 kS/s is aggregate. Ten inputs are acquired sequentially."
+      ],
+      "open_questions": [
+        "Module socket exact MPN, standoff height and USB access; verify Pico H module pinout against assembly."
+      ],
+      "footprint_candidate": "",
+      "identity_state": "EXACT_MPN",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": []
+    },
+    {
+      "id": "display",
+      "mpn": "Pico-ResTouch-LCD-3.5 (SKU 19907)",
+      "manufacturer": "Waveshare",
+      "kind": "Module",
+      "package": "86 x 57.2 mm board",
+      "jlc_code": null,
+      "jlc_url": null,
+      "role": "Single display with ten panes; touch and SD unused",
+      "pins": {
+        "1": "GP0",
+        "2": "GP1",
+        "3": "GND",
+        "4": "GP2",
+        "5": "GP3",
+        "6": "GP4",
+        "7": "GP5",
+        "8": "GND",
+        "9": "GP6",
+        "10": "GP7",
+        "11": "GP8",
+        "12": "GP9",
+        "13": "GND",
+        "14": "GP10",
+        "15": "GP11",
+        "16": "GP12",
+        "17": "GP13",
+        "18": "GND",
+        "19": "GP14",
+        "20": "GP15",
+        "21": "GP16",
+        "22": "GP17",
+        "23": "GND",
+        "24": "GP18",
+        "25": "GP19",
+        "26": "GP20",
+        "27": "GP21",
+        "28": "GND",
+        "29": "GP22",
+        "30": "RUN",
+        "31": "GP26_ADC0",
+        "32": "GP27_ADC1",
+        "33": "AGND",
+        "34": "GP28_ADC2",
+        "35": "ADC_VREF",
+        "36": "3V3_OUT",
+        "37": "3V3_EN",
+        "38": "GND",
+        "39": "VSYS",
+        "40": "VBUS"
+      },
+      "source_ids": [
+        "display",
+        "display-wiki",
+        "display-sch",
+        "display-cad",
+        "display-code"
+      ],
+      "facts": [
+        "480 x 320; portrait logical surface 320 x 480. Active area 48.96 x 73.44 mm in portrait.",
+        "5 V module; 3.3 V logic. Vendor module uses a serial-to-16-bit-parallel bridge and RGB565.",
+        "Factory female Pico socket headers are present."
+      ],
+      "open_questions": [
+        "STOP: inspect R11/R12/R14/R15 regulator straps and module revision before connecting power.",
+        "Do not tie Pico 3V3_OUT to the display regulator output.",
+        "Verify high/low unused chip-select states, SPI word framing, actual mounting holes and board stack.",
+        "Exact module STEP and vendor driver were linked but binary downloads failed in this environment."
+      ],
+      "footprint_candidate": "",
+      "identity_state": "EXACT_MPN",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": []
+    },
+    {
+      "id": "range",
+      "mpn": "SS14MDP2",
+      "manufacturer": "NKK Switches",
+      "kind": "Switch",
+      "package": "Through-hole SP3T",
+      "jlc_code": "C6684954",
+      "jlc_url": "https://jlcpcb.com/partdetail/C6684954",
+      "role": "Three maintained display range positions",
+      "pins": {
+        "C": "COMMON_LOGICAL",
+        "L": "LOW_RANGE_LOGICAL",
+        "M": "MID_RANGE_LOGICAL",
+        "H": "HIGH_RANGE_LOGICAL"
+      },
+      "source_ids": [
+        "range",
+        "range-jlc"
+      ],
+      "facts": [
+        "Manufacturer states SP3T On-On-On, top actuation, straight PC terminals, break-before-make.",
+        "Listing showed zero stock; price is not an availability guarantee."
+      ],
+      "open_questions": [
+        "STOP: numeric pin numbers, pad geometry and 2 mm lever/panel access are not qualified.",
+        "Logical terminal letters in schematic are intentional placeholders, not pad numbers.",
+        "Approve signal-level switching and cleaning process; price/lead time via RFQ."
+      ],
+      "footprint_candidate": "",
+      "identity_state": "EXACT_MPN",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": []
+    },
+    {
+      "id": "pot",
+      "mpn": "RK09L1140A5L",
+      "manufacturer": "Alps Alpine",
+      "kind": "rotary",
+      "package": "15 mm flat shaft; threaded bushing; top access",
+      "jlc_code": "C7419101",
+      "jlc_url": "https://jlcpcb.com/partdetail/C7419101",
+      "role": "Ten independent TIME controls",
+      "pins": {
+        "1": "LOW",
+        "2": "WIPER",
+        "3": "HIGH"
+      },
+      "source_ids": [
+        "pot"
+      ],
+      "facts": [
+        "15 mm flat shaft; threaded bushing; top access",
+        "10 k\u03a9 \u00b7 linear"
+      ],
+      "open_questions": [
+        "Verify original PDF view and actual physical terminals before assigning footprint.",
+        "Factory soldering and mechanical support required; no home electrical rework."
+      ],
+      "footprint_candidate": "",
+      "identity_state": "EXACT_MPN",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": [
+        {
+          "path": "reference/assets/pot/product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+          "sha256": "e1b63c0709434be1aeea9db8d1f5a33f135b89535fd858f6a580b3bc6a8bdea3",
+          "bytes": 610290,
+          "source_url": "https://tech.alpsalpine.com/cms.media/product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+          "kind": "archive",
+          "match": "exact_product_page_asset",
+          "origin": "imported_from_previous_archive"
+        },
+        {
+          "path": "reference/assets/pot/Read-me-first.rtf",
+          "sha256": "8876b93a81abf812c3aaf52b3801bea233ec49905c763754a60a43b26d315ec8",
+          "bytes": 8712,
+          "source_url": "https://tech.alpsalpine.com/cms.media/product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+          "kind": "license",
+          "match": "exact_product_page_asset",
+          "origin": "imported_from_previous_archive"
+        },
+        {
+          "path": "reference/assets/pot/RK09L1140-F15.pdf",
+          "sha256": "43f87b03b11193d752628ff4c6174ec4f20524e07c2a3268bec712505f147553",
+          "bytes": 437987,
+          "source_url": "https://tech.alpsalpine.com/cms.media/product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+          "kind": "pdf",
+          "match": "exact_product_page_asset",
+          "origin": "imported_from_previous_archive"
+        },
+        {
+          "path": "reference/assets/pot/RK09L1140-F15.STEP",
+          "sha256": "a67271ce2e6911aba3a23c88eb34c7b514f74ccd99545806524535efde795d43",
+          "bytes": 1861371,
+          "source_url": "https://tech.alpsalpine.com/cms.media/product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+          "kind": "step",
+          "match": "exact",
+          "origin": "imported_from_previous_archive"
+        },
+        {
+          "path": "reference/assets/pot/product_catalog_rv_01_rk09l_en_b8437bd47d.pdf",
+          "sha256": "45176642b75760db42093394f6204a127e7abac542df13ab4312f11ff51d4c3f",
+          "bytes": 399193,
+          "source_url": "https://tech.alpsalpine.com/cms.media/product_catalog_rv_01_rk09l_en_b8437bd47d.pdf",
+          "kind": "pdf",
+          "match": "manufacturer_family",
+          "origin": "imported_from_previous_archive"
+        },
+        {
+          "path": "reference/assets/pot/product_detail_fig_rk09l_c_101_en_acab65d7d7.gif",
+          "sha256": "626d3d204b16f181ca063eaa6311d53d001d7f29e63aceda29c5e2219ed83147",
+          "bytes": 11653,
+          "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_c_101_en_acab65d7d7.gif",
+          "kind": "image",
+          "match": "exact_product_page_asset",
+          "origin": "imported_from_previous_archive"
+        },
+        {
+          "path": "reference/assets/pot/product_detail_fig_rk09l_c_1_en_60d88f1440.gif",
+          "sha256": "08137933b50c389638c33b04b2339ec1a98bbc9b2e4f346bf4b5805440cec498",
+          "bytes": 7777,
+          "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_c_1_en_60d88f1440.gif",
+          "kind": "image",
+          "match": "exact_product_page_asset",
+          "origin": "imported_from_previous_archive"
+        },
+        {
+          "path": "reference/assets/pot/product_detail_fig_rk09l_d_222_en_34014d0696.gif",
+          "sha256": "97e4f667d4e6756804d7ef7b5e6d5a6a92cde9a91e19a6a2f89805df73894ae8",
+          "bytes": 17566,
+          "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_d_222_en_34014d0696.gif",
+          "kind": "image",
+          "match": "exact_product_page_asset",
+          "origin": "imported_from_previous_archive"
+        },
+        {
+          "path": "reference/assets/pot/product_detail_fig_rk09l_d_231_en_08e696475d.gif",
+          "sha256": "3d9b8dca14fdc9ef2dfde4254382b86838ba1777c10c7234157f5cc47796a112",
+          "bytes": 7241,
+          "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_d_231_en_08e696475d.gif",
+          "kind": "image",
+          "match": "exact_product_page_asset",
+          "origin": "imported_from_previous_archive"
+        },
+        {
+          "path": "reference/assets/pot/product_detail_main_rk09l1140a5l_8ddc7a3c2d.jpg",
+          "sha256": "f82eac4aa6bb40c52b05ee951f214a2da5d7de14ce992cfddd76be0423bb2518",
+          "bytes": 10453,
+          "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_main_rk09l1140a5l_8ddc7a3c2d.jpg",
+          "kind": "image",
+          "match": "exact_product_page_asset",
+          "origin": "imported_from_previous_archive"
+        },
+        {
+          "path": "reference/assets/pot/manufacturer-page.html",
+          "sha256": "2836f211115c8f18f8e0b003ca1cf49ab276ea940324c17d3deb284d78f2ea08",
+          "bytes": 67341,
+          "source_url": "https://tech.alpsalpine.com/e/products/detail/RK09L1140A5L/?download=1",
+          "kind": "document",
+          "match": "exact_product_page",
+          "origin": "imported_from_previous_archive"
+        },
+        {
+          "path": "reference/assets/pot/product_detail_fig_rk09l_d_231_en_08e696475d.png",
+          "sha256": "d482505ccd5d1c05711567af2f92f08ffd507ba91d1084f04934ce3053dee3cd",
+          "bytes": 6291,
+          "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_d_231_en_08e696475d.gif",
+          "kind": "image",
+          "match": "derived_preview",
+          "origin": "imported_from_previous_archive"
+        },
+        {
+          "path": "reference/assets/pot/product_detail_fig_rk09l_c_101_en_acab65d7d7.png",
+          "sha256": "b62efb72f486db96f15a64020694b2227dcbbec22104b52f2a4bc8a83c7466d8",
+          "bytes": 9737,
+          "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_c_101_en_acab65d7d7.gif",
+          "kind": "image",
+          "match": "derived_preview",
+          "origin": "imported_from_previous_archive"
+        },
+        {
+          "path": "reference/assets/pot/product_detail_fig_rk09l_d_222_en_34014d0696.png",
+          "sha256": "86e7960f3ebd3a7342e68768090ce4e2a76160b06a1b4b8b11ff7c52f31a00aa",
+          "bytes": 14521,
+          "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_d_222_en_34014d0696.gif",
+          "kind": "image",
+          "match": "derived_preview",
+          "origin": "imported_from_previous_archive"
+        },
+        {
+          "path": "reference/assets/pot/product_detail_fig_rk09l_c_1_en_60d88f1440.png",
+          "sha256": "93c623969b52bc5a6b0170fddb8b0d2967cdc8d9b493be73510cdf86bc9c1034",
+          "bytes": 6542,
+          "source_url": "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_c_1_en_60d88f1440.gif",
+          "kind": "image",
+          "match": "derived_preview",
+          "origin": "imported_from_previous_archive"
+        },
+        {
+          "path": "reference/assets/pot/RK09L1140-F15.png",
+          "sha256": "21a820e5b524e30264eadd9c1c3e436bb876a5c5e3230d1a9573743ad1899f47",
+          "bytes": 104676,
+          "source_url": "https://tech.alpsalpine.com/cms.media/product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+          "kind": "image",
+          "match": "derived_preview",
+          "origin": "imported_from_previous_archive"
+        },
+        {
+          "path": "reference/assets/pot/ASSET-NOTES.md",
+          "sha256": "efedf8fd61120d49f70a32a51dfad20e8b4189ce1f2a6e1d2de63a830b4c33f3",
+          "bytes": 1271,
+          "source_url": "https://tech.alpsalpine.com/e/products/detail/RK09L1140A5L/?download=1",
+          "kind": "document",
+          "match": null,
+          "origin": "imported_from_previous_archive"
+        }
+      ],
+      "original_source_urls": [
+        "https://tech.alpsalpine.com/e/products/detail/RK09L1140A5L/?download=1",
+        "https://tech.alpsalpine.com/cms.media/product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+        "https://tech.alpsalpine.com/cms.media/product_catalog_rv_01_rk09l_en_b8437bd47d.pdf",
+        "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_c_101_en_acab65d7d7.gif",
+        "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_c_1_en_60d88f1440.gif",
+        "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_d_222_en_34014d0696.gif",
+        "https://tech.alpsalpine.com/cms.media/product_detail_fig_rk09l_d_231_en_08e696475d.gif",
+        "https://tech.alpsalpine.com/cms.media/product_detail_main_rk09l1140a5l_8ddc7a3c2d.jpg",
+        "https://jlcpcb.com/partdetail/ALPSALPINE-RK09L1140A5L/C7419101",
+        "https://tech.alpsalpine.com/e/products/detail/RK09L1140A5L/",
+        "https://www.lcsc.com/de/product-detail/C7419101.html"
+      ],
+      "evidence_origin": "User-provided zudo-synth-components-v03.zip; dated 2026-09-25/26. Imported, not newly downloaded.",
+      "model_refs_from_prior": [
+        {
+          "path": "component-previews/a67271ce2e6911ab.glb",
+          "preview": "component-previews/a67271ce2e6911ab.png",
+          "source_step": "component-assets/a67271ce2e6911ab/RK09L1140-F15.STEP",
+          "source_sha256": "a67271ce2e6911aba3a23c88eb34c7b514f74ccd99545806524535efde795d43",
+          "source_url": "https://tech.alpsalpine.com/cms.media/product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+          "label": "Manufacturer CAD linked to the exact part",
+          "model_match": "manufacturer_part",
+          "original_model_match": "exact",
+          "bbox_mm": {
+            "x": 12.1008,
+            "y": 12.5023,
+            "z": 28.5297
+          },
+          "notes": "Public official asset linked by exact manufacturer PN page.",
+          "license": "Manufacturer technical document; copyright retained; no explicit open redistribution license found.",
+          "inspection": {
+            "source_sha256": "a67271ce2e6911aba3a23c88eb34c7b514f74ccd99545806524535efde795d43",
+            "glb": "a67271ce2e6911ab.glb",
+            "png": "a67271ce2e6911ab.png",
+            "vertices": 50304,
+            "triangles": 84986,
+            "source_bounding_box_mm": {
+              "x": 12.1008,
+              "y": 12.5023,
+              "z": 28.5297
+            },
+            "bbox_basis": "Imported STEP geometry, including terminals/hardware represented in the file; not measured physical dimensions.",
+            "source_units": "mm (OpenCascade import normalization)",
+            "glb_units": "metres",
+            "glb_axis_mapping": "x,y,z -> x,z,-y",
+            "linear_tessellation_tolerance_mm": 0.07,
+            "angular_tessellation_tolerance_radians": 0.2,
+            "material": "Neutral inspection material; original STEP surface colours are not reproduced.",
+            "solids": 1,
+            "valid_shape": true,
+            "derivation": "Tessellation and preview only. The source STEP is retained unchanged with separate provenance.",
+            "glb_sha256": "1e52ae89ba85ab57cb2f979eb898a588014fe9e5ffa0f14b83f31c525c284f4d",
+            "png_sha256": "9b22e14620225e518d2e723464574e8077278b3cfbb749b6accaee8b723b87c8"
+          },
+          "generated": false
+        }
+      ]
+    },
+    {
+      "id": "jack",
+      "mpn": "PJ-313 5JCJ",
+      "manufacturer": "SHOU HAN",
+      "kind": "jack",
+      "package": "Jack axis parallel to PCB; rear/edge/raised patch strip layout, not Thonkiconn footprint. Two locating posts. Exact manufacturer page1 schematic visually checked: ONLY THREE electrical contact nodes; five legs include duplicated contacts and DO NOT imply normally closed switching contacts. Non-threaded5mm OD nose with3.6mm nominal opening in drawing;3.5mm audiojack class.",
+      "jlc_code": "C668607",
+      "jlc_url": "https://jlcpcb.com/partdetail/C668607",
+      "role": "Ten unbalanced TS signal inputs",
+      "pins": {
+        "1": "SLEEVE",
+        "2": "RING",
+        "3": "TIP"
+      },
+      "source_ids": [],
+      "facts": [
+        "Jack axis parallel to PCB; rear/edge/raised patch strip layout, not Thonkiconn footprint. Two locating posts. Exact manufacturer page1 schematic visually checked: ONLY THREE electrical contact nodes; five legs include duplicated contacts and DO NOT imply normally closed switching contacts. Non-threaded5mm OD nose with3.6mm nominal opening in drawing;3.5mm audiojack class.",
+        ""
+      ],
+      "open_questions": [
+        "Verify original PDF view and actual physical terminals before assigning footprint.",
+        "Factory soldering and mechanical support required; no home electrical rework.",
+        "STOP: five physical legs represent three contacts; duplicated pads and extra-slot notation are unresolved. No normal switch.",
+        "Open unconnected jack is biased and must NOT be interpreted as zero volts; shorted-input calibration is required."
+      ],
+      "footprint_candidate": "",
+      "identity_state": "EXACT_MPN",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": [
+        {
+          "path": "reference/assets/jack/PJ-313-5JCJ.pdf",
+          "sha256": "8c3be622655208735ec21158f79aba16f5b1ae0b6621efa6ea6e2e89ac0d7199",
+          "bytes": 1146441,
+          "source_url": "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf",
+          "kind": "pdf",
+          "match": "exact_mpn_drawing",
+          "origin": "imported_from_previous_archive"
+        }
+      ],
+      "original_source_urls": [
+        "https://atta.szlcsc.com/upload/public/pdf/source/20251231/E3DA10C8A7633EC8E3E8BA226882FE17.pdf",
+        "https://jlcpcb.com/partdetail/SHOUHAN-PJ_3135JCJ/C668607",
+        "https://item.szlcsc.com/698550.html"
+      ],
+      "evidence_origin": "User-provided zudo-synth-components-v03.zip; dated 2026-09-25/26. Imported, not newly downloaded.",
+      "model_refs_from_prior": []
+    },
+    {
+      "id": "button",
+      "mpn": "TS-1088-AR02016",
+      "manufacturer": "XUNPU",
+      "kind": "button",
+      "package": "Vertical/top push; round black actuator; no bracket;1.6N operating force. Tiny switch is not a velocity-sensitive pad or an adequately sized finger key on its own.",
+      "jlc_code": "C720477",
+      "jlc_url": "https://jlcpcb.com/partdetail/C720477",
+      "role": "HOLD and LINK push buttons",
+      "pins": {
+        "1": "NO_CONTACT_1",
+        "2": "NO_CONTACT_2"
+      },
+      "source_ids": [],
+      "facts": [
+        "Vertical/top push; round black actuator; no bracket;1.6N operating force. Tiny switch is not a velocity-sensitive pad or an adequately sized finger key on its own.",
+        "",
+        "Retained XUNPU drawing visually inspected: two SMT contact terminals numbered 1 and 2; normally open. Body 3.9 x 3.0 mm; recommended pad outside span 5.50 mm and inside gap 3.40 mm, pad height 2.00 mm."
+      ],
+      "open_questions": [
+        "Independently verify pad orientation, actuator height and any cap/enclosure mechanics against the exact AR02016 variant."
+      ],
+      "footprint_candidate": "ZudoScope10:SW_XUNPU_TS1088_AR02016_REVIEW",
+      "identity_state": "EXACT_MPN",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": [
+        {
+          "path": "reference/assets/button/TS-1088-AR02016.pdf",
+          "sha256": "368d4cc2c26b08cb63e1b67193f671d0860b6d3fb2e6b9f2696ffade401afc30",
+          "bytes": 123213,
+          "source_url": "https://datasheet.lcsc.com/datasheet/pdf/0475ac02febf455ca9ddcfb380b0df0d.pdf?productCode=C720477",
+          "kind": "pdf",
+          "match": "family_drawing_with_exact_variant_ordering_fields",
+          "origin": "imported_from_previous_archive"
+        }
+      ],
+      "original_source_urls": [
+        "https://datasheet.lcsc.com/datasheet/pdf/0475ac02febf455ca9ddcfb380b0df0d.pdf?productCode=C720477",
+        "https://www.lcsc.com/product-detail/C720477.html",
+        "https://jlcpcb.com/partdetail/XUNPU-TS_1088AR02016/C720477"
+      ],
+      "evidence_origin": "User-provided zudo-synth-components-v03.zip; dated 2026-09-25/26. Imported, not newly downloaded.",
+      "model_refs_from_prior": []
+    },
+    {
+      "id": "socket20",
+      "mpn": null,
+      "manufacturer": "RFQ exact manufacturer",
+      "kind": "Connector",
+      "package": "2.54 mm; height TBD",
+      "jlc_code": null,
+      "jlc_url": null,
+      "role": "Two 1x20 female sockets for Pico H",
+      "pins": {
+        "1": "CONTACT",
+        "2": "CONTACT",
+        "3": "CONTACT",
+        "4": "CONTACT",
+        "5": "CONTACT",
+        "6": "CONTACT",
+        "7": "CONTACT",
+        "8": "CONTACT",
+        "9": "CONTACT",
+        "10": "CONTACT",
+        "11": "CONTACT",
+        "12": "CONTACT",
+        "13": "CONTACT",
+        "14": "CONTACT",
+        "15": "CONTACT",
+        "16": "CONTACT",
+        "17": "CONTACT",
+        "18": "CONTACT",
+        "19": "CONTACT",
+        "20": "CONTACT"
+      },
+      "source_ids": [
+        "pico-pins"
+      ],
+      "facts": [
+        "Exact mating length, insulator height, retention and shoulder clearance are NOT defined by 2.54 mm pitch alone."
+      ],
+      "open_questions": [
+        "STOP: select exact orderable and mechanical stack. Factory-populate all four strips."
+      ],
+      "footprint_candidate": "Connector_PinSocket_2.54mm:PinSocket_1x20_P2.54mm_Vertical",
+      "identity_state": "SPECIFICATION_ONLY",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": []
+    },
+    {
+      "id": "header20",
+      "mpn": null,
+      "manufacturer": "RFQ exact manufacturer",
+      "kind": "Connector",
+      "package": "2.54 mm; height TBD",
+      "jlc_code": null,
+      "jlc_url": null,
+      "role": "Two 1x20 male rows for display; physical Pico numbering",
+      "pins": {
+        "1": "CONTACT",
+        "2": "CONTACT",
+        "3": "CONTACT",
+        "4": "CONTACT",
+        "5": "CONTACT",
+        "6": "CONTACT",
+        "7": "CONTACT",
+        "8": "CONTACT",
+        "9": "CONTACT",
+        "10": "CONTACT",
+        "11": "CONTACT",
+        "12": "CONTACT",
+        "13": "CONTACT",
+        "14": "CONTACT",
+        "15": "CONTACT",
+        "16": "CONTACT",
+        "17": "CONTACT",
+        "18": "CONTACT",
+        "19": "CONTACT",
+        "20": "CONTACT"
+      },
+      "source_ids": [
+        "pico-pins"
+      ],
+      "facts": [
+        "Exact mating length, insulator height, retention and shoulder clearance are NOT defined by 2.54 mm pitch alone."
+      ],
+      "open_questions": [
+        "STOP: select exact orderable and mechanical stack. Factory-populate all four strips."
+      ],
+      "footprint_candidate": "Connector_PinHeader_2.54mm:PinHeader_1x20_P2.54mm_Vertical",
+      "identity_state": "SPECIFICATION_ONLY",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": []
+    },
+    {
+      "id": "fuse",
+      "mpn": null,
+      "manufacturer": "RFQ exact manufacturer",
+      "kind": "Protection",
+      "package": "1206 PPTC candidate",
+      "jlc_code": null,
+      "jlc_url": null,
+      "role": "Analog/display branch protection",
+      "pins": {
+        "1": "IN",
+        "2": "OUT"
+      },
+      "source_ids": [],
+      "facts": [
+        "Proposed 500 mA hold, >=6 V. This does not limit Pico USB inrush before the carrier branch."
+      ],
+      "open_questions": [
+        "Select actual part and qualify trip time, cold resistance and USB current budget."
+      ],
+      "footprint_candidate": "",
+      "identity_state": "SPECIFICATION_ONLY",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": []
+    },
+    {
+      "id": "r1m",
+      "mpn": null,
+      "manufacturer": "RFQ value/package selection",
+      "kind": "Resistor",
+      "package": "0603",
+      "jlc_code": null,
+      "jlc_url": null,
+      "role": "input impedance/current limit",
+      "pins": {
+        "1": "P1",
+        "2": "P2"
+      },
+      "source_ids": [],
+      "facts": [
+        "1M; 0.1% 25 ppm/C; >=50 V. Value specified by this design; not an exact orderable."
+      ],
+      "open_questions": [
+        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+      ],
+      "footprint_candidate": "Resistor_SMD:R_0603_1608Metric",
+      "identity_state": "SPECIFICATION_ONLY",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": [],
+      "value": "1M",
+      "nominal": 1000000.0
+    },
+    {
+      "id": "r200k",
+      "mpn": null,
+      "manufacturer": "RFQ value/package selection",
+      "kind": "Resistor",
+      "package": "0603",
+      "jlc_code": null,
+      "jlc_url": null,
+      "role": "bias divider",
+      "pins": {
+        "1": "P1",
+        "2": "P2"
+      },
+      "source_ids": [],
+      "facts": [
+        "200k; 0.1% 25 ppm/C. Value specified by this design; not an exact orderable."
+      ],
+      "open_questions": [
+        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+      ],
+      "footprint_candidate": "Resistor_SMD:R_0603_1608Metric",
+      "identity_state": "SPECIFICATION_ONLY",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": [],
+      "value": "200k",
+      "nominal": 200000.0
+    },
+    {
+      "id": "r249k",
+      "mpn": null,
+      "manufacturer": "RFQ value/package selection",
+      "kind": "Resistor",
+      "package": "0603",
+      "jlc_code": null,
+      "jlc_url": null,
+      "role": "bias divider",
+      "pins": {
+        "1": "P1",
+        "2": "P2"
+      },
+      "source_ids": [],
+      "facts": [
+        "249k; 0.1% 25 ppm/C. Value specified by this design; not an exact orderable."
+      ],
+      "open_questions": [
+        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+      ],
+      "footprint_candidate": "Resistor_SMD:R_0603_1608Metric",
+      "identity_state": "SPECIFICATION_ONLY",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": [],
+      "value": "249k",
+      "nominal": 249000.0
+    },
+    {
+      "id": "r4k7",
+      "mpn": null,
+      "manufacturer": "RFQ value/package selection",
+      "kind": "Resistor",
+      "package": "0603",
+      "jlc_code": null,
+      "jlc_url": null,
+      "role": "second filter",
+      "pins": {
+        "1": "P1",
+        "2": "P2"
+      },
+      "source_ids": [],
+      "facts": [
+        "4.7k; 1%. Value specified by this design; not an exact orderable."
+      ],
+      "open_questions": [
+        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+      ],
+      "footprint_candidate": "Resistor_SMD:R_0603_1608Metric",
+      "identity_state": "SPECIFICATION_ONLY",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": [],
+      "value": "4.7k",
+      "nominal": 4700
+    },
+    {
+      "id": "r10k",
+      "mpn": null,
+      "manufacturer": "RFQ value/package selection",
+      "kind": "Resistor",
+      "package": "0603",
+      "jlc_code": null,
+      "jlc_url": null,
+      "role": "switch ladder, pulls",
+      "pins": {
+        "1": "P1",
+        "2": "P2"
+      },
+      "source_ids": [],
+      "facts": [
+        "10k; 1%. Value specified by this design; not an exact orderable."
+      ],
+      "open_questions": [
+        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+      ],
+      "footprint_candidate": "Resistor_SMD:R_0603_1608Metric",
+      "identity_state": "SPECIFICATION_ONLY",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": [],
+      "value": "10k",
+      "nominal": 10000
+    },
+    {
+      "id": "r100k",
+      "mpn": null,
+      "manufacturer": "RFQ value/package selection",
+      "kind": "Resistor",
+      "package": "0603",
+      "jlc_code": null,
+      "jlc_url": null,
+      "role": "digital/default pulls",
+      "pins": {
+        "1": "P1",
+        "2": "P2"
+      },
+      "source_ids": [],
+      "facts": [
+        "100k; 1%. Value specified by this design; not an exact orderable."
+      ],
+      "open_questions": [
+        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+      ],
+      "footprint_candidate": "Resistor_SMD:R_0603_1608Metric",
+      "identity_state": "SPECIFICATION_ONLY",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": [],
+      "value": "100k",
+      "nominal": 100000
+    },
+    {
+      "id": "r100",
+      "mpn": null,
+      "manufacturer": "RFQ value/package selection",
+      "kind": "Resistor",
+      "package": "0603",
+      "jlc_code": null,
+      "jlc_url": null,
+      "role": "ADC isolation",
+      "pins": {
+        "1": "P1",
+        "2": "P2"
+      },
+      "source_ids": [],
+      "facts": [
+        "100; 1%. Value specified by this design; not an exact orderable."
+      ],
+      "open_questions": [
+        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+      ],
+      "footprint_candidate": "Resistor_SMD:R_0603_1608Metric",
+      "identity_state": "SPECIFICATION_ONLY",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": [],
+      "value": "100",
+      "nominal": 100
+    },
+    {
+      "id": "r1k",
+      "mpn": null,
+      "manufacturer": "RFQ value/package selection",
+      "kind": "Resistor",
+      "package": "0603",
+      "jlc_code": null,
+      "jlc_url": null,
+      "role": "control isolation/rail bleed",
+      "pins": {
+        "1": "P1",
+        "2": "P2"
+      },
+      "source_ids": [],
+      "facts": [
+        "1k; 1%. Value specified by this design; not an exact orderable."
+      ],
+      "open_questions": [
+        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+      ],
+      "footprint_candidate": "Resistor_SMD:R_0603_1608Metric",
+      "identity_state": "SPECIFICATION_ONLY",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": [],
+      "value": "1k",
+      "nominal": 1000
+    },
+    {
+      "id": "r33",
+      "mpn": null,
+      "manufacturer": "RFQ value/package selection",
+      "kind": "Resistor",
+      "package": "0603",
+      "jlc_code": null,
+      "jlc_url": null,
+      "role": "SPI source termination",
+      "pins": {
+        "1": "P1",
+        "2": "P2"
+      },
+      "source_ids": [],
+      "facts": [
+        "33; 1%. Value specified by this design; not an exact orderable."
+      ],
+      "open_questions": [
+        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+      ],
+      "footprint_candidate": "Resistor_SMD:R_0603_1608Metric",
+      "identity_state": "SPECIFICATION_ONLY",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": [],
+      "value": "33",
+      "nominal": 33
+    },
+    {
+      "id": "c470p",
+      "mpn": null,
+      "manufacturer": "RFQ value/package selection",
+      "kind": "Capacitor",
+      "package": "0603",
+      "jlc_code": null,
+      "jlc_url": null,
+      "role": "input filter",
+      "pins": {
+        "1": "P1",
+        "2": "P2"
+      },
+      "source_ids": [],
+      "facts": [
+        "470pF; C0G 5% >=25 V. Value specified by this design; not an exact orderable."
+      ],
+      "open_questions": [
+        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+      ],
+      "footprint_candidate": "Capacitor_SMD:C_0603_1608Metric",
+      "identity_state": "SPECIFICATION_ONLY",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": [],
+      "value": "470pF",
+      "nominal": 4.7e-10
+    },
+    {
+      "id": "c10n",
+      "mpn": null,
+      "manufacturer": "RFQ value/package selection",
+      "kind": "Capacitor",
+      "package": "0603",
+      "jlc_code": null,
+      "jlc_url": null,
+      "role": "filter",
+      "pins": {
+        "1": "P1",
+        "2": "P2"
+      },
+      "source_ids": [],
+      "facts": [
+        "10nF; C0G 5% >=25 V. Value specified by this design; not an exact orderable."
+      ],
+      "open_questions": [
+        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+      ],
+      "footprint_candidate": "Capacitor_SMD:C_0603_1608Metric",
+      "identity_state": "SPECIFICATION_ONLY",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": [],
+      "value": "10nF",
+      "nominal": 1e-08
+    },
+    {
+      "id": "c1n",
+      "mpn": null,
+      "manufacturer": "RFQ value/package selection",
+      "kind": "Capacitor",
+      "package": "0603",
+      "jlc_code": null,
+      "jlc_url": null,
+      "role": "ADC bucket",
+      "pins": {
+        "1": "P1",
+        "2": "P2"
+      },
+      "source_ids": [],
+      "facts": [
+        "1nF; C0G 5% >=25 V. Value specified by this design; not an exact orderable."
+      ],
+      "open_questions": [
+        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+      ],
+      "footprint_candidate": "Capacitor_SMD:C_0603_1608Metric",
+      "identity_state": "SPECIFICATION_ONLY",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": [],
+      "value": "1nF",
+      "nominal": 1e-09
+    },
+    {
+      "id": "c100n",
+      "mpn": null,
+      "manufacturer": "RFQ value/package selection",
+      "kind": "Capacitor",
+      "package": "0603",
+      "jlc_code": null,
+      "jlc_url": null,
+      "role": "local decoupling",
+      "pins": {
+        "1": "P1",
+        "2": "P2"
+      },
+      "source_ids": [],
+      "facts": [
+        "100nF; X7R >=16 V. Value specified by this design; not an exact orderable."
+      ],
+      "open_questions": [
+        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+      ],
+      "footprint_candidate": "Capacitor_SMD:C_0603_1608Metric",
+      "identity_state": "SPECIFICATION_ONLY",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": [],
+      "value": "100nF",
+      "nominal": 1e-07
+    },
+    {
+      "id": "c1u",
+      "mpn": null,
+      "manufacturer": "RFQ value/package selection",
+      "kind": "Capacitor",
+      "package": "0805",
+      "jlc_code": null,
+      "jlc_url": null,
+      "role": "regulator/reference decoupling",
+      "pins": {
+        "1": "P1",
+        "2": "P2"
+      },
+      "source_ids": [],
+      "facts": [
+        "1uF; X7R >=10 V; effective >0.47uF. Value specified by this design; not an exact orderable."
+      ],
+      "open_questions": [
+        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+      ],
+      "footprint_candidate": "Capacitor_SMD:C_0805_2012Metric",
+      "identity_state": "SPECIFICATION_ONLY",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": [],
+      "value": "1uF",
+      "nominal": 1e-06
+    },
+    {
+      "id": "c10u",
+      "mpn": null,
+      "manufacturer": "RFQ value/package selection",
+      "kind": "Capacitor",
+      "package": "0805",
+      "jlc_code": null,
+      "jlc_url": null,
+      "role": "branch bulk",
+      "pins": {
+        "1": "P1",
+        "2": "P2"
+      },
+      "source_ids": [],
+      "facts": [
+        "10uF; X5R/X7R >=10 V; verify effective capacitance. Value specified by this design; not an exact orderable."
+      ],
+      "open_questions": [
+        "Assign a stocked exact MPN/C-code and source its datasheet before fabrication."
+      ],
+      "footprint_candidate": "Capacitor_SMD:C_0805_2012Metric",
+      "identity_state": "SPECIFICATION_ONLY",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": [],
+      "value": "10uF",
+      "nominal": 1e-05
+    },
+    {
+      "id": "testpoint",
+      "mpn": null,
+      "manufacturer": "PCB geometry",
+      "kind": "Test point",
+      "package": "Exposed pad",
+      "jlc_code": null,
+      "jlc_url": null,
+      "role": "Factory test access",
+      "pins": {
+        "1": "PAD"
+      },
+      "source_ids": [],
+      "facts": [
+        "Copper test pad; no purchased part. Not a solder-yourself header."
+      ],
+      "open_questions": [
+        "Fixture access and probe spacing must be reviewed."
+      ],
+      "footprint_candidate": "TestPoint:TestPoint_Pad_D1.0mm",
+      "identity_state": "SPECIFICATION_ONLY",
+      "fit_state": "PROPOSED_NOT_ASSEMBLED",
+      "footprint_qualified": false,
+      "factory_order_approved": false,
+      "assets": []
+    }
+  ]
+}

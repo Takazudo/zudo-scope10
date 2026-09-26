@@ -1,0 +1,348 @@
+{
+  "result": "PASS",
+  "scope": "Offline structural checks only. NOT native ERC/DRC or assembly approval.",
+  "physical_instances": 224,
+  "nets": 134,
+  "component_records": 30,
+  "retained_source_files": 19,
+  "checks": [
+    {
+      "check": "Unique component records",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Unique physical references",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Every part has exactly its record pins",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Ten inputs, TIME pots and RANGE switches",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Required silicon counts",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Module strips included in factory BOM",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "No raw RP2040 pretending to be a Pico",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "XML netlist equals explicit pin/net graph",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Mux outputs remain independent",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "U7 common and supply contract",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "U8 common and supply contract",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "U9 common and supply contract",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Display power position 39 only is explicit",
+      "result": "PASS",
+      "detail": "Conditional G01; does not validate hardware straps"
+    },
+    {
+      "check": "Display spare GP3 GP5 GP14 not passed through",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "No bipolar power net on digital mux supply",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "S-expression inputs-07-08.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "S-expression module-interfaces.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "S-expression power.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "S-expression inputs-09-10.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "S-expression zudo-scope10-p0.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "S-expression controls-left.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "S-expression controls-right.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "S-expression inputs-03-04.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "S-expression inputs-01-02.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "S-expression acquisition.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "S-expression inputs-05-06.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "S-expression ZudoScope10.kicad_sym",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "S-expression zudo-scope10-p0.kicad_pcb",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "S-expression SW_XUNPU_TS1088_AR02016_REVIEW.kicad_mod",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Native schematic instance inventory matches graph",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Root has ten child sheets",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Sheet exists power.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Sheet exists module-interfaces.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Sheet exists acquisition.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Sheet exists inputs-01-02.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Sheet exists inputs-03-04.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Sheet exists inputs-05-06.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Sheet exists inputs-07-08.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Sheet exists inputs-09-10.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Sheet exists controls-left.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Sheet exists controls-right.kicad_sch",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "PCB honestly remains outline only",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Retained asset reference/assets/pot/product_3dcad_rk09l1140a5l_en_5f99b140b5.zip",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Retained asset reference/assets/pot/Read-me-first.rtf",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Retained asset reference/assets/pot/RK09L1140-F15.pdf",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Retained asset reference/assets/pot/RK09L1140-F15.STEP",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Retained asset reference/assets/pot/product_catalog_rv_01_rk09l_en_b8437bd47d.pdf",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Retained asset reference/assets/pot/product_detail_fig_rk09l_c_101_en_acab65d7d7.gif",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Retained asset reference/assets/pot/product_detail_fig_rk09l_c_1_en_60d88f1440.gif",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Retained asset reference/assets/pot/product_detail_fig_rk09l_d_222_en_34014d0696.gif",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Retained asset reference/assets/pot/product_detail_fig_rk09l_d_231_en_08e696475d.gif",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Retained asset reference/assets/pot/product_detail_main_rk09l1140a5l_8ddc7a3c2d.jpg",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Retained asset reference/assets/pot/manufacturer-page.html",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Retained asset reference/assets/pot/product_detail_fig_rk09l_d_231_en_08e696475d.png",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Retained asset reference/assets/pot/product_detail_fig_rk09l_c_101_en_acab65d7d7.png",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Retained asset reference/assets/pot/product_detail_fig_rk09l_d_222_en_34014d0696.png",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Retained asset reference/assets/pot/product_detail_fig_rk09l_c_1_en_60d88f1440.png",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Retained asset reference/assets/pot/RK09L1140-F15.png",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Retained asset reference/assets/pot/ASSET-NOTES.md",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Retained asset reference/assets/jack/PJ-313-5JCJ.pdf",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Retained asset reference/assets/button/TS-1088-AR02016.pdf",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "All local HTML links/media exist",
+      "result": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "All component source references resolve",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "No catalog footprint or factory approval fabricated",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Release guard blocks this package",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Regeneration preserves generated design/page bytes",
+      "result": "PASS",
+      "detail": ""
+    }
+  ],
+  "not_run": [
+    "Native KiCad parsing/ERC/DRC",
+    "Native zudo-doc npm install/build",
+    "Pico/ARM target compilation",
+    "Vendor LCD backend integration",
+    "Electrical or mechanical hardware measurements",
+    "Factory DFM/quote/acceptance"
+  ]
+}

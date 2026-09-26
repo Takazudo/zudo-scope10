@@ -1,0 +1,27 @@
+{
+  "name": "zudo-scope10-doc",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "packageManager": "pnpm@10.34.1",
+  "scripts": {
+    "generate:components": "python3 ../scripts/build_docs.py",
+    "dev": "zfb dev",
+    "build": "pnpm generate:components && zfb build",
+    "preview": "zfb preview",
+    "check": "zfb check"
+  },
+  "dependencies": {
+    "@takazudo/zfb": "2.20.2",
+    "@takazudo/zfb-runtime": "2.20.2",
+    "@takazudo/zfb-md-wasm": "2.20.2",
+    "@takazudo/zudo-doc": "5.27.0",
+    "preact": "^10.29.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.0",
+    "tailwindcss": "^4.2.0"
+  }
+}

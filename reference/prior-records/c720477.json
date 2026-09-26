@@ -1,0 +1,301 @@
+{
+  "id": "c720477",
+  "name": "TS-1088-AR02016",
+  "mpn": "TS-1088-AR02016",
+  "manufacturer": "XUNPU",
+  "jlc_code": "C720477",
+  "jlc_url": "https://jlcpcb.com/partdetail/XUNPU-TS_1088AR02016/C720477",
+  "kind": "button",
+  "identity": "exact_mpn",
+  "geometry": "Vertical/top push; round black actuator; no bracket;1.6N operating force. Tiny switch is not a velocity-sensitive pad or an adequately sized finger key on its own.",
+  "application": "Momentary trigger/run/reset button beneath a mechanically supported cap",
+  "scope": "primary",
+  "original_catalog_record": {
+    "mpn": "TS-1088-AR02016",
+    "jlc_code": "C720477",
+    "manufacturer": "XUNPU",
+    "role": "Momentary trigger/run/reset button beneath a mechanically supported cap",
+    "package": "SMD4×3mm (spec length3.9mm,width3mm,height2mm)",
+    "jlc_url": "https://jlcpcb.com/partdetail/XUNPU-TS_1088AR02016/C720477",
+    "manufacturer_url": null,
+    "lcsc_url": "https://www.lcsc.com/product-detail/C720477.html",
+    "geometry_notes": "Vertical/top push; round black actuator; no bracket;1.6N operating force. Tiny switch is not a velocity-sensitive pad or an adequately sized finger key on its own.",
+    "electrical_notes": "SPST momentary tactile;12V50mA;100,000cycles per catalog. Gate circuit needs debounce/edge shaping.",
+    "assembly": "JLC listing: SMT Assembly; Economic and Standard; Basic.",
+    "stock_status": "Actual public stock quantity not captured; recheck BOM tool.",
+    "open_questions": [
+      "Compatible cap or custom plunger and force-stop design",
+      "Debounce and trigger behavior",
+      "Cap installation scope with factory"
+    ],
+    "category": "Controls and connectors",
+    "record_basis": "named_part_and_assembly_listing",
+    "listing_checked": "2026-09-25",
+    "listing_checked_timezone": "UTC (2026-09-26 in Japan)",
+    "qualification_status": "Research candidate; no design-specific footprint, assembled sample, or order-specific acceptance established."
+  },
+  "listing_record": {
+    "mpn": "TS-1088-AR02016",
+    "jlc_code": "C720477",
+    "manufacturer": "XUNPU",
+    "role": "Momentary trigger/run/reset button beneath a mechanically supported cap",
+    "package": "SMD4×3mm (spec length3.9mm,width3mm,height2mm)",
+    "jlc_url": "https://jlcpcb.com/partdetail/XUNPU-TS_1088AR02016/C720477",
+    "manufacturer_url": null,
+    "lcsc_url": "https://www.lcsc.com/product-detail/C720477.html",
+    "geometry_notes": "Vertical/top push; round black actuator; no bracket;1.6N operating force. Tiny switch is not a velocity-sensitive pad or an adequately sized finger key on its own.",
+    "electrical_notes": "SPST momentary tactile;12V50mA;100,000cycles per catalog. Gate circuit needs debounce/edge shaping.",
+    "assembly": "JLC listing: SMT Assembly; Economic and Standard; Basic.",
+    "stock_status": "Actual public stock quantity not captured; recheck BOM tool.",
+    "open_questions": [
+      "Compatible cap or custom plunger and force-stop design",
+      "Debounce and trigger behavior",
+      "Cap installation scope with factory"
+    ],
+    "category": "Controls and connectors",
+    "record_basis": "named_part_and_assembly_listing",
+    "listing_checked": "2026-09-25",
+    "listing_checked_timezone": "UTC (2026-09-26 in Japan)",
+    "qualification_status": "Research candidate; no design-specific footprint, assembled sample, or order-specific acceptance established."
+  },
+  "research": {
+    "id": "c720477",
+    "manufacturer": "XUNPU",
+    "mpn": "TS-1088-AR02016",
+    "files": [
+      {
+        "path": "component-assets/368d4cc2c26b08cb/TS-1088-AR02016.pdf",
+        "relative_path": "component-assets/368d4cc2c26b08cb/TS-1088-AR02016.pdf",
+        "source_url": "https://datasheet.lcsc.com/datasheet/pdf/0475ac02febf455ca9ddcfb380b0df0d.pdf?productCode=C720477",
+        "content_type": "application/pdf",
+        "model_match": "family_drawing_with_exact_variant_ordering_fields",
+        "provenance": "Manufacturer TS-1088-ARXXXXXX drawing rev A, supplied by LCSC for C720477;020=2.0mm height,16=160gf.",
+        "license": "Manufacturer/supplier reference document; copyright remains with its owner. No open redistribution license identified.",
+        "date": "2026-09-25",
+        "downloaded": true,
+        "bytes": 123213,
+        "sha256": "368d4cc2c26b08cb63e1b67193f671d0860b6d3fb2e6b9f2696ffade401afc30",
+        "pages": 1
+      }
+    ],
+    "pins": {
+      "electrical_count": 2,
+      "roles": {
+        "1": "switch contact",
+        "2": "switch contact"
+      },
+      "switching": "SPST normally open momentary; two SMT pads"
+    },
+    "critical_dimensions": {
+      "units": "mm",
+      "case_xy": [
+        3.9,
+        3
+      ],
+      "overall_contact_span": 5,
+      "body_without_plunger_height": 1.5,
+      "overall_height": 2,
+      "actuator_diameter": 1.8,
+      "travel_nominal": 0.2,
+      "travel_tolerance": 0.1,
+      "recommended_land_outer_span": 5.5,
+      "recommended_land_inner_gap": 3.4,
+      "recommended_land_height": 2,
+      "notes": [
+        "Recommended land width derived from symmetrical drawing is(5.5-3.4)/2=1.05mm per pad; validate footprint from drawing.",
+        "Actuator is a small round plunger; no large keycap mating interface is specified."
+      ]
+    },
+    "facts": [
+      "Operating force code16=160gf with drawing table tolerance+/-50gf, approximately1.57N nominal.",
+      "Rated50mA DC12V; contact resistance<100mOhm; insulation>100MOhm; dielectric withstand250VAC1minute."
+    ],
+    "gaps": [
+      "No STEP/WRL/IGES downloaded; public EasyEDA component request returned403.",
+      "Exact drawing does not establish compatibility with any Omron B32 cap. B32-1600's3.8mm mounting geometry is for listed12x12mm Omron switches.",
+      "Catalogue100,000-cycle claim is not present in the one-page drawing and is not elevated to datasheet-verified here."
+    ],
+    "links": [
+      "https://www.lcsc.com/product-detail/C720477.html",
+      "https://jlcpcb.com/partdetail/XUNPU-TS_1088AR02016/C720477"
+    ],
+    "model_status": "no_model_downloaded"
+  },
+  "remote_assets": [],
+  "assets": [
+    {
+      "path": "component-assets/368d4cc2c26b08cb/TS-1088-AR02016.pdf",
+      "source_url": "https://datasheet.lcsc.com/datasheet/pdf/0475ac02febf455ca9ddcfb380b0df0d.pdf?productCode=C720477",
+      "content_type": "application/pdf",
+      "model_match": "family_drawing_with_exact_variant_ordering_fields",
+      "provenance": "Manufacturer TS-1088-ARXXXXXX drawing rev A, supplied by LCSC for C720477;020=2.0mm height,16=160gf.",
+      "license": "Manufacturer/supplier reference document; copyright remains with its owner. No open redistribution license identified.",
+      "date": "2026-09-25",
+      "downloaded": true,
+      "bytes": 123213,
+      "sha256": "368d4cc2c26b08cb63e1b67193f671d0860b6d3fb2e6b9f2696ffade401afc30",
+      "pages": 1,
+      "filename": "TS-1088-AR02016.pdf",
+      "original_filename": "TS-1088-AR02016.pdf",
+      "kind": "pdf",
+      "notes": "Manufacturer TS-1088-ARXXXXXX drawing rev A, supplied by LCSC for C720477;020=2.0mm height,16=160gf.",
+      "research_origin": "component-research/connectors/c720477/TS-1088-AR02016.pdf"
+    }
+  ],
+  "facts": [
+    {
+      "label": "Facts 1",
+      "value": "Operating force code16=160gf with drawing table tolerance+/-50gf, approximately1.57N nominal.",
+      "source_urls": [
+        "https://datasheet.lcsc.com/datasheet/pdf/0475ac02febf455ca9ddcfb380b0df0d.pdf?productCode=C720477"
+      ]
+    },
+    {
+      "label": "Facts 2",
+      "value": "Rated50mA DC12V; contact resistance<100mOhm; insulation>100MOhm; dielectric withstand250VAC1minute.",
+      "source_urls": [
+        "https://datasheet.lcsc.com/datasheet/pdf/0475ac02febf455ca9ddcfb380b0df0d.pdf?productCode=C720477"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Units",
+      "value": "mm",
+      "source_urls": [
+        "https://datasheet.lcsc.com/datasheet/pdf/0475ac02febf455ca9ddcfb380b0df0d.pdf?productCode=C720477"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Case xy 1",
+      "value": "3.9",
+      "source_urls": [
+        "https://datasheet.lcsc.com/datasheet/pdf/0475ac02febf455ca9ddcfb380b0df0d.pdf?productCode=C720477"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Case xy 2",
+      "value": "3",
+      "source_urls": [
+        "https://datasheet.lcsc.com/datasheet/pdf/0475ac02febf455ca9ddcfb380b0df0d.pdf?productCode=C720477"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Overall contact span",
+      "value": "5",
+      "source_urls": [
+        "https://datasheet.lcsc.com/datasheet/pdf/0475ac02febf455ca9ddcfb380b0df0d.pdf?productCode=C720477"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Body without plunger height",
+      "value": "1.5",
+      "source_urls": [
+        "https://datasheet.lcsc.com/datasheet/pdf/0475ac02febf455ca9ddcfb380b0df0d.pdf?productCode=C720477"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Overall height",
+      "value": "2",
+      "source_urls": [
+        "https://datasheet.lcsc.com/datasheet/pdf/0475ac02febf455ca9ddcfb380b0df0d.pdf?productCode=C720477"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Actuator diameter",
+      "value": "1.8",
+      "source_urls": [
+        "https://datasheet.lcsc.com/datasheet/pdf/0475ac02febf455ca9ddcfb380b0df0d.pdf?productCode=C720477"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Travel nominal",
+      "value": "0.2",
+      "source_urls": [
+        "https://datasheet.lcsc.com/datasheet/pdf/0475ac02febf455ca9ddcfb380b0df0d.pdf?productCode=C720477"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Travel tolerance",
+      "value": "0.1",
+      "source_urls": [
+        "https://datasheet.lcsc.com/datasheet/pdf/0475ac02febf455ca9ddcfb380b0df0d.pdf?productCode=C720477"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Recommended land outer span",
+      "value": "5.5",
+      "source_urls": [
+        "https://datasheet.lcsc.com/datasheet/pdf/0475ac02febf455ca9ddcfb380b0df0d.pdf?productCode=C720477"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Recommended land inner gap",
+      "value": "3.4",
+      "source_urls": [
+        "https://datasheet.lcsc.com/datasheet/pdf/0475ac02febf455ca9ddcfb380b0df0d.pdf?productCode=C720477"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Recommended land height",
+      "value": "2",
+      "source_urls": [
+        "https://datasheet.lcsc.com/datasheet/pdf/0475ac02febf455ca9ddcfb380b0df0d.pdf?productCode=C720477"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Notes 1",
+      "value": "Recommended land width derived from symmetrical drawing is(5.5-3.4)/2=1.05mm per pad; validate footprint from drawing.",
+      "source_urls": [
+        "https://datasheet.lcsc.com/datasheet/pdf/0475ac02febf455ca9ddcfb380b0df0d.pdf?productCode=C720477"
+      ]
+    },
+    {
+      "label": "Critical dimensions / Notes 2",
+      "value": "Actuator is a small round plunger; no large keycap mating interface is specified.",
+      "source_urls": [
+        "https://datasheet.lcsc.com/datasheet/pdf/0475ac02febf455ca9ddcfb380b0df0d.pdf?productCode=C720477"
+      ]
+    }
+  ],
+  "pinmap": {
+    "electrical_count": 2,
+    "roles": {
+      "1": "switch contact",
+      "2": "switch contact"
+    },
+    "switching": "SPST normally open momentary; two SMT pads"
+  },
+  "pinmap_source": "Use the source drawing and its stated view; no CAD pad coordinates have been qualified.",
+  "gaps": [
+    "No STEP/WRL/IGES downloaded; public EasyEDA component request returned403.",
+    "Exact drawing does not establish compatibility with any Omron B32 cap. B32-1600's3.8mm mounting geometry is for listed12x12mm Omron switches.",
+    "Catalogue100,000-cycle claim is not present in the one-page drawing and is not elevated to datasheet-verified here."
+  ],
+  "assembly": "JLC listing: SMT Assembly; Economic and Standard; Basic.",
+  "models": [],
+  "sources": [
+    {
+      "url": "https://datasheet.lcsc.com/datasheet/pdf/0475ac02febf455ca9ddcfb380b0df0d.pdf?productCode=C720477",
+      "label": "datasheet.lcsc.com — 0475ac02febf455ca9ddcfb380b0df0d.pdf"
+    },
+    {
+      "url": "https://www.lcsc.com/product-detail/C720477.html",
+      "label": "www.lcsc.com — C720477.html"
+    },
+    {
+      "url": "https://jlcpcb.com/partdetail/XUNPU-TS_1088AR02016/C720477",
+      "label": "jlcpcb.com"
+    }
+  ],
+  "research_group": "connectors",
+  "coverage": {
+    "downloaded_pdf": true,
+    "downloaded_step": false,
+    "downloaded_model": false,
+    "viewer_models": 0,
+    "generated_envelope": false,
+    "best_model_match": "unavailable",
+    "fit_qualified": false,
+    "production_footprint_qualified": false,
+    "factory_order_approved": false
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "project": "zudo-scope10",
+  "revision": "P0-prelayout",
+  "date": "2026-09-26",
+  "scope": "Ten-channel waveform monitor; not the five-oscillator instrument or LED lamp.",
+  "no_home_soldering": true,
+  "order_approved": false,
+  "channels": 10,
+  "display": {
+    "module": "Waveshare 19907",
+    "logical_pixels": [
+      320,
+      480
+    ],
+    "panes": [
+      2,
+      5
+    ],
+    "touch": false,
+    "sd_card": false
+  },
+  "controls": {
+    "time_pots": 10,
+    "range_switches": 10,
+    "range_volts_peak": [
+      3,
+      5,
+      8
+    ],
+    "buttons": [
+      "HOLD",
+      "LINK"
+    ],
+    "time_window_s": [
+      0.002,
+      8.192
+    ]
+  },
+  "acquisition": {
+    "adc": "RP2040 internal",
+    "mode": "sequential",
+    "nominal_channel_rate_hz": 10000,
+    "frame_us": 100,
+    "signal_slots": 10,
+    "signal_slot_us": 8,
+    "control_slots": 2,
+    "control_slot_us": 8,
+    "margin_us": 4,
+    "window_display": "min/max envelope at slow scales; rolling initially, no promised phase alignment",
+    "nominal_intended_signal_bandwidth_hz": 1000,
+    "full_audio_band_claim": false
+  },
+  "input": {
+    "working_target_volts_peak": 12,
+    "display_scales_are_not_input_limits": true,
+    "fault_test_target_volts_peak": 24,
+    "fault_tolerance_qualified": false,
+    "r_input": 1000000.0,
+    "r_to_ref": 200000.0,
+    "r_to_gnd": 249000.0,
+    "reference_v": 3,
+    "filter1_c_f": 4.7e-10,
+    "filter2_r_ohm": 4700,
+    "filter2_c_f": 1e-08,
+    "open_input_detection": false
+  },
+  "mechanical": {
+    "board_envelope_mm": [
+      250,
+      180
+    ],
+    "thickness_mm": 1.6,
+    "layer_target": 4,
+    "hole_centres_mm": [
+      [
+        5,
+        5
+      ],
+      [
+        245,
+        5
+      ],
+      [
+        245,
+        175
+      ],
+      [
+        5,
+        175
+      ]
+    ],
+    "mechanical_release": false
+  },
+  "cost": {
+    "priority": "low cost with retained dedicated controls",
+    "prototype_exception": "preassembled Pico H + documented Waveshare module before raw MCU/LCD cost-down",
+    "external_parts_acceptable": true
+  }
+}

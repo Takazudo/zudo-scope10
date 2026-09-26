@@ -1,0 +1,165 @@
+{
+  "units": "mm",
+  "purpose": "ERGONOMIC_STUDY_NOT_PAD_PLACEMENT",
+  "screen_active_mm": [
+    48.96,
+    73.44
+  ],
+  "module_envelope_mm": [
+    57.2,
+    86
+  ],
+  "active_centring": "UNVERIFIED_VISUAL_STUDY",
+  "channels": [
+    {
+      "channel": 1,
+      "pot_axis_mm": [
+        48,
+        43.0
+      ],
+      "range_envelope_centre_mm": [
+        77,
+        43.0
+      ],
+      "jack_envelope_centre_mm": [
+        8.5,
+        43.0
+      ]
+    },
+    {
+      "channel": 2,
+      "pot_axis_mm": [
+        48,
+        66.5
+      ],
+      "range_envelope_centre_mm": [
+        77,
+        66.5
+      ],
+      "jack_envelope_centre_mm": [
+        8.5,
+        66.5
+      ]
+    },
+    {
+      "channel": 3,
+      "pot_axis_mm": [
+        48,
+        90.0
+      ],
+      "range_envelope_centre_mm": [
+        77,
+        90.0
+      ],
+      "jack_envelope_centre_mm": [
+        8.5,
+        90.0
+      ]
+    },
+    {
+      "channel": 4,
+      "pot_axis_mm": [
+        48,
+        113.5
+      ],
+      "range_envelope_centre_mm": [
+        77,
+        113.5
+      ],
+      "jack_envelope_centre_mm": [
+        8.5,
+        113.5
+      ]
+    },
+    {
+      "channel": 5,
+      "pot_axis_mm": [
+        48,
+        137.0
+      ],
+      "range_envelope_centre_mm": [
+        77,
+        137.0
+      ],
+      "jack_envelope_centre_mm": [
+        8.5,
+        137.0
+      ]
+    },
+    {
+      "channel": 6,
+      "pot_axis_mm": [
+        202,
+        43.0
+      ],
+      "range_envelope_centre_mm": [
+        173,
+        43.0
+      ],
+      "jack_envelope_centre_mm": [
+        241.5,
+        43.0
+      ]
+    },
+    {
+      "channel": 7,
+      "pot_axis_mm": [
+        202,
+        66.5
+      ],
+      "range_envelope_centre_mm": [
+        173,
+        66.5
+      ],
+      "jack_envelope_centre_mm": [
+        241.5,
+        66.5
+      ]
+    },
+    {
+      "channel": 8,
+      "pot_axis_mm": [
+        202,
+        90.0
+      ],
+      "range_envelope_centre_mm": [
+        173,
+        90.0
+      ],
+      "jack_envelope_centre_mm": [
+        241.5,
+        90.0
+      ]
+    },
+    {
+      "channel": 9,
+      "pot_axis_mm": [
+        202,
+        113.5
+      ],
+      "range_envelope_centre_mm": [
+        173,
+        113.5
+      ],
+      "jack_envelope_centre_mm": [
+        241.5,
+        113.5
+      ]
+    },
+    {
+      "channel": 10,
+      "pot_axis_mm": [
+        202,
+        137.0
+      ],
+      "range_envelope_centre_mm": [
+        173,
+        137.0
+      ],
+      "jack_envelope_centre_mm": [
+        241.5,
+        137.0
+      ]
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "gpio_nets": {
+    "0": "HOLD_N",
+    "1": "LINK_N",
+    "2": "ADDR0_SRC",
+    "3": "ADDR1_SRC",
+    "4": "ADDR2_SRC",
+    "5": "ADDR3_SRC",
+    "7": "MUX_DISABLE",
+    "8": "LCD_DC_SRC",
+    "9": "LCD_CS_SRC",
+    "10": "LCD_CLK_SRC",
+    "11": "LCD_MOSI_SRC",
+    "12": "LCD_MISO",
+    "13": "LCD_BL_SRC",
+    "14": "TIMING_TP",
+    "15": "LCD_RST_SRC",
+    "16": "TP_CS_N",
+    "22": "SD_CS_N",
+    "26": "ADC0",
+    "27": "ADC1",
+    "28": "ADC2"
+  },
+  "adc_channels": {
+    "0": "ADC0",
+    "1": "ADC1",
+    "2": "ADC2"
+  },
+  "mux_address_pins": [
+    2,
+    3,
+    4,
+    5
+  ],
+  "mux_disable_pin": 7,
+  "display_spi": 1,
+  "display_spi_hz_initial": 8000000,
+  "display_cs_pin": 9,
+  "display_touch_sd_unused": true
+}

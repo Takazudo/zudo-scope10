@@ -1,0 +1,85 @@
+{
+  "basis": "Analytical ideal resistors/buffers. No vendor SPICE, no tolerances for op amp/ADC/diode/PCB included unless explicitly stated.",
+  "gain_v_per_v": 0.09983961507618283,
+  "zero_input_adc_v": 1.4975942261427426,
+  "thevenin_ohm": 99839.61507618283,
+  "small_signal_input_impedance_ohm": 1110913.140311804,
+  "shorted_input_bias_current_uA": 1.4975942261427426,
+  "adc_volts_at_input": {
+    "-12": 0.29951884522854866,
+    "-8": 0.69887730553328,
+    "-5": 0.9983961507618284,
+    "-3": 1.1980753809141942,
+    "0": 1.4975942261427426,
+    "3": 1.797113071371291,
+    "5": 1.9967923015236568,
+    "8": 2.2963111467522053,
+    "12": 2.695669607056937
+  },
+  "input_referred_ideal_adc_lsb_mV": 8.069583019578312,
+  "adc_zero_code_ideal": 1858.3782897134943,
+  "open_input_adc_v": 1.66369710467706,
+  "open_input_apparent_volts": 1.6636971046770574,
+  "filter_poles_hz": [
+    3391.715184749098,
+    3386.2753849339438
+  ],
+  "filter_amplitude": {
+    "20": {
+      "ratio": 0.9999651739855155,
+      "dB": -0.0003025001858141487
+    },
+    "100": {
+      "ratio": 0.9991300767418635,
+      "dB": -0.007559345916103119
+    },
+    "500": {
+      "ratio": 0.9786966929221216,
+      "dB": -0.18703758374246635
+    },
+    "1000": {
+      "ratio": 0.9199056041550316,
+      "dB": -0.7251347073908053
+    },
+    "2000": {
+      "ratio": 0.7416900172105177,
+      "dB": -2.5955513268576174
+    },
+    "5000": {
+      "ratio": 0.31479210065730795,
+      "dB": -10.039523485851928
+    },
+    "10000": {
+      "ratio": 0.10302059703617907,
+      "dB": -19.741518751549734
+    },
+    "20000": {
+      "ratio": 0.027911766845027584,
+      "dB": -31.084253426616556
+    }
+  },
+  "corner_assumptions": {
+    "divider_R_fraction": 0.001,
+    "reference_fraction": 0.0015,
+    "other_error_sources": "EXCLUDED"
+  },
+  "corner_results": {
+    "min_voltage_minus12": 0.294578558214021,
+    "max_voltage_plus12": 2.700079095199267,
+    "gain_min": 0.09966001548079405,
+    "gain_max": 0.10001950237640064
+  },
+  "ideal_positive_fault_current_upper_bound_uA_at_24V": 24.0,
+  "ten_channel_unpowered_injection_bound_uA": 240.0,
+  "one_k_bleed_ideal_rail_bound_V": 0.24000000000000002,
+  "fault_note": "Conservative resistor current bound only; not an ESD, negative-voltage, current-path or latch-up proof. Do not claim \u00b124V rated immunity.",
+  "acquisition": {
+    "nominal_samples_per_channel_s": 10000,
+    "sample_period_per_channel_us": 100,
+    "maximum_sequential_channel_skew_us": 72,
+    "nyquist_hz": 5000,
+    "ideal_spi_full_frame_ms_at8MHz": 307.2,
+    "ideal_spi_full_frame_ms_at24MHz": 102.4,
+    "note": "SPI times exclude framing/commands. Full RGB565 framebuffer is 307200B, larger than RP2040 264kB SRAM; stream small tiles, never allocate full frame."
+  }
+}

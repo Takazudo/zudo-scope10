@@ -1,0 +1,8 @@
+node_modules/
+doc/dist/
+doc/.zfb/
+firmware/build/
+__pycache__/
+*.pyc
+.DS_Store
+reference/downloads/

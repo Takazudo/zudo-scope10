@@ -1,0 +1,10 @@
+(kicad_pcb (version 20240108) (generator "pcbnew")
+ (general (thickness 1.6)) (paper "A4")
+ (layers (0 "F.Cu" signal) (1 "In1.Cu" power) (2 "In2.Cu" power) (31 "B.Cu" signal)
+ (44 "Edge.Cuts" user) (40 "Dwgs.User" user) (36 "B.SilkS" user "b.silkscreen") (37 "F.SilkS" user "f.silkscreen")
+ (38 "B.Mask" user) (39 "F.Mask" user) (46 "B.CrtYd" user) (47 "F.CrtYd" user) (48 "B.Fab" user) (49 "F.Fab" user))
+ (setup (pad_to_mask_clearance 0)) (net 0 "")
+ (gr_rect (start 50 50) (end 300 230) (stroke (width 0.1) (type default)) (fill none) (layer "Edge.Cuts") (uuid "a31e1590-4e43-5c9d-9793-6c6212e1713a"))
+ (gr_text "OUTLINE STUDY ONLY - NO COMPONENTS OR ROUTING
+P0 / DO NOT FABRICATE" (at 175 140) (layer "Dwgs.User") (uuid "a24df598-59e0-5e84-895a-d7e474053f71") (effects (font (size 3 3) (thickness 0.5))))
+)

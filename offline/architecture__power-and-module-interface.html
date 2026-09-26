@@ -1,0 +1,62 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Power and module interface — stop gate · SCOPE10</title><link rel="stylesheet" href="style.css"><header><div class="tag">ZUDO / SCOPE 10 / P0</div><a href="index.html">Project catalogue</a> · <a href="../doc/public/prototype/index.html">UI simulation</a></header><main><div class="crumb">architecture/power-and-module-interface</div><h1>Power and module interface — stop gate</h1><h2>One source only</h2>
+<p>Pico H's USB input supplies <code>VBUS_USB</code>. Carrier F1 passes it to <code>+5V_FUSED</code> for the display and the analog regulator. There is no external second supply connection. An eventual suitable USB 5 V source and the Pico USB/VBUS path must satisfy the measured total load and inrush. A 1 A-rated charger is a planned source, not permission to draw 1 A through an unverified PCB/header path.</p>
+<p>The analog LDO is TLV75533PDBVR: 3.3 V output, input supply constrained to the <a href="https://www.ti.com/lit/ds/symlink/tlv755p.pdf">manufacturer limits</a>. Use the exact DBV pin assignment (1 IN, 2 GND, 3 EN, 4 NC, 5 OUT). EN is tied to fused 5 V. Use effective input/output capacitance of at least 1 µF as required by the datasheet. No PD voltage negotiation is present.</p>
+<p>REF3330 generates 3.0 V and U6D buffers it. The ADC still uses Pico's own reference arrangement; two-point calibration is required to relate the separately generated analog bias to the ADC. The 3.0 V node is not incorrectly connected to Pico ADC_VREF.</p>
+<h2>Physical header numbering</h2>
+<p>J20/J30 are the left 20-contact strips: carrier contact <code>k</code> corresponds to Pico position <code>k</code> (1–20). J21/J31 are the right strips: contact <code>k</code> corresponds to Pico position <code>41-k</code> (40 down to 21). This convention is recorded explicitly in <code>design/circuit.json</code> and checked in the data tests.</p>
+<p>J20/J21 accept Pico H. J30/J31 accept the display module. Do not merge these two 40-position interfaces electrically. Only the documented LCD signals, select signals, ground and intended power path pass through the carrier.</p>
+<h2>G01 — do not route a presumed power connection</h2>
+<p>The present netlist proposes display Pico-position 39 (VSYS) fed by fused 5 V, with positions 36 (3V3), 37 (3V3_EN), 35 (ADC_VREF) and 40 (VBUS) isolated. <strong>This is conditional and not power-qualified.</strong> The module schematic was readable as extracted text, but its power-strapping diagram could not be visually verified in this environment. Verify the exact received module revision, its regulator/strap resistors and required GPIO level supplies before finalizing the header footprint/netlist.</p>
+<p>The Waveshare board can have extra memory/clock/power-control nets on otherwise spare Pico positions. GP3, GP5 and GP14 on the display header are not automatically tied to the custom carrier's mux controls or timing output. Trace any additional requirements from the correct manufacturer schematic. Do not energize an unverified arrangement and assume a blank screen is a firmware issue.</p>
+<p>The independent source files are listed in <code>catalog/sources.json</code>. <code>scripts/fetch_sources.py --execute</code> downloads available originals locally; retrieval does not establish that they have been reviewed.</p>
+<h2>Signal contract</h2>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Pico GPIO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HOLD, LINK</td>
+<td>GP0, GP1; active-low buttons</td>
+</tr>
+<tr>
+<td>Mux address bit 0…3</td>
+<td>GP2, GP3, GP4, GP5</td>
+</tr>
+<tr>
+<td>Mux disable</td>
+<td>GP7; HIGH disconnects all banks</td>
+</tr>
+<tr>
+<td>LCD DC / CS</td>
+<td>GP8 / GP9</td>
+</tr>
+<tr>
+<td>SPI1 SCK / MOSI / MISO</td>
+<td>GP10 / GP11 / GP12</td>
+</tr>
+<tr>
+<td>LCD backlight / reset</td>
+<td>GP13 / GP15</td>
+</tr>
+<tr>
+<td>Timing test point</td>
+<td>GP14</td>
+</tr>
+<tr>
+<td>Touch / SD deselect</td>
+<td>GP16 / GP22</td>
+</tr>
+<tr>
+<td>Signal / TIME / RANGE ADC</td>
+<td>GP26 / GP27 / GP28</td>
+</tr>
+</tbody>
+</table>
+<p>All address changes occur while mux disable is high in the diagnostic firmware. LCD backlight has a pull-down, chip-selects pull high. Do not assume asynchronous analog and digital 3.3 V startup is harmless: qualify power sequencing and unpowered injection into the mux/ADC paths.</p>
+<h2>Provisional power allocation</h2>
+<p>Allocate 300 mA to the screen/backlight module, 80 mA to Pico and 40 mA to carrier analog/control circuitry for planning. These are <strong>budget allowances, not measured or manufacturer maximum currents</strong>. Their sum is 420 mA; verify USB startup/enumeration limits, F1 derating, local capacitance and connector ratings. At 40 mA the analog LDO's ideal 5-to-3.3 V dissipation is about 68 mW, excluding any abnormal condition. Do not infer a thermal pass from this estimate.</p>
+<footer>Pre-layout evidence. No factory approval or hardware measurements are implied.</footer></main></html>

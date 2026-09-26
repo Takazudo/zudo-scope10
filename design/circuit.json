@@ -1,0 +1,3036 @@
+{
+  "schema_version": 1,
+  "generator": "scripts/make_design.py",
+  "status": "REVIEW_ONLY_NOT_FOR_FABRICATION",
+  "parts": [
+    {
+      "ref": "J1",
+      "record": "jack",
+      "value": "PJ-313 5JCJ",
+      "pins": {
+        "1": "GND",
+        "2": null,
+        "3": "CH01_IN"
+      },
+      "sheet": "inputs-01-02",
+      "notes": "3 logical contacts / 5 physical legs: duplicated pad mapping is OPEN",
+      "footprint": ""
+    },
+    {
+      "ref": "R101",
+      "record": "r1m",
+      "value": "1M",
+      "pins": {
+        "1": "CH01_IN",
+        "2": "CH01_BIAS"
+      },
+      "sheet": "inputs-01-02",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R102",
+      "record": "r200k",
+      "value": "200k",
+      "pins": {
+        "1": "+3V0_REF",
+        "2": "CH01_BIAS"
+      },
+      "sheet": "inputs-01-02",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R103",
+      "record": "r249k",
+      "value": "249k",
+      "pins": {
+        "1": "CH01_BIAS",
+        "2": "GND"
+      },
+      "sheet": "inputs-01-02",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C101",
+      "record": "c470p",
+      "value": "470pF",
+      "pins": {
+        "1": "CH01_BIAS",
+        "2": "GND"
+      },
+      "sheet": "inputs-01-02",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "D1",
+      "record": "clamp",
+      "value": "BAV199,215",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3A",
+        "3": "CH01_BIAS"
+      },
+      "sheet": "inputs-01-02",
+      "notes": "",
+      "footprint": "Package_TO_SOT_SMD:SOT-23"
+    },
+    {
+      "ref": "R104",
+      "record": "r4k7",
+      "value": "4.7k",
+      "pins": {
+        "1": "CH01_BUF1",
+        "2": "CH01_LP2"
+      },
+      "sheet": "inputs-01-02",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C102",
+      "record": "c10n",
+      "value": "10nF",
+      "pins": {
+        "1": "CH01_LP2",
+        "2": "GND"
+      },
+      "sheet": "inputs-01-02",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "TP1",
+      "record": "testpoint",
+      "value": "testpoint",
+      "pins": {
+        "1": "CH01_OUT"
+      },
+      "sheet": "inputs-01-02",
+      "notes": "",
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm"
+    },
+    {
+      "ref": "J2",
+      "record": "jack",
+      "value": "PJ-313 5JCJ",
+      "pins": {
+        "1": "GND",
+        "2": null,
+        "3": "CH02_IN"
+      },
+      "sheet": "inputs-01-02",
+      "notes": "3 logical contacts / 5 physical legs: duplicated pad mapping is OPEN",
+      "footprint": ""
+    },
+    {
+      "ref": "R201",
+      "record": "r1m",
+      "value": "1M",
+      "pins": {
+        "1": "CH02_IN",
+        "2": "CH02_BIAS"
+      },
+      "sheet": "inputs-01-02",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R202",
+      "record": "r200k",
+      "value": "200k",
+      "pins": {
+        "1": "+3V0_REF",
+        "2": "CH02_BIAS"
+      },
+      "sheet": "inputs-01-02",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R203",
+      "record": "r249k",
+      "value": "249k",
+      "pins": {
+        "1": "CH02_BIAS",
+        "2": "GND"
+      },
+      "sheet": "inputs-01-02",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C201",
+      "record": "c470p",
+      "value": "470pF",
+      "pins": {
+        "1": "CH02_BIAS",
+        "2": "GND"
+      },
+      "sheet": "inputs-01-02",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "D2",
+      "record": "clamp",
+      "value": "BAV199,215",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3A",
+        "3": "CH02_BIAS"
+      },
+      "sheet": "inputs-01-02",
+      "notes": "",
+      "footprint": "Package_TO_SOT_SMD:SOT-23"
+    },
+    {
+      "ref": "R204",
+      "record": "r4k7",
+      "value": "4.7k",
+      "pins": {
+        "1": "CH02_BUF1",
+        "2": "CH02_LP2"
+      },
+      "sheet": "inputs-01-02",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C202",
+      "record": "c10n",
+      "value": "10nF",
+      "pins": {
+        "1": "CH02_LP2",
+        "2": "GND"
+      },
+      "sheet": "inputs-01-02",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "TP2",
+      "record": "testpoint",
+      "value": "testpoint",
+      "pins": {
+        "1": "CH02_OUT"
+      },
+      "sheet": "inputs-01-02",
+      "notes": "",
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm"
+    },
+    {
+      "ref": "U1",
+      "record": "tlv9064",
+      "value": "TLV9064IDR",
+      "pins": {
+        "4": "+3V3A",
+        "11": "GND",
+        "1": "CH01_BUF1",
+        "2": "CH01_BUF1",
+        "3": "CH01_BIAS",
+        "5": "CH01_LP2",
+        "6": "CH01_OUT",
+        "7": "CH01_OUT",
+        "8": "CH02_BUF1",
+        "9": "CH02_BUF1",
+        "10": "CH02_BIAS",
+        "12": "CH02_LP2",
+        "13": "CH02_OUT",
+        "14": "CH02_OUT"
+      },
+      "sheet": "inputs-01-02",
+      "notes": "",
+      "footprint": "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
+    },
+    {
+      "ref": "C1",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "+3V3A",
+        "2": "GND"
+      },
+      "sheet": "inputs-01-02",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "J3",
+      "record": "jack",
+      "value": "PJ-313 5JCJ",
+      "pins": {
+        "1": "GND",
+        "2": null,
+        "3": "CH03_IN"
+      },
+      "sheet": "inputs-03-04",
+      "notes": "3 logical contacts / 5 physical legs: duplicated pad mapping is OPEN",
+      "footprint": ""
+    },
+    {
+      "ref": "R301",
+      "record": "r1m",
+      "value": "1M",
+      "pins": {
+        "1": "CH03_IN",
+        "2": "CH03_BIAS"
+      },
+      "sheet": "inputs-03-04",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R302",
+      "record": "r200k",
+      "value": "200k",
+      "pins": {
+        "1": "+3V0_REF",
+        "2": "CH03_BIAS"
+      },
+      "sheet": "inputs-03-04",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R303",
+      "record": "r249k",
+      "value": "249k",
+      "pins": {
+        "1": "CH03_BIAS",
+        "2": "GND"
+      },
+      "sheet": "inputs-03-04",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C301",
+      "record": "c470p",
+      "value": "470pF",
+      "pins": {
+        "1": "CH03_BIAS",
+        "2": "GND"
+      },
+      "sheet": "inputs-03-04",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "D3",
+      "record": "clamp",
+      "value": "BAV199,215",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3A",
+        "3": "CH03_BIAS"
+      },
+      "sheet": "inputs-03-04",
+      "notes": "",
+      "footprint": "Package_TO_SOT_SMD:SOT-23"
+    },
+    {
+      "ref": "R304",
+      "record": "r4k7",
+      "value": "4.7k",
+      "pins": {
+        "1": "CH03_BUF1",
+        "2": "CH03_LP2"
+      },
+      "sheet": "inputs-03-04",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C302",
+      "record": "c10n",
+      "value": "10nF",
+      "pins": {
+        "1": "CH03_LP2",
+        "2": "GND"
+      },
+      "sheet": "inputs-03-04",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "TP3",
+      "record": "testpoint",
+      "value": "testpoint",
+      "pins": {
+        "1": "CH03_OUT"
+      },
+      "sheet": "inputs-03-04",
+      "notes": "",
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm"
+    },
+    {
+      "ref": "J4",
+      "record": "jack",
+      "value": "PJ-313 5JCJ",
+      "pins": {
+        "1": "GND",
+        "2": null,
+        "3": "CH04_IN"
+      },
+      "sheet": "inputs-03-04",
+      "notes": "3 logical contacts / 5 physical legs: duplicated pad mapping is OPEN",
+      "footprint": ""
+    },
+    {
+      "ref": "R401",
+      "record": "r1m",
+      "value": "1M",
+      "pins": {
+        "1": "CH04_IN",
+        "2": "CH04_BIAS"
+      },
+      "sheet": "inputs-03-04",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R402",
+      "record": "r200k",
+      "value": "200k",
+      "pins": {
+        "1": "+3V0_REF",
+        "2": "CH04_BIAS"
+      },
+      "sheet": "inputs-03-04",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R403",
+      "record": "r249k",
+      "value": "249k",
+      "pins": {
+        "1": "CH04_BIAS",
+        "2": "GND"
+      },
+      "sheet": "inputs-03-04",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C401",
+      "record": "c470p",
+      "value": "470pF",
+      "pins": {
+        "1": "CH04_BIAS",
+        "2": "GND"
+      },
+      "sheet": "inputs-03-04",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "D4",
+      "record": "clamp",
+      "value": "BAV199,215",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3A",
+        "3": "CH04_BIAS"
+      },
+      "sheet": "inputs-03-04",
+      "notes": "",
+      "footprint": "Package_TO_SOT_SMD:SOT-23"
+    },
+    {
+      "ref": "R404",
+      "record": "r4k7",
+      "value": "4.7k",
+      "pins": {
+        "1": "CH04_BUF1",
+        "2": "CH04_LP2"
+      },
+      "sheet": "inputs-03-04",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C402",
+      "record": "c10n",
+      "value": "10nF",
+      "pins": {
+        "1": "CH04_LP2",
+        "2": "GND"
+      },
+      "sheet": "inputs-03-04",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "TP4",
+      "record": "testpoint",
+      "value": "testpoint",
+      "pins": {
+        "1": "CH04_OUT"
+      },
+      "sheet": "inputs-03-04",
+      "notes": "",
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm"
+    },
+    {
+      "ref": "U2",
+      "record": "tlv9064",
+      "value": "TLV9064IDR",
+      "pins": {
+        "4": "+3V3A",
+        "11": "GND",
+        "1": "CH03_BUF1",
+        "2": "CH03_BUF1",
+        "3": "CH03_BIAS",
+        "5": "CH03_LP2",
+        "6": "CH03_OUT",
+        "7": "CH03_OUT",
+        "8": "CH04_BUF1",
+        "9": "CH04_BUF1",
+        "10": "CH04_BIAS",
+        "12": "CH04_LP2",
+        "13": "CH04_OUT",
+        "14": "CH04_OUT"
+      },
+      "sheet": "inputs-03-04",
+      "notes": "",
+      "footprint": "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
+    },
+    {
+      "ref": "C2",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "+3V3A",
+        "2": "GND"
+      },
+      "sheet": "inputs-03-04",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "J5",
+      "record": "jack",
+      "value": "PJ-313 5JCJ",
+      "pins": {
+        "1": "GND",
+        "2": null,
+        "3": "CH05_IN"
+      },
+      "sheet": "inputs-05-06",
+      "notes": "3 logical contacts / 5 physical legs: duplicated pad mapping is OPEN",
+      "footprint": ""
+    },
+    {
+      "ref": "R501",
+      "record": "r1m",
+      "value": "1M",
+      "pins": {
+        "1": "CH05_IN",
+        "2": "CH05_BIAS"
+      },
+      "sheet": "inputs-05-06",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R502",
+      "record": "r200k",
+      "value": "200k",
+      "pins": {
+        "1": "+3V0_REF",
+        "2": "CH05_BIAS"
+      },
+      "sheet": "inputs-05-06",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R503",
+      "record": "r249k",
+      "value": "249k",
+      "pins": {
+        "1": "CH05_BIAS",
+        "2": "GND"
+      },
+      "sheet": "inputs-05-06",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C501",
+      "record": "c470p",
+      "value": "470pF",
+      "pins": {
+        "1": "CH05_BIAS",
+        "2": "GND"
+      },
+      "sheet": "inputs-05-06",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "D5",
+      "record": "clamp",
+      "value": "BAV199,215",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3A",
+        "3": "CH05_BIAS"
+      },
+      "sheet": "inputs-05-06",
+      "notes": "",
+      "footprint": "Package_TO_SOT_SMD:SOT-23"
+    },
+    {
+      "ref": "R504",
+      "record": "r4k7",
+      "value": "4.7k",
+      "pins": {
+        "1": "CH05_BUF1",
+        "2": "CH05_LP2"
+      },
+      "sheet": "inputs-05-06",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C502",
+      "record": "c10n",
+      "value": "10nF",
+      "pins": {
+        "1": "CH05_LP2",
+        "2": "GND"
+      },
+      "sheet": "inputs-05-06",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "TP5",
+      "record": "testpoint",
+      "value": "testpoint",
+      "pins": {
+        "1": "CH05_OUT"
+      },
+      "sheet": "inputs-05-06",
+      "notes": "",
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm"
+    },
+    {
+      "ref": "J6",
+      "record": "jack",
+      "value": "PJ-313 5JCJ",
+      "pins": {
+        "1": "GND",
+        "2": null,
+        "3": "CH06_IN"
+      },
+      "sheet": "inputs-05-06",
+      "notes": "3 logical contacts / 5 physical legs: duplicated pad mapping is OPEN",
+      "footprint": ""
+    },
+    {
+      "ref": "R601",
+      "record": "r1m",
+      "value": "1M",
+      "pins": {
+        "1": "CH06_IN",
+        "2": "CH06_BIAS"
+      },
+      "sheet": "inputs-05-06",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R602",
+      "record": "r200k",
+      "value": "200k",
+      "pins": {
+        "1": "+3V0_REF",
+        "2": "CH06_BIAS"
+      },
+      "sheet": "inputs-05-06",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R603",
+      "record": "r249k",
+      "value": "249k",
+      "pins": {
+        "1": "CH06_BIAS",
+        "2": "GND"
+      },
+      "sheet": "inputs-05-06",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C601",
+      "record": "c470p",
+      "value": "470pF",
+      "pins": {
+        "1": "CH06_BIAS",
+        "2": "GND"
+      },
+      "sheet": "inputs-05-06",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "D6",
+      "record": "clamp",
+      "value": "BAV199,215",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3A",
+        "3": "CH06_BIAS"
+      },
+      "sheet": "inputs-05-06",
+      "notes": "",
+      "footprint": "Package_TO_SOT_SMD:SOT-23"
+    },
+    {
+      "ref": "R604",
+      "record": "r4k7",
+      "value": "4.7k",
+      "pins": {
+        "1": "CH06_BUF1",
+        "2": "CH06_LP2"
+      },
+      "sheet": "inputs-05-06",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C602",
+      "record": "c10n",
+      "value": "10nF",
+      "pins": {
+        "1": "CH06_LP2",
+        "2": "GND"
+      },
+      "sheet": "inputs-05-06",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "TP6",
+      "record": "testpoint",
+      "value": "testpoint",
+      "pins": {
+        "1": "CH06_OUT"
+      },
+      "sheet": "inputs-05-06",
+      "notes": "",
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm"
+    },
+    {
+      "ref": "U3",
+      "record": "tlv9064",
+      "value": "TLV9064IDR",
+      "pins": {
+        "4": "+3V3A",
+        "11": "GND",
+        "1": "CH05_BUF1",
+        "2": "CH05_BUF1",
+        "3": "CH05_BIAS",
+        "5": "CH05_LP2",
+        "6": "CH05_OUT",
+        "7": "CH05_OUT",
+        "8": "CH06_BUF1",
+        "9": "CH06_BUF1",
+        "10": "CH06_BIAS",
+        "12": "CH06_LP2",
+        "13": "CH06_OUT",
+        "14": "CH06_OUT"
+      },
+      "sheet": "inputs-05-06",
+      "notes": "",
+      "footprint": "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
+    },
+    {
+      "ref": "C3",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "+3V3A",
+        "2": "GND"
+      },
+      "sheet": "inputs-05-06",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "J7",
+      "record": "jack",
+      "value": "PJ-313 5JCJ",
+      "pins": {
+        "1": "GND",
+        "2": null,
+        "3": "CH07_IN"
+      },
+      "sheet": "inputs-07-08",
+      "notes": "3 logical contacts / 5 physical legs: duplicated pad mapping is OPEN",
+      "footprint": ""
+    },
+    {
+      "ref": "R701",
+      "record": "r1m",
+      "value": "1M",
+      "pins": {
+        "1": "CH07_IN",
+        "2": "CH07_BIAS"
+      },
+      "sheet": "inputs-07-08",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R702",
+      "record": "r200k",
+      "value": "200k",
+      "pins": {
+        "1": "+3V0_REF",
+        "2": "CH07_BIAS"
+      },
+      "sheet": "inputs-07-08",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R703",
+      "record": "r249k",
+      "value": "249k",
+      "pins": {
+        "1": "CH07_BIAS",
+        "2": "GND"
+      },
+      "sheet": "inputs-07-08",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C701",
+      "record": "c470p",
+      "value": "470pF",
+      "pins": {
+        "1": "CH07_BIAS",
+        "2": "GND"
+      },
+      "sheet": "inputs-07-08",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "D7",
+      "record": "clamp",
+      "value": "BAV199,215",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3A",
+        "3": "CH07_BIAS"
+      },
+      "sheet": "inputs-07-08",
+      "notes": "",
+      "footprint": "Package_TO_SOT_SMD:SOT-23"
+    },
+    {
+      "ref": "R704",
+      "record": "r4k7",
+      "value": "4.7k",
+      "pins": {
+        "1": "CH07_BUF1",
+        "2": "CH07_LP2"
+      },
+      "sheet": "inputs-07-08",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C702",
+      "record": "c10n",
+      "value": "10nF",
+      "pins": {
+        "1": "CH07_LP2",
+        "2": "GND"
+      },
+      "sheet": "inputs-07-08",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "TP7",
+      "record": "testpoint",
+      "value": "testpoint",
+      "pins": {
+        "1": "CH07_OUT"
+      },
+      "sheet": "inputs-07-08",
+      "notes": "",
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm"
+    },
+    {
+      "ref": "J8",
+      "record": "jack",
+      "value": "PJ-313 5JCJ",
+      "pins": {
+        "1": "GND",
+        "2": null,
+        "3": "CH08_IN"
+      },
+      "sheet": "inputs-07-08",
+      "notes": "3 logical contacts / 5 physical legs: duplicated pad mapping is OPEN",
+      "footprint": ""
+    },
+    {
+      "ref": "R801",
+      "record": "r1m",
+      "value": "1M",
+      "pins": {
+        "1": "CH08_IN",
+        "2": "CH08_BIAS"
+      },
+      "sheet": "inputs-07-08",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R802",
+      "record": "r200k",
+      "value": "200k",
+      "pins": {
+        "1": "+3V0_REF",
+        "2": "CH08_BIAS"
+      },
+      "sheet": "inputs-07-08",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R803",
+      "record": "r249k",
+      "value": "249k",
+      "pins": {
+        "1": "CH08_BIAS",
+        "2": "GND"
+      },
+      "sheet": "inputs-07-08",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C801",
+      "record": "c470p",
+      "value": "470pF",
+      "pins": {
+        "1": "CH08_BIAS",
+        "2": "GND"
+      },
+      "sheet": "inputs-07-08",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "D8",
+      "record": "clamp",
+      "value": "BAV199,215",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3A",
+        "3": "CH08_BIAS"
+      },
+      "sheet": "inputs-07-08",
+      "notes": "",
+      "footprint": "Package_TO_SOT_SMD:SOT-23"
+    },
+    {
+      "ref": "R804",
+      "record": "r4k7",
+      "value": "4.7k",
+      "pins": {
+        "1": "CH08_BUF1",
+        "2": "CH08_LP2"
+      },
+      "sheet": "inputs-07-08",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C802",
+      "record": "c10n",
+      "value": "10nF",
+      "pins": {
+        "1": "CH08_LP2",
+        "2": "GND"
+      },
+      "sheet": "inputs-07-08",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "TP8",
+      "record": "testpoint",
+      "value": "testpoint",
+      "pins": {
+        "1": "CH08_OUT"
+      },
+      "sheet": "inputs-07-08",
+      "notes": "",
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm"
+    },
+    {
+      "ref": "U4",
+      "record": "tlv9064",
+      "value": "TLV9064IDR",
+      "pins": {
+        "4": "+3V3A",
+        "11": "GND",
+        "1": "CH07_BUF1",
+        "2": "CH07_BUF1",
+        "3": "CH07_BIAS",
+        "5": "CH07_LP2",
+        "6": "CH07_OUT",
+        "7": "CH07_OUT",
+        "8": "CH08_BUF1",
+        "9": "CH08_BUF1",
+        "10": "CH08_BIAS",
+        "12": "CH08_LP2",
+        "13": "CH08_OUT",
+        "14": "CH08_OUT"
+      },
+      "sheet": "inputs-07-08",
+      "notes": "",
+      "footprint": "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
+    },
+    {
+      "ref": "C4",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "+3V3A",
+        "2": "GND"
+      },
+      "sheet": "inputs-07-08",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "J9",
+      "record": "jack",
+      "value": "PJ-313 5JCJ",
+      "pins": {
+        "1": "GND",
+        "2": null,
+        "3": "CH09_IN"
+      },
+      "sheet": "inputs-09-10",
+      "notes": "3 logical contacts / 5 physical legs: duplicated pad mapping is OPEN",
+      "footprint": ""
+    },
+    {
+      "ref": "R901",
+      "record": "r1m",
+      "value": "1M",
+      "pins": {
+        "1": "CH09_IN",
+        "2": "CH09_BIAS"
+      },
+      "sheet": "inputs-09-10",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R902",
+      "record": "r200k",
+      "value": "200k",
+      "pins": {
+        "1": "+3V0_REF",
+        "2": "CH09_BIAS"
+      },
+      "sheet": "inputs-09-10",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R903",
+      "record": "r249k",
+      "value": "249k",
+      "pins": {
+        "1": "CH09_BIAS",
+        "2": "GND"
+      },
+      "sheet": "inputs-09-10",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C901",
+      "record": "c470p",
+      "value": "470pF",
+      "pins": {
+        "1": "CH09_BIAS",
+        "2": "GND"
+      },
+      "sheet": "inputs-09-10",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "D9",
+      "record": "clamp",
+      "value": "BAV199,215",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3A",
+        "3": "CH09_BIAS"
+      },
+      "sheet": "inputs-09-10",
+      "notes": "",
+      "footprint": "Package_TO_SOT_SMD:SOT-23"
+    },
+    {
+      "ref": "R904",
+      "record": "r4k7",
+      "value": "4.7k",
+      "pins": {
+        "1": "CH09_BUF1",
+        "2": "CH09_LP2"
+      },
+      "sheet": "inputs-09-10",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C902",
+      "record": "c10n",
+      "value": "10nF",
+      "pins": {
+        "1": "CH09_LP2",
+        "2": "GND"
+      },
+      "sheet": "inputs-09-10",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "TP9",
+      "record": "testpoint",
+      "value": "testpoint",
+      "pins": {
+        "1": "CH09_OUT"
+      },
+      "sheet": "inputs-09-10",
+      "notes": "",
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm"
+    },
+    {
+      "ref": "J10",
+      "record": "jack",
+      "value": "PJ-313 5JCJ",
+      "pins": {
+        "1": "GND",
+        "2": null,
+        "3": "CH10_IN"
+      },
+      "sheet": "inputs-09-10",
+      "notes": "3 logical contacts / 5 physical legs: duplicated pad mapping is OPEN",
+      "footprint": ""
+    },
+    {
+      "ref": "R1001",
+      "record": "r1m",
+      "value": "1M",
+      "pins": {
+        "1": "CH10_IN",
+        "2": "CH10_BIAS"
+      },
+      "sheet": "inputs-09-10",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R1002",
+      "record": "r200k",
+      "value": "200k",
+      "pins": {
+        "1": "+3V0_REF",
+        "2": "CH10_BIAS"
+      },
+      "sheet": "inputs-09-10",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R1003",
+      "record": "r249k",
+      "value": "249k",
+      "pins": {
+        "1": "CH10_BIAS",
+        "2": "GND"
+      },
+      "sheet": "inputs-09-10",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C1001",
+      "record": "c470p",
+      "value": "470pF",
+      "pins": {
+        "1": "CH10_BIAS",
+        "2": "GND"
+      },
+      "sheet": "inputs-09-10",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "D10",
+      "record": "clamp",
+      "value": "BAV199,215",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3A",
+        "3": "CH10_BIAS"
+      },
+      "sheet": "inputs-09-10",
+      "notes": "",
+      "footprint": "Package_TO_SOT_SMD:SOT-23"
+    },
+    {
+      "ref": "R1004",
+      "record": "r4k7",
+      "value": "4.7k",
+      "pins": {
+        "1": "CH10_BUF1",
+        "2": "CH10_LP2"
+      },
+      "sheet": "inputs-09-10",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C1002",
+      "record": "c10n",
+      "value": "10nF",
+      "pins": {
+        "1": "CH10_LP2",
+        "2": "GND"
+      },
+      "sheet": "inputs-09-10",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "TP10",
+      "record": "testpoint",
+      "value": "testpoint",
+      "pins": {
+        "1": "CH10_OUT"
+      },
+      "sheet": "inputs-09-10",
+      "notes": "",
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm"
+    },
+    {
+      "ref": "U5",
+      "record": "tlv9064",
+      "value": "TLV9064IDR",
+      "pins": {
+        "4": "+3V3A",
+        "11": "GND",
+        "1": "CH09_BUF1",
+        "2": "CH09_BUF1",
+        "3": "CH09_BIAS",
+        "5": "CH09_LP2",
+        "6": "CH09_OUT",
+        "7": "CH09_OUT",
+        "8": "CH10_BUF1",
+        "9": "CH10_BUF1",
+        "10": "CH10_BIAS",
+        "12": "CH10_LP2",
+        "13": "CH10_OUT",
+        "14": "CH10_OUT"
+      },
+      "sheet": "inputs-09-10",
+      "notes": "",
+      "footprint": "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
+    },
+    {
+      "ref": "C5",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "+3V3A",
+        "2": "GND"
+      },
+      "sheet": "inputs-09-10",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "RV1",
+      "record": "pot",
+      "value": "RK09L1140A5L",
+      "pins": {
+        "1": "GND",
+        "2": "CH01_TIME_W",
+        "3": "+3V3A"
+      },
+      "sheet": "controls-left",
+      "notes": "Endpoint direction must be checked on actual sample",
+      "footprint": ""
+    },
+    {
+      "ref": "R1111",
+      "record": "r1k",
+      "value": "1k",
+      "pins": {
+        "1": "CH01_TIME_W",
+        "2": "CH01_TIME"
+      },
+      "sheet": "controls-left",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C1111",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "CH01_TIME",
+        "2": "GND"
+      },
+      "sheet": "controls-left",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "SW1",
+      "record": "range",
+      "value": "SS14MDP2",
+      "pins": {
+        "C": "CH01_RANGE_W",
+        "L": "GND",
+        "M": "RANGE_MID",
+        "H": "+3V3A"
+      },
+      "sheet": "controls-left",
+      "notes": "Logical pin letters intentionally block footprint release",
+      "footprint": ""
+    },
+    {
+      "ref": "R1112",
+      "record": "r1k",
+      "value": "1k",
+      "pins": {
+        "1": "CH01_RANGE_W",
+        "2": "CH01_RANGE"
+      },
+      "sheet": "controls-left",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C1112",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "CH01_RANGE",
+        "2": "GND"
+      },
+      "sheet": "controls-left",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "RV2",
+      "record": "pot",
+      "value": "RK09L1140A5L",
+      "pins": {
+        "1": "GND",
+        "2": "CH02_TIME_W",
+        "3": "+3V3A"
+      },
+      "sheet": "controls-left",
+      "notes": "Endpoint direction must be checked on actual sample",
+      "footprint": ""
+    },
+    {
+      "ref": "R1121",
+      "record": "r1k",
+      "value": "1k",
+      "pins": {
+        "1": "CH02_TIME_W",
+        "2": "CH02_TIME"
+      },
+      "sheet": "controls-left",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C1121",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "CH02_TIME",
+        "2": "GND"
+      },
+      "sheet": "controls-left",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "SW2",
+      "record": "range",
+      "value": "SS14MDP2",
+      "pins": {
+        "C": "CH02_RANGE_W",
+        "L": "GND",
+        "M": "RANGE_MID",
+        "H": "+3V3A"
+      },
+      "sheet": "controls-left",
+      "notes": "Logical pin letters intentionally block footprint release",
+      "footprint": ""
+    },
+    {
+      "ref": "R1122",
+      "record": "r1k",
+      "value": "1k",
+      "pins": {
+        "1": "CH02_RANGE_W",
+        "2": "CH02_RANGE"
+      },
+      "sheet": "controls-left",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C1122",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "CH02_RANGE",
+        "2": "GND"
+      },
+      "sheet": "controls-left",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "RV3",
+      "record": "pot",
+      "value": "RK09L1140A5L",
+      "pins": {
+        "1": "GND",
+        "2": "CH03_TIME_W",
+        "3": "+3V3A"
+      },
+      "sheet": "controls-left",
+      "notes": "Endpoint direction must be checked on actual sample",
+      "footprint": ""
+    },
+    {
+      "ref": "R1131",
+      "record": "r1k",
+      "value": "1k",
+      "pins": {
+        "1": "CH03_TIME_W",
+        "2": "CH03_TIME"
+      },
+      "sheet": "controls-left",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C1131",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "CH03_TIME",
+        "2": "GND"
+      },
+      "sheet": "controls-left",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "SW3",
+      "record": "range",
+      "value": "SS14MDP2",
+      "pins": {
+        "C": "CH03_RANGE_W",
+        "L": "GND",
+        "M": "RANGE_MID",
+        "H": "+3V3A"
+      },
+      "sheet": "controls-left",
+      "notes": "Logical pin letters intentionally block footprint release",
+      "footprint": ""
+    },
+    {
+      "ref": "R1132",
+      "record": "r1k",
+      "value": "1k",
+      "pins": {
+        "1": "CH03_RANGE_W",
+        "2": "CH03_RANGE"
+      },
+      "sheet": "controls-left",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C1132",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "CH03_RANGE",
+        "2": "GND"
+      },
+      "sheet": "controls-left",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "RV4",
+      "record": "pot",
+      "value": "RK09L1140A5L",
+      "pins": {
+        "1": "GND",
+        "2": "CH04_TIME_W",
+        "3": "+3V3A"
+      },
+      "sheet": "controls-left",
+      "notes": "Endpoint direction must be checked on actual sample",
+      "footprint": ""
+    },
+    {
+      "ref": "R1141",
+      "record": "r1k",
+      "value": "1k",
+      "pins": {
+        "1": "CH04_TIME_W",
+        "2": "CH04_TIME"
+      },
+      "sheet": "controls-left",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C1141",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "CH04_TIME",
+        "2": "GND"
+      },
+      "sheet": "controls-left",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "SW4",
+      "record": "range",
+      "value": "SS14MDP2",
+      "pins": {
+        "C": "CH04_RANGE_W",
+        "L": "GND",
+        "M": "RANGE_MID",
+        "H": "+3V3A"
+      },
+      "sheet": "controls-left",
+      "notes": "Logical pin letters intentionally block footprint release",
+      "footprint": ""
+    },
+    {
+      "ref": "R1142",
+      "record": "r1k",
+      "value": "1k",
+      "pins": {
+        "1": "CH04_RANGE_W",
+        "2": "CH04_RANGE"
+      },
+      "sheet": "controls-left",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C1142",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "CH04_RANGE",
+        "2": "GND"
+      },
+      "sheet": "controls-left",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "RV5",
+      "record": "pot",
+      "value": "RK09L1140A5L",
+      "pins": {
+        "1": "GND",
+        "2": "CH05_TIME_W",
+        "3": "+3V3A"
+      },
+      "sheet": "controls-left",
+      "notes": "Endpoint direction must be checked on actual sample",
+      "footprint": ""
+    },
+    {
+      "ref": "R1151",
+      "record": "r1k",
+      "value": "1k",
+      "pins": {
+        "1": "CH05_TIME_W",
+        "2": "CH05_TIME"
+      },
+      "sheet": "controls-left",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C1151",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "CH05_TIME",
+        "2": "GND"
+      },
+      "sheet": "controls-left",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "SW5",
+      "record": "range",
+      "value": "SS14MDP2",
+      "pins": {
+        "C": "CH05_RANGE_W",
+        "L": "GND",
+        "M": "RANGE_MID",
+        "H": "+3V3A"
+      },
+      "sheet": "controls-left",
+      "notes": "Logical pin letters intentionally block footprint release",
+      "footprint": ""
+    },
+    {
+      "ref": "R1152",
+      "record": "r1k",
+      "value": "1k",
+      "pins": {
+        "1": "CH05_RANGE_W",
+        "2": "CH05_RANGE"
+      },
+      "sheet": "controls-left",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C1152",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "CH05_RANGE",
+        "2": "GND"
+      },
+      "sheet": "controls-left",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "RV6",
+      "record": "pot",
+      "value": "RK09L1140A5L",
+      "pins": {
+        "1": "GND",
+        "2": "CH06_TIME_W",
+        "3": "+3V3A"
+      },
+      "sheet": "controls-right",
+      "notes": "Endpoint direction must be checked on actual sample",
+      "footprint": ""
+    },
+    {
+      "ref": "R1161",
+      "record": "r1k",
+      "value": "1k",
+      "pins": {
+        "1": "CH06_TIME_W",
+        "2": "CH06_TIME"
+      },
+      "sheet": "controls-right",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C1161",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "CH06_TIME",
+        "2": "GND"
+      },
+      "sheet": "controls-right",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "SW6",
+      "record": "range",
+      "value": "SS14MDP2",
+      "pins": {
+        "C": "CH06_RANGE_W",
+        "L": "GND",
+        "M": "RANGE_MID",
+        "H": "+3V3A"
+      },
+      "sheet": "controls-right",
+      "notes": "Logical pin letters intentionally block footprint release",
+      "footprint": ""
+    },
+    {
+      "ref": "R1162",
+      "record": "r1k",
+      "value": "1k",
+      "pins": {
+        "1": "CH06_RANGE_W",
+        "2": "CH06_RANGE"
+      },
+      "sheet": "controls-right",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C1162",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "CH06_RANGE",
+        "2": "GND"
+      },
+      "sheet": "controls-right",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "RV7",
+      "record": "pot",
+      "value": "RK09L1140A5L",
+      "pins": {
+        "1": "GND",
+        "2": "CH07_TIME_W",
+        "3": "+3V3A"
+      },
+      "sheet": "controls-right",
+      "notes": "Endpoint direction must be checked on actual sample",
+      "footprint": ""
+    },
+    {
+      "ref": "R1171",
+      "record": "r1k",
+      "value": "1k",
+      "pins": {
+        "1": "CH07_TIME_W",
+        "2": "CH07_TIME"
+      },
+      "sheet": "controls-right",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C1171",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "CH07_TIME",
+        "2": "GND"
+      },
+      "sheet": "controls-right",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "SW7",
+      "record": "range",
+      "value": "SS14MDP2",
+      "pins": {
+        "C": "CH07_RANGE_W",
+        "L": "GND",
+        "M": "RANGE_MID",
+        "H": "+3V3A"
+      },
+      "sheet": "controls-right",
+      "notes": "Logical pin letters intentionally block footprint release",
+      "footprint": ""
+    },
+    {
+      "ref": "R1172",
+      "record": "r1k",
+      "value": "1k",
+      "pins": {
+        "1": "CH07_RANGE_W",
+        "2": "CH07_RANGE"
+      },
+      "sheet": "controls-right",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C1172",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "CH07_RANGE",
+        "2": "GND"
+      },
+      "sheet": "controls-right",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "RV8",
+      "record": "pot",
+      "value": "RK09L1140A5L",
+      "pins": {
+        "1": "GND",
+        "2": "CH08_TIME_W",
+        "3": "+3V3A"
+      },
+      "sheet": "controls-right",
+      "notes": "Endpoint direction must be checked on actual sample",
+      "footprint": ""
+    },
+    {
+      "ref": "R1181",
+      "record": "r1k",
+      "value": "1k",
+      "pins": {
+        "1": "CH08_TIME_W",
+        "2": "CH08_TIME"
+      },
+      "sheet": "controls-right",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C1181",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "CH08_TIME",
+        "2": "GND"
+      },
+      "sheet": "controls-right",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "SW8",
+      "record": "range",
+      "value": "SS14MDP2",
+      "pins": {
+        "C": "CH08_RANGE_W",
+        "L": "GND",
+        "M": "RANGE_MID",
+        "H": "+3V3A"
+      },
+      "sheet": "controls-right",
+      "notes": "Logical pin letters intentionally block footprint release",
+      "footprint": ""
+    },
+    {
+      "ref": "R1182",
+      "record": "r1k",
+      "value": "1k",
+      "pins": {
+        "1": "CH08_RANGE_W",
+        "2": "CH08_RANGE"
+      },
+      "sheet": "controls-right",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C1182",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "CH08_RANGE",
+        "2": "GND"
+      },
+      "sheet": "controls-right",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "RV9",
+      "record": "pot",
+      "value": "RK09L1140A5L",
+      "pins": {
+        "1": "GND",
+        "2": "CH09_TIME_W",
+        "3": "+3V3A"
+      },
+      "sheet": "controls-right",
+      "notes": "Endpoint direction must be checked on actual sample",
+      "footprint": ""
+    },
+    {
+      "ref": "R1191",
+      "record": "r1k",
+      "value": "1k",
+      "pins": {
+        "1": "CH09_TIME_W",
+        "2": "CH09_TIME"
+      },
+      "sheet": "controls-right",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C1191",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "CH09_TIME",
+        "2": "GND"
+      },
+      "sheet": "controls-right",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "SW9",
+      "record": "range",
+      "value": "SS14MDP2",
+      "pins": {
+        "C": "CH09_RANGE_W",
+        "L": "GND",
+        "M": "RANGE_MID",
+        "H": "+3V3A"
+      },
+      "sheet": "controls-right",
+      "notes": "Logical pin letters intentionally block footprint release",
+      "footprint": ""
+    },
+    {
+      "ref": "R1192",
+      "record": "r1k",
+      "value": "1k",
+      "pins": {
+        "1": "CH09_RANGE_W",
+        "2": "CH09_RANGE"
+      },
+      "sheet": "controls-right",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C1192",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "CH09_RANGE",
+        "2": "GND"
+      },
+      "sheet": "controls-right",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "RV10",
+      "record": "pot",
+      "value": "RK09L1140A5L",
+      "pins": {
+        "1": "GND",
+        "2": "CH10_TIME_W",
+        "3": "+3V3A"
+      },
+      "sheet": "controls-right",
+      "notes": "Endpoint direction must be checked on actual sample",
+      "footprint": ""
+    },
+    {
+      "ref": "R1201",
+      "record": "r1k",
+      "value": "1k",
+      "pins": {
+        "1": "CH10_TIME_W",
+        "2": "CH10_TIME"
+      },
+      "sheet": "controls-right",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C1201",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "CH10_TIME",
+        "2": "GND"
+      },
+      "sheet": "controls-right",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "SW10",
+      "record": "range",
+      "value": "SS14MDP2",
+      "pins": {
+        "C": "CH10_RANGE_W",
+        "L": "GND",
+        "M": "RANGE_MID",
+        "H": "+3V3A"
+      },
+      "sheet": "controls-right",
+      "notes": "Logical pin letters intentionally block footprint release",
+      "footprint": ""
+    },
+    {
+      "ref": "R1202",
+      "record": "r1k",
+      "value": "1k",
+      "pins": {
+        "1": "CH10_RANGE_W",
+        "2": "CH10_RANGE"
+      },
+      "sheet": "controls-right",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C1202",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "CH10_RANGE",
+        "2": "GND"
+      },
+      "sheet": "controls-right",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "R40",
+      "record": "r10k",
+      "value": "10k",
+      "pins": {
+        "1": "+3V3A",
+        "2": "RANGE_MID"
+      },
+      "sheet": "controls-left",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R41",
+      "record": "r10k",
+      "value": "10k",
+      "pins": {
+        "1": "RANGE_MID",
+        "2": "GND"
+      },
+      "sheet": "controls-left",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "SW11",
+      "record": "button",
+      "value": "TS-1088-AR02016",
+      "pins": {
+        "1": "HOLD_N",
+        "2": "GND"
+      },
+      "sheet": "controls-right",
+      "notes": "Two contacts 1/2 from retained XUNPU drawing; independent footprint review required",
+      "footprint": "ZudoScope10:SW_XUNPU_TS1088_AR02016_REVIEW"
+    },
+    {
+      "ref": "R51",
+      "record": "r10k",
+      "value": "10k",
+      "pins": {
+        "1": "+3V3D",
+        "2": "HOLD_N"
+      },
+      "sheet": "controls-right",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C51",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "HOLD_N",
+        "2": "GND"
+      },
+      "sheet": "controls-right",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "SW12",
+      "record": "button",
+      "value": "TS-1088-AR02016",
+      "pins": {
+        "1": "LINK_N",
+        "2": "GND"
+      },
+      "sheet": "controls-right",
+      "notes": "Two contacts 1/2 from retained XUNPU drawing; independent footprint review required",
+      "footprint": "ZudoScope10:SW_XUNPU_TS1088_AR02016_REVIEW"
+    },
+    {
+      "ref": "R52",
+      "record": "r10k",
+      "value": "10k",
+      "pins": {
+        "1": "+3V3D",
+        "2": "LINK_N"
+      },
+      "sheet": "controls-right",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C52",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "LINK_N",
+        "2": "GND"
+      },
+      "sheet": "controls-right",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "U7",
+      "record": "mux",
+      "value": "74HC4067PW,118",
+      "pins": {
+        "1": "MUX_OUT",
+        "2": "CH08_OUT",
+        "3": "CH07_OUT",
+        "4": "CH06_OUT",
+        "5": "CH05_OUT",
+        "6": "CH04_OUT",
+        "7": "CH03_OUT",
+        "8": "CH02_OUT",
+        "9": "CH01_OUT",
+        "10": "ADDR0",
+        "11": "ADDR1",
+        "12": "GND",
+        "13": "ADDR3",
+        "14": "ADDR2",
+        "15": "MUX_DISABLE",
+        "16": "+3V0_REF",
+        "17": "GND",
+        "18": "+3V0_REF",
+        "19": "GND",
+        "20": "+3V0_REF",
+        "21": "GND",
+        "22": "CH10_OUT",
+        "23": "CH09_OUT",
+        "24": "+3V3A"
+      },
+      "sheet": "acquisition",
+      "notes": "",
+      "footprint": "Package_SO:TSSOP-24_4.4x7.8mm_P0.65mm"
+    },
+    {
+      "ref": "C7",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "+3V3A",
+        "2": "GND"
+      },
+      "sheet": "acquisition",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "U8",
+      "record": "mux",
+      "value": "74HC4067PW,118",
+      "pins": {
+        "1": "MUX_TIME",
+        "2": "CH08_TIME",
+        "3": "CH07_TIME",
+        "4": "CH06_TIME",
+        "5": "CH05_TIME",
+        "6": "CH04_TIME",
+        "7": "CH03_TIME",
+        "8": "CH02_TIME",
+        "9": "CH01_TIME",
+        "10": "ADDR0",
+        "11": "ADDR1",
+        "12": "GND",
+        "13": "ADDR3",
+        "14": "ADDR2",
+        "15": "MUX_DISABLE",
+        "16": "+3V0_REF",
+        "17": "GND",
+        "18": "+3V0_REF",
+        "19": "GND",
+        "20": "+3V0_REF",
+        "21": "GND",
+        "22": "CH10_TIME",
+        "23": "CH09_TIME",
+        "24": "+3V3A"
+      },
+      "sheet": "acquisition",
+      "notes": "",
+      "footprint": "Package_SO:TSSOP-24_4.4x7.8mm_P0.65mm"
+    },
+    {
+      "ref": "C8",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "+3V3A",
+        "2": "GND"
+      },
+      "sheet": "acquisition",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "U9",
+      "record": "mux",
+      "value": "74HC4067PW,118",
+      "pins": {
+        "1": "MUX_RANGE",
+        "2": "CH08_RANGE",
+        "3": "CH07_RANGE",
+        "4": "CH06_RANGE",
+        "5": "CH05_RANGE",
+        "6": "CH04_RANGE",
+        "7": "CH03_RANGE",
+        "8": "CH02_RANGE",
+        "9": "CH01_RANGE",
+        "10": "ADDR0",
+        "11": "ADDR1",
+        "12": "GND",
+        "13": "ADDR3",
+        "14": "ADDR2",
+        "15": "MUX_DISABLE",
+        "16": "+3V0_REF",
+        "17": "GND",
+        "18": "+3V0_REF",
+        "19": "GND",
+        "20": "+3V0_REF",
+        "21": "GND",
+        "22": "CH10_RANGE",
+        "23": "CH09_RANGE",
+        "24": "+3V3A"
+      },
+      "sheet": "acquisition",
+      "notes": "",
+      "footprint": "Package_SO:TSSOP-24_4.4x7.8mm_P0.65mm"
+    },
+    {
+      "ref": "C9",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "+3V3A",
+        "2": "GND"
+      },
+      "sheet": "acquisition",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "U6",
+      "record": "tlv9064",
+      "value": "TLV9064IDR",
+      "pins": {
+        "1": "ADC_DRV0",
+        "2": "ADC_DRV0",
+        "3": "MUX_OUT",
+        "4": "+3V3A",
+        "5": "MUX_TIME",
+        "6": "ADC_DRV1",
+        "7": "ADC_DRV1",
+        "8": "ADC_DRV2",
+        "9": "ADC_DRV2",
+        "10": "MUX_RANGE",
+        "11": "GND",
+        "12": "REF_RAW",
+        "13": "+3V0_REF",
+        "14": "+3V0_REF"
+      },
+      "sheet": "acquisition",
+      "notes": "",
+      "footprint": "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
+    },
+    {
+      "ref": "C6",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "+3V3A",
+        "2": "GND"
+      },
+      "sheet": "acquisition",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "R20",
+      "record": "r100",
+      "value": "100",
+      "pins": {
+        "1": "ADC_DRV0",
+        "2": "ADC0"
+      },
+      "sheet": "acquisition",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C20",
+      "record": "c1n",
+      "value": "1nF",
+      "pins": {
+        "1": "ADC0",
+        "2": "GND"
+      },
+      "sheet": "acquisition",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "TP20",
+      "record": "testpoint",
+      "value": "testpoint",
+      "pins": {
+        "1": "ADC0"
+      },
+      "sheet": "acquisition",
+      "notes": "",
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm"
+    },
+    {
+      "ref": "R21",
+      "record": "r100",
+      "value": "100",
+      "pins": {
+        "1": "ADC_DRV1",
+        "2": "ADC1"
+      },
+      "sheet": "acquisition",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C21",
+      "record": "c1n",
+      "value": "1nF",
+      "pins": {
+        "1": "ADC1",
+        "2": "GND"
+      },
+      "sheet": "acquisition",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "TP21",
+      "record": "testpoint",
+      "value": "testpoint",
+      "pins": {
+        "1": "ADC1"
+      },
+      "sheet": "acquisition",
+      "notes": "",
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm"
+    },
+    {
+      "ref": "R22",
+      "record": "r100",
+      "value": "100",
+      "pins": {
+        "1": "ADC_DRV2",
+        "2": "ADC2"
+      },
+      "sheet": "acquisition",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "C22",
+      "record": "c1n",
+      "value": "1nF",
+      "pins": {
+        "1": "ADC2",
+        "2": "GND"
+      },
+      "sheet": "acquisition",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "TP22",
+      "record": "testpoint",
+      "value": "testpoint",
+      "pins": {
+        "1": "ADC2"
+      },
+      "sheet": "acquisition",
+      "notes": "",
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm"
+    },
+    {
+      "ref": "J20",
+      "record": "socket20",
+      "value": "socket20",
+      "pins": {
+        "1": "HOLD_N",
+        "2": "LINK_N",
+        "3": "GND",
+        "4": "ADDR0_SRC",
+        "5": "ADDR1_SRC",
+        "6": "ADDR2_SRC",
+        "7": "ADDR3_SRC",
+        "8": "GND",
+        "9": null,
+        "10": "MUX_DISABLE",
+        "11": "LCD_DC_SRC",
+        "12": "LCD_CS_SRC",
+        "13": "GND",
+        "14": "LCD_CLK_SRC",
+        "15": "LCD_MOSI_SRC",
+        "16": "LCD_MISO",
+        "17": "LCD_BL_SRC",
+        "18": "GND",
+        "19": "TIMING_TP",
+        "20": "LCD_RST_SRC"
+      },
+      "sheet": "module-interfaces",
+      "notes": "Left Pico H socket: pin 1 = Pico pin 1",
+      "footprint": "Connector_PinSocket_2.54mm:PinSocket_1x20_P2.54mm_Vertical"
+    },
+    {
+      "ref": "J21",
+      "record": "socket20",
+      "value": "socket20",
+      "pins": {
+        "1": "VBUS_USB",
+        "2": null,
+        "3": "GND",
+        "4": null,
+        "5": "+3V3D",
+        "6": null,
+        "7": "ADC2",
+        "8": "GND",
+        "9": "ADC1",
+        "10": "ADC0",
+        "11": null,
+        "12": "SD_CS_N",
+        "13": "GND",
+        "14": null,
+        "15": null,
+        "16": null,
+        "17": null,
+        "18": "GND",
+        "19": null,
+        "20": "TP_CS_N"
+      },
+      "sheet": "module-interfaces",
+      "notes": "Right Pico H socket: pin 1 = Pico pin 40; do not mirror blindly",
+      "footprint": "Connector_PinSocket_2.54mm:PinSocket_1x20_P2.54mm_Vertical"
+    },
+    {
+      "ref": "J30",
+      "record": "header20",
+      "value": "header20",
+      "pins": {
+        "1": null,
+        "2": null,
+        "3": "GND",
+        "4": null,
+        "5": null,
+        "6": null,
+        "7": null,
+        "8": "GND",
+        "9": null,
+        "10": null,
+        "11": "LCD_DC",
+        "12": "LCD_CS",
+        "13": "GND",
+        "14": "LCD_CLK",
+        "15": "LCD_MOSI",
+        "16": "LCD_MISO",
+        "17": "LCD_BL",
+        "18": "GND",
+        "19": null,
+        "20": "LCD_RST"
+      },
+      "sheet": "module-interfaces",
+      "notes": "Display left header: pin 1 = Pico position 1. Power straps OPEN gate G01.",
+      "footprint": "Connector_PinHeader_2.54mm:PinHeader_1x20_P2.54mm_Vertical"
+    },
+    {
+      "ref": "J31",
+      "record": "header20",
+      "value": "header20",
+      "pins": {
+        "1": null,
+        "2": "+5V_FUSED",
+        "3": "GND",
+        "4": null,
+        "5": null,
+        "6": null,
+        "7": null,
+        "8": "GND",
+        "9": null,
+        "10": null,
+        "11": null,
+        "12": "SD_CS_N",
+        "13": "GND",
+        "14": null,
+        "15": null,
+        "16": null,
+        "17": null,
+        "18": "GND",
+        "19": null,
+        "20": "TP_CS_N"
+      },
+      "sheet": "module-interfaces",
+      "notes": "Display right header: pin 1 = Pico position 40; pin 2 supplies VSYS position",
+      "footprint": "Connector_PinHeader_2.54mm:PinHeader_1x20_P2.54mm_Vertical"
+    },
+    {
+      "ref": "R60",
+      "record": "r33",
+      "value": "33",
+      "pins": {
+        "1": "LCD_DC_SRC",
+        "2": "LCD_DC"
+      },
+      "sheet": "module-interfaces",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R61",
+      "record": "r33",
+      "value": "33",
+      "pins": {
+        "1": "LCD_CS_SRC",
+        "2": "LCD_CS"
+      },
+      "sheet": "module-interfaces",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R62",
+      "record": "r33",
+      "value": "33",
+      "pins": {
+        "1": "LCD_CLK_SRC",
+        "2": "LCD_CLK"
+      },
+      "sheet": "module-interfaces",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R63",
+      "record": "r33",
+      "value": "33",
+      "pins": {
+        "1": "LCD_MOSI_SRC",
+        "2": "LCD_MOSI"
+      },
+      "sheet": "module-interfaces",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R64",
+      "record": "r33",
+      "value": "33",
+      "pins": {
+        "1": "LCD_BL_SRC",
+        "2": "LCD_BL"
+      },
+      "sheet": "module-interfaces",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R65",
+      "record": "r33",
+      "value": "33",
+      "pins": {
+        "1": "LCD_RST_SRC",
+        "2": "LCD_RST"
+      },
+      "sheet": "module-interfaces",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R66",
+      "record": "r33",
+      "value": "33",
+      "pins": {
+        "1": "ADDR0_SRC",
+        "2": "ADDR0"
+      },
+      "sheet": "module-interfaces",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R67",
+      "record": "r33",
+      "value": "33",
+      "pins": {
+        "1": "ADDR1_SRC",
+        "2": "ADDR1"
+      },
+      "sheet": "module-interfaces",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R68",
+      "record": "r33",
+      "value": "33",
+      "pins": {
+        "1": "ADDR2_SRC",
+        "2": "ADDR2"
+      },
+      "sheet": "module-interfaces",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R69",
+      "record": "r33",
+      "value": "33",
+      "pins": {
+        "1": "ADDR3_SRC",
+        "2": "ADDR3"
+      },
+      "sheet": "module-interfaces",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R80",
+      "record": "r100k",
+      "value": "100k",
+      "pins": {
+        "1": "ADDR0",
+        "2": "GND"
+      },
+      "sheet": "module-interfaces",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R81",
+      "record": "r100k",
+      "value": "100k",
+      "pins": {
+        "1": "ADDR1",
+        "2": "GND"
+      },
+      "sheet": "module-interfaces",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R82",
+      "record": "r100k",
+      "value": "100k",
+      "pins": {
+        "1": "ADDR2",
+        "2": "GND"
+      },
+      "sheet": "module-interfaces",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R83",
+      "record": "r100k",
+      "value": "100k",
+      "pins": {
+        "1": "ADDR3",
+        "2": "GND"
+      },
+      "sheet": "module-interfaces",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R84",
+      "record": "r100k",
+      "value": "100k",
+      "pins": {
+        "1": "+3V3D",
+        "2": "LCD_CS"
+      },
+      "sheet": "module-interfaces",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R85",
+      "record": "r100k",
+      "value": "100k",
+      "pins": {
+        "1": "+3V3D",
+        "2": "TP_CS_N"
+      },
+      "sheet": "module-interfaces",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R86",
+      "record": "r100k",
+      "value": "100k",
+      "pins": {
+        "1": "+3V3D",
+        "2": "SD_CS_N"
+      },
+      "sheet": "module-interfaces",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R87",
+      "record": "r100k",
+      "value": "100k",
+      "pins": {
+        "1": "+3V3A",
+        "2": "MUX_DISABLE"
+      },
+      "sheet": "module-interfaces",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "R88",
+      "record": "r100k",
+      "value": "100k",
+      "pins": {
+        "1": "LCD_BL",
+        "2": "GND"
+      },
+      "sheet": "module-interfaces",
+      "notes": "",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "TP30",
+      "record": "testpoint",
+      "value": "testpoint",
+      "pins": {
+        "1": "TIMING_TP"
+      },
+      "sheet": "module-interfaces",
+      "notes": "",
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm"
+    },
+    {
+      "ref": "F1",
+      "record": "fuse",
+      "value": "fuse",
+      "pins": {
+        "1": "VBUS_USB",
+        "2": "+5V_FUSED"
+      },
+      "sheet": "power",
+      "notes": "Protection component identity pending; not an inrush/load-switch substitute",
+      "footprint": ""
+    },
+    {
+      "ref": "U10",
+      "record": "ldo",
+      "value": "TLV75533PDBVR",
+      "pins": {
+        "1": "+5V_FUSED",
+        "2": "GND",
+        "3": "+5V_FUSED",
+        "4": null,
+        "5": "+3V3A"
+      },
+      "sheet": "power",
+      "notes": "",
+      "footprint": "Package_TO_SOT_SMD:SOT-23-5"
+    },
+    {
+      "ref": "U11",
+      "record": "ref",
+      "value": "REF3330AIDBZR",
+      "pins": {
+        "1": "+3V3A",
+        "2": "REF_RAW",
+        "3": "GND"
+      },
+      "sheet": "power",
+      "notes": "",
+      "footprint": "Package_TO_SOT_SMD:SOT-23"
+    },
+    {
+      "ref": "C30",
+      "record": "c1u",
+      "value": "1uF",
+      "pins": {
+        "1": "+5V_FUSED",
+        "2": "GND"
+      },
+      "sheet": "power",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0805_2012Metric"
+    },
+    {
+      "ref": "C31",
+      "record": "c1u",
+      "value": "1uF",
+      "pins": {
+        "1": "+3V3A",
+        "2": "GND"
+      },
+      "sheet": "power",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0805_2012Metric"
+    },
+    {
+      "ref": "C32",
+      "record": "c1u",
+      "value": "1uF",
+      "pins": {
+        "1": "REF_RAW",
+        "2": "GND"
+      },
+      "sheet": "power",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0805_2012Metric"
+    },
+    {
+      "ref": "C33",
+      "record": "c100n",
+      "value": "100nF",
+      "pins": {
+        "1": "+3V3A",
+        "2": "GND"
+      },
+      "sheet": "power",
+      "notes": "",
+      "footprint": "Capacitor_SMD:C_0603_1608Metric"
+    },
+    {
+      "ref": "R30",
+      "record": "r1k",
+      "value": "1k",
+      "pins": {
+        "1": "+3V3A",
+        "2": "GND"
+      },
+      "sheet": "power",
+      "notes": "Intentional 3.3mA bleed; bound unpowered injection, still requires testing",
+      "footprint": "Resistor_SMD:R_0603_1608Metric"
+    },
+    {
+      "ref": "TP40",
+      "record": "testpoint",
+      "value": "testpoint",
+      "pins": {
+        "1": "GND"
+      },
+      "sheet": "power",
+      "notes": "",
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm"
+    },
+    {
+      "ref": "TP41",
+      "record": "testpoint",
+      "value": "testpoint",
+      "pins": {
+        "1": "VBUS_USB"
+      },
+      "sheet": "power",
+      "notes": "",
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm"
+    },
+    {
+      "ref": "TP42",
+      "record": "testpoint",
+      "value": "testpoint",
+      "pins": {
+        "1": "+5V_FUSED"
+      },
+      "sheet": "power",
+      "notes": "",
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm"
+    },
+    {
+      "ref": "TP43",
+      "record": "testpoint",
+      "value": "testpoint",
+      "pins": {
+        "1": "+3V3A"
+      },
+      "sheet": "power",
+      "notes": "",
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm"
+    },
+    {
+      "ref": "TP44",
+      "record": "testpoint",
+      "value": "testpoint",
+      "pins": {
+        "1": "REF_RAW"
+      },
+      "sheet": "power",
+      "notes": "",
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm"
+    },
+    {
+      "ref": "TP45",
+      "record": "testpoint",
+      "value": "testpoint",
+      "pins": {
+        "1": "+3V0_REF"
+      },
+      "sheet": "power",
+      "notes": "",
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm"
+    },
+    {
+      "ref": "TP46",
+      "record": "testpoint",
+      "value": "testpoint",
+      "pins": {
+        "1": "+3V3D"
+      },
+      "sheet": "power",
+      "notes": "",
+      "footprint": "TestPoint:TestPoint_Pad_D1.0mm"
+    }
+  ],
+  "external_modules": [
+    "pico-h",
+    "display"
+  ],
+  "connector_position_maps": {
+    "pico_h": {
+      "J20": {
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "4": 4,
+        "5": 5,
+        "6": 6,
+        "7": 7,
+        "8": 8,
+        "9": 9,
+        "10": 10,
+        "11": 11,
+        "12": 12,
+        "13": 13,
+        "14": 14,
+        "15": 15,
+        "16": 16,
+        "17": 17,
+        "18": 18,
+        "19": 19,
+        "20": 20
+      },
+      "J21": {
+        "1": 40,
+        "2": 39,
+        "3": 38,
+        "4": 37,
+        "5": 36,
+        "6": 35,
+        "7": 34,
+        "8": 33,
+        "9": 32,
+        "10": 31,
+        "11": 30,
+        "12": 29,
+        "13": 28,
+        "14": 27,
+        "15": 26,
+        "16": 25,
+        "17": 24,
+        "18": 23,
+        "19": 22,
+        "20": 21
+      }
+    },
+    "display": {
+      "J30": {
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "4": 4,
+        "5": 5,
+        "6": 6,
+        "7": 7,
+        "8": 8,
+        "9": 9,
+        "10": 10,
+        "11": 11,
+        "12": 12,
+        "13": 13,
+        "14": 14,
+        "15": 15,
+        "16": 16,
+        "17": 17,
+        "18": 18,
+        "19": 19,
+        "20": 20
+      },
+      "J31": {
+        "1": 40,
+        "2": 39,
+        "3": 38,
+        "4": 37,
+        "5": 36,
+        "6": 35,
+        "7": 34,
+        "8": 33,
+        "9": 32,
+        "10": 31,
+        "11": 30,
+        "12": 29,
+        "13": 28,
+        "14": 27,
+        "15": 26,
+        "16": 25,
+        "17": 24,
+        "18": 23,
+        "19": 22,
+        "20": 21
+      }
+    }
+  }
+}

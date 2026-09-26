@@ -1,0 +1,7 @@
+{
+  "host_compiler": "/usr/bin/cc",
+  "result": "PASS",
+  "output": "PASS: calibration, 4096 time points, range/debounce/wrap, multiresolution extremes.\nTen-channel history allocation: 77800 bytes.\n",
+  "target_build": "NOT_RUN",
+  "hardware_tests": "NOT_RUN"
+}

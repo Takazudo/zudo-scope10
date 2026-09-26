@@ -1,0 +1,2043 @@
+<?xml version='1.0' encoding='utf-8'?>
+<export version="D">
+  <components>
+    <comp ref="J1">
+      <value>PJ-313 5JCJ</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="jack" />
+    </comp>
+    <comp ref="R101">
+      <value>1M</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1m" />
+    </comp>
+    <comp ref="R102">
+      <value>200k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r200k" />
+    </comp>
+    <comp ref="R103">
+      <value>249k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r249k" />
+    </comp>
+    <comp ref="C101">
+      <value>470pF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c470p" />
+    </comp>
+    <comp ref="D1">
+      <value>BAV199,215</value>
+      <footprint>Package_TO_SOT_SMD:SOT-23</footprint>
+      <libsource lib="ZudoScope10" part="clamp" />
+    </comp>
+    <comp ref="R104">
+      <value>4.7k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r4k7" />
+    </comp>
+    <comp ref="C102">
+      <value>10nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c10n" />
+    </comp>
+    <comp ref="TP1">
+      <value>testpoint</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <libsource lib="ZudoScope10" part="testpoint" />
+    </comp>
+    <comp ref="J2">
+      <value>PJ-313 5JCJ</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="jack" />
+    </comp>
+    <comp ref="R201">
+      <value>1M</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1m" />
+    </comp>
+    <comp ref="R202">
+      <value>200k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r200k" />
+    </comp>
+    <comp ref="R203">
+      <value>249k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r249k" />
+    </comp>
+    <comp ref="C201">
+      <value>470pF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c470p" />
+    </comp>
+    <comp ref="D2">
+      <value>BAV199,215</value>
+      <footprint>Package_TO_SOT_SMD:SOT-23</footprint>
+      <libsource lib="ZudoScope10" part="clamp" />
+    </comp>
+    <comp ref="R204">
+      <value>4.7k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r4k7" />
+    </comp>
+    <comp ref="C202">
+      <value>10nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c10n" />
+    </comp>
+    <comp ref="TP2">
+      <value>testpoint</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <libsource lib="ZudoScope10" part="testpoint" />
+    </comp>
+    <comp ref="U1">
+      <value>TLV9064IDR</value>
+      <footprint>Package_SO:SOIC-14_3.9x8.7mm_P1.27mm</footprint>
+      <libsource lib="ZudoScope10" part="tlv9064" />
+    </comp>
+    <comp ref="C1">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="J3">
+      <value>PJ-313 5JCJ</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="jack" />
+    </comp>
+    <comp ref="R301">
+      <value>1M</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1m" />
+    </comp>
+    <comp ref="R302">
+      <value>200k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r200k" />
+    </comp>
+    <comp ref="R303">
+      <value>249k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r249k" />
+    </comp>
+    <comp ref="C301">
+      <value>470pF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c470p" />
+    </comp>
+    <comp ref="D3">
+      <value>BAV199,215</value>
+      <footprint>Package_TO_SOT_SMD:SOT-23</footprint>
+      <libsource lib="ZudoScope10" part="clamp" />
+    </comp>
+    <comp ref="R304">
+      <value>4.7k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r4k7" />
+    </comp>
+    <comp ref="C302">
+      <value>10nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c10n" />
+    </comp>
+    <comp ref="TP3">
+      <value>testpoint</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <libsource lib="ZudoScope10" part="testpoint" />
+    </comp>
+    <comp ref="J4">
+      <value>PJ-313 5JCJ</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="jack" />
+    </comp>
+    <comp ref="R401">
+      <value>1M</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1m" />
+    </comp>
+    <comp ref="R402">
+      <value>200k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r200k" />
+    </comp>
+    <comp ref="R403">
+      <value>249k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r249k" />
+    </comp>
+    <comp ref="C401">
+      <value>470pF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c470p" />
+    </comp>
+    <comp ref="D4">
+      <value>BAV199,215</value>
+      <footprint>Package_TO_SOT_SMD:SOT-23</footprint>
+      <libsource lib="ZudoScope10" part="clamp" />
+    </comp>
+    <comp ref="R404">
+      <value>4.7k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r4k7" />
+    </comp>
+    <comp ref="C402">
+      <value>10nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c10n" />
+    </comp>
+    <comp ref="TP4">
+      <value>testpoint</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <libsource lib="ZudoScope10" part="testpoint" />
+    </comp>
+    <comp ref="U2">
+      <value>TLV9064IDR</value>
+      <footprint>Package_SO:SOIC-14_3.9x8.7mm_P1.27mm</footprint>
+      <libsource lib="ZudoScope10" part="tlv9064" />
+    </comp>
+    <comp ref="C2">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="J5">
+      <value>PJ-313 5JCJ</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="jack" />
+    </comp>
+    <comp ref="R501">
+      <value>1M</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1m" />
+    </comp>
+    <comp ref="R502">
+      <value>200k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r200k" />
+    </comp>
+    <comp ref="R503">
+      <value>249k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r249k" />
+    </comp>
+    <comp ref="C501">
+      <value>470pF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c470p" />
+    </comp>
+    <comp ref="D5">
+      <value>BAV199,215</value>
+      <footprint>Package_TO_SOT_SMD:SOT-23</footprint>
+      <libsource lib="ZudoScope10" part="clamp" />
+    </comp>
+    <comp ref="R504">
+      <value>4.7k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r4k7" />
+    </comp>
+    <comp ref="C502">
+      <value>10nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c10n" />
+    </comp>
+    <comp ref="TP5">
+      <value>testpoint</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <libsource lib="ZudoScope10" part="testpoint" />
+    </comp>
+    <comp ref="J6">
+      <value>PJ-313 5JCJ</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="jack" />
+    </comp>
+    <comp ref="R601">
+      <value>1M</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1m" />
+    </comp>
+    <comp ref="R602">
+      <value>200k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r200k" />
+    </comp>
+    <comp ref="R603">
+      <value>249k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r249k" />
+    </comp>
+    <comp ref="C601">
+      <value>470pF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c470p" />
+    </comp>
+    <comp ref="D6">
+      <value>BAV199,215</value>
+      <footprint>Package_TO_SOT_SMD:SOT-23</footprint>
+      <libsource lib="ZudoScope10" part="clamp" />
+    </comp>
+    <comp ref="R604">
+      <value>4.7k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r4k7" />
+    </comp>
+    <comp ref="C602">
+      <value>10nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c10n" />
+    </comp>
+    <comp ref="TP6">
+      <value>testpoint</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <libsource lib="ZudoScope10" part="testpoint" />
+    </comp>
+    <comp ref="U3">
+      <value>TLV9064IDR</value>
+      <footprint>Package_SO:SOIC-14_3.9x8.7mm_P1.27mm</footprint>
+      <libsource lib="ZudoScope10" part="tlv9064" />
+    </comp>
+    <comp ref="C3">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="J7">
+      <value>PJ-313 5JCJ</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="jack" />
+    </comp>
+    <comp ref="R701">
+      <value>1M</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1m" />
+    </comp>
+    <comp ref="R702">
+      <value>200k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r200k" />
+    </comp>
+    <comp ref="R703">
+      <value>249k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r249k" />
+    </comp>
+    <comp ref="C701">
+      <value>470pF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c470p" />
+    </comp>
+    <comp ref="D7">
+      <value>BAV199,215</value>
+      <footprint>Package_TO_SOT_SMD:SOT-23</footprint>
+      <libsource lib="ZudoScope10" part="clamp" />
+    </comp>
+    <comp ref="R704">
+      <value>4.7k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r4k7" />
+    </comp>
+    <comp ref="C702">
+      <value>10nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c10n" />
+    </comp>
+    <comp ref="TP7">
+      <value>testpoint</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <libsource lib="ZudoScope10" part="testpoint" />
+    </comp>
+    <comp ref="J8">
+      <value>PJ-313 5JCJ</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="jack" />
+    </comp>
+    <comp ref="R801">
+      <value>1M</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1m" />
+    </comp>
+    <comp ref="R802">
+      <value>200k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r200k" />
+    </comp>
+    <comp ref="R803">
+      <value>249k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r249k" />
+    </comp>
+    <comp ref="C801">
+      <value>470pF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c470p" />
+    </comp>
+    <comp ref="D8">
+      <value>BAV199,215</value>
+      <footprint>Package_TO_SOT_SMD:SOT-23</footprint>
+      <libsource lib="ZudoScope10" part="clamp" />
+    </comp>
+    <comp ref="R804">
+      <value>4.7k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r4k7" />
+    </comp>
+    <comp ref="C802">
+      <value>10nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c10n" />
+    </comp>
+    <comp ref="TP8">
+      <value>testpoint</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <libsource lib="ZudoScope10" part="testpoint" />
+    </comp>
+    <comp ref="U4">
+      <value>TLV9064IDR</value>
+      <footprint>Package_SO:SOIC-14_3.9x8.7mm_P1.27mm</footprint>
+      <libsource lib="ZudoScope10" part="tlv9064" />
+    </comp>
+    <comp ref="C4">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="J9">
+      <value>PJ-313 5JCJ</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="jack" />
+    </comp>
+    <comp ref="R901">
+      <value>1M</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1m" />
+    </comp>
+    <comp ref="R902">
+      <value>200k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r200k" />
+    </comp>
+    <comp ref="R903">
+      <value>249k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r249k" />
+    </comp>
+    <comp ref="C901">
+      <value>470pF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c470p" />
+    </comp>
+    <comp ref="D9">
+      <value>BAV199,215</value>
+      <footprint>Package_TO_SOT_SMD:SOT-23</footprint>
+      <libsource lib="ZudoScope10" part="clamp" />
+    </comp>
+    <comp ref="R904">
+      <value>4.7k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r4k7" />
+    </comp>
+    <comp ref="C902">
+      <value>10nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c10n" />
+    </comp>
+    <comp ref="TP9">
+      <value>testpoint</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <libsource lib="ZudoScope10" part="testpoint" />
+    </comp>
+    <comp ref="J10">
+      <value>PJ-313 5JCJ</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="jack" />
+    </comp>
+    <comp ref="R1001">
+      <value>1M</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1m" />
+    </comp>
+    <comp ref="R1002">
+      <value>200k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r200k" />
+    </comp>
+    <comp ref="R1003">
+      <value>249k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r249k" />
+    </comp>
+    <comp ref="C1001">
+      <value>470pF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c470p" />
+    </comp>
+    <comp ref="D10">
+      <value>BAV199,215</value>
+      <footprint>Package_TO_SOT_SMD:SOT-23</footprint>
+      <libsource lib="ZudoScope10" part="clamp" />
+    </comp>
+    <comp ref="R1004">
+      <value>4.7k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r4k7" />
+    </comp>
+    <comp ref="C1002">
+      <value>10nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c10n" />
+    </comp>
+    <comp ref="TP10">
+      <value>testpoint</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <libsource lib="ZudoScope10" part="testpoint" />
+    </comp>
+    <comp ref="U5">
+      <value>TLV9064IDR</value>
+      <footprint>Package_SO:SOIC-14_3.9x8.7mm_P1.27mm</footprint>
+      <libsource lib="ZudoScope10" part="tlv9064" />
+    </comp>
+    <comp ref="C5">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="RV1">
+      <value>RK09L1140A5L</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="pot" />
+    </comp>
+    <comp ref="R1111">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1k" />
+    </comp>
+    <comp ref="C1111">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="SW1">
+      <value>SS14MDP2</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="range" />
+    </comp>
+    <comp ref="R1112">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1k" />
+    </comp>
+    <comp ref="C1112">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="RV2">
+      <value>RK09L1140A5L</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="pot" />
+    </comp>
+    <comp ref="R1121">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1k" />
+    </comp>
+    <comp ref="C1121">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="SW2">
+      <value>SS14MDP2</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="range" />
+    </comp>
+    <comp ref="R1122">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1k" />
+    </comp>
+    <comp ref="C1122">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="RV3">
+      <value>RK09L1140A5L</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="pot" />
+    </comp>
+    <comp ref="R1131">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1k" />
+    </comp>
+    <comp ref="C1131">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="SW3">
+      <value>SS14MDP2</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="range" />
+    </comp>
+    <comp ref="R1132">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1k" />
+    </comp>
+    <comp ref="C1132">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="RV4">
+      <value>RK09L1140A5L</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="pot" />
+    </comp>
+    <comp ref="R1141">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1k" />
+    </comp>
+    <comp ref="C1141">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="SW4">
+      <value>SS14MDP2</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="range" />
+    </comp>
+    <comp ref="R1142">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1k" />
+    </comp>
+    <comp ref="C1142">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="RV5">
+      <value>RK09L1140A5L</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="pot" />
+    </comp>
+    <comp ref="R1151">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1k" />
+    </comp>
+    <comp ref="C1151">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="SW5">
+      <value>SS14MDP2</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="range" />
+    </comp>
+    <comp ref="R1152">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1k" />
+    </comp>
+    <comp ref="C1152">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="RV6">
+      <value>RK09L1140A5L</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="pot" />
+    </comp>
+    <comp ref="R1161">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1k" />
+    </comp>
+    <comp ref="C1161">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="SW6">
+      <value>SS14MDP2</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="range" />
+    </comp>
+    <comp ref="R1162">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1k" />
+    </comp>
+    <comp ref="C1162">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="RV7">
+      <value>RK09L1140A5L</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="pot" />
+    </comp>
+    <comp ref="R1171">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1k" />
+    </comp>
+    <comp ref="C1171">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="SW7">
+      <value>SS14MDP2</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="range" />
+    </comp>
+    <comp ref="R1172">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1k" />
+    </comp>
+    <comp ref="C1172">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="RV8">
+      <value>RK09L1140A5L</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="pot" />
+    </comp>
+    <comp ref="R1181">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1k" />
+    </comp>
+    <comp ref="C1181">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="SW8">
+      <value>SS14MDP2</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="range" />
+    </comp>
+    <comp ref="R1182">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1k" />
+    </comp>
+    <comp ref="C1182">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="RV9">
+      <value>RK09L1140A5L</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="pot" />
+    </comp>
+    <comp ref="R1191">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1k" />
+    </comp>
+    <comp ref="C1191">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="SW9">
+      <value>SS14MDP2</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="range" />
+    </comp>
+    <comp ref="R1192">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1k" />
+    </comp>
+    <comp ref="C1192">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="RV10">
+      <value>RK09L1140A5L</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="pot" />
+    </comp>
+    <comp ref="R1201">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1k" />
+    </comp>
+    <comp ref="C1201">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="SW10">
+      <value>SS14MDP2</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="range" />
+    </comp>
+    <comp ref="R1202">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1k" />
+    </comp>
+    <comp ref="C1202">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="R40">
+      <value>10k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r10k" />
+    </comp>
+    <comp ref="R41">
+      <value>10k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r10k" />
+    </comp>
+    <comp ref="SW11">
+      <value>TS-1088-AR02016</value>
+      <footprint>ZudoScope10:SW_XUNPU_TS1088_AR02016_REVIEW</footprint>
+      <libsource lib="ZudoScope10" part="button" />
+    </comp>
+    <comp ref="R51">
+      <value>10k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r10k" />
+    </comp>
+    <comp ref="C51">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="SW12">
+      <value>TS-1088-AR02016</value>
+      <footprint>ZudoScope10:SW_XUNPU_TS1088_AR02016_REVIEW</footprint>
+      <libsource lib="ZudoScope10" part="button" />
+    </comp>
+    <comp ref="R52">
+      <value>10k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r10k" />
+    </comp>
+    <comp ref="C52">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="U7">
+      <value>74HC4067PW,118</value>
+      <footprint>Package_SO:TSSOP-24_4.4x7.8mm_P0.65mm</footprint>
+      <libsource lib="ZudoScope10" part="mux" />
+    </comp>
+    <comp ref="C7">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="U8">
+      <value>74HC4067PW,118</value>
+      <footprint>Package_SO:TSSOP-24_4.4x7.8mm_P0.65mm</footprint>
+      <libsource lib="ZudoScope10" part="mux" />
+    </comp>
+    <comp ref="C8">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="U9">
+      <value>74HC4067PW,118</value>
+      <footprint>Package_SO:TSSOP-24_4.4x7.8mm_P0.65mm</footprint>
+      <libsource lib="ZudoScope10" part="mux" />
+    </comp>
+    <comp ref="C9">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="U6">
+      <value>TLV9064IDR</value>
+      <footprint>Package_SO:SOIC-14_3.9x8.7mm_P1.27mm</footprint>
+      <libsource lib="ZudoScope10" part="tlv9064" />
+    </comp>
+    <comp ref="C6">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="R20">
+      <value>100</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r100" />
+    </comp>
+    <comp ref="C20">
+      <value>1nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c1n" />
+    </comp>
+    <comp ref="TP20">
+      <value>testpoint</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <libsource lib="ZudoScope10" part="testpoint" />
+    </comp>
+    <comp ref="R21">
+      <value>100</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r100" />
+    </comp>
+    <comp ref="C21">
+      <value>1nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c1n" />
+    </comp>
+    <comp ref="TP21">
+      <value>testpoint</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <libsource lib="ZudoScope10" part="testpoint" />
+    </comp>
+    <comp ref="R22">
+      <value>100</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r100" />
+    </comp>
+    <comp ref="C22">
+      <value>1nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c1n" />
+    </comp>
+    <comp ref="TP22">
+      <value>testpoint</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <libsource lib="ZudoScope10" part="testpoint" />
+    </comp>
+    <comp ref="J20">
+      <value>socket20</value>
+      <footprint>Connector_PinSocket_2.54mm:PinSocket_1x20_P2.54mm_Vertical</footprint>
+      <libsource lib="ZudoScope10" part="socket20" />
+    </comp>
+    <comp ref="J21">
+      <value>socket20</value>
+      <footprint>Connector_PinSocket_2.54mm:PinSocket_1x20_P2.54mm_Vertical</footprint>
+      <libsource lib="ZudoScope10" part="socket20" />
+    </comp>
+    <comp ref="J30">
+      <value>header20</value>
+      <footprint>Connector_PinHeader_2.54mm:PinHeader_1x20_P2.54mm_Vertical</footprint>
+      <libsource lib="ZudoScope10" part="header20" />
+    </comp>
+    <comp ref="J31">
+      <value>header20</value>
+      <footprint>Connector_PinHeader_2.54mm:PinHeader_1x20_P2.54mm_Vertical</footprint>
+      <libsource lib="ZudoScope10" part="header20" />
+    </comp>
+    <comp ref="R60">
+      <value>33</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r33" />
+    </comp>
+    <comp ref="R61">
+      <value>33</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r33" />
+    </comp>
+    <comp ref="R62">
+      <value>33</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r33" />
+    </comp>
+    <comp ref="R63">
+      <value>33</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r33" />
+    </comp>
+    <comp ref="R64">
+      <value>33</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r33" />
+    </comp>
+    <comp ref="R65">
+      <value>33</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r33" />
+    </comp>
+    <comp ref="R66">
+      <value>33</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r33" />
+    </comp>
+    <comp ref="R67">
+      <value>33</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r33" />
+    </comp>
+    <comp ref="R68">
+      <value>33</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r33" />
+    </comp>
+    <comp ref="R69">
+      <value>33</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r33" />
+    </comp>
+    <comp ref="R80">
+      <value>100k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r100k" />
+    </comp>
+    <comp ref="R81">
+      <value>100k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r100k" />
+    </comp>
+    <comp ref="R82">
+      <value>100k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r100k" />
+    </comp>
+    <comp ref="R83">
+      <value>100k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r100k" />
+    </comp>
+    <comp ref="R84">
+      <value>100k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r100k" />
+    </comp>
+    <comp ref="R85">
+      <value>100k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r100k" />
+    </comp>
+    <comp ref="R86">
+      <value>100k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r100k" />
+    </comp>
+    <comp ref="R87">
+      <value>100k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r100k" />
+    </comp>
+    <comp ref="R88">
+      <value>100k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r100k" />
+    </comp>
+    <comp ref="TP30">
+      <value>testpoint</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <libsource lib="ZudoScope10" part="testpoint" />
+    </comp>
+    <comp ref="F1">
+      <value>fuse</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="fuse" />
+    </comp>
+    <comp ref="U10">
+      <value>TLV75533PDBVR</value>
+      <footprint>Package_TO_SOT_SMD:SOT-23-5</footprint>
+      <libsource lib="ZudoScope10" part="ldo" />
+    </comp>
+    <comp ref="U11">
+      <value>REF3330AIDBZR</value>
+      <footprint>Package_TO_SOT_SMD:SOT-23</footprint>
+      <libsource lib="ZudoScope10" part="ref" />
+    </comp>
+    <comp ref="C30">
+      <value>1uF</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
+      <libsource lib="ZudoScope10" part="c1u" />
+    </comp>
+    <comp ref="C31">
+      <value>1uF</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
+      <libsource lib="ZudoScope10" part="c1u" />
+    </comp>
+    <comp ref="C32">
+      <value>1uF</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
+      <libsource lib="ZudoScope10" part="c1u" />
+    </comp>
+    <comp ref="C33">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="c100n" />
+    </comp>
+    <comp ref="R30">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <libsource lib="ZudoScope10" part="r1k" />
+    </comp>
+    <comp ref="TP40">
+      <value>testpoint</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <libsource lib="ZudoScope10" part="testpoint" />
+    </comp>
+    <comp ref="TP41">
+      <value>testpoint</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <libsource lib="ZudoScope10" part="testpoint" />
+    </comp>
+    <comp ref="TP42">
+      <value>testpoint</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <libsource lib="ZudoScope10" part="testpoint" />
+    </comp>
+    <comp ref="TP43">
+      <value>testpoint</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <libsource lib="ZudoScope10" part="testpoint" />
+    </comp>
+    <comp ref="TP44">
+      <value>testpoint</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <libsource lib="ZudoScope10" part="testpoint" />
+    </comp>
+    <comp ref="TP45">
+      <value>testpoint</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <libsource lib="ZudoScope10" part="testpoint" />
+    </comp>
+    <comp ref="TP46">
+      <value>testpoint</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <libsource lib="ZudoScope10" part="testpoint" />
+    </comp>
+  </components>
+  <nets>
+    <net code="1" name="+3V0_REF">
+      <node ref="R102" pin="1" />
+      <node ref="R202" pin="1" />
+      <node ref="R302" pin="1" />
+      <node ref="R402" pin="1" />
+      <node ref="R502" pin="1" />
+      <node ref="R602" pin="1" />
+      <node ref="R702" pin="1" />
+      <node ref="R802" pin="1" />
+      <node ref="R902" pin="1" />
+      <node ref="R1002" pin="1" />
+      <node ref="U7" pin="16" />
+      <node ref="U7" pin="18" />
+      <node ref="U7" pin="20" />
+      <node ref="U8" pin="16" />
+      <node ref="U8" pin="18" />
+      <node ref="U8" pin="20" />
+      <node ref="U9" pin="16" />
+      <node ref="U9" pin="18" />
+      <node ref="U9" pin="20" />
+      <node ref="U6" pin="13" />
+      <node ref="U6" pin="14" />
+      <node ref="TP45" pin="1" />
+    </net>
+    <net code="2" name="+3V3A">
+      <node ref="D1" pin="2" />
+      <node ref="D2" pin="2" />
+      <node ref="U1" pin="4" />
+      <node ref="C1" pin="1" />
+      <node ref="D3" pin="2" />
+      <node ref="D4" pin="2" />
+      <node ref="U2" pin="4" />
+      <node ref="C2" pin="1" />
+      <node ref="D5" pin="2" />
+      <node ref="D6" pin="2" />
+      <node ref="U3" pin="4" />
+      <node ref="C3" pin="1" />
+      <node ref="D7" pin="2" />
+      <node ref="D8" pin="2" />
+      <node ref="U4" pin="4" />
+      <node ref="C4" pin="1" />
+      <node ref="D9" pin="2" />
+      <node ref="D10" pin="2" />
+      <node ref="U5" pin="4" />
+      <node ref="C5" pin="1" />
+      <node ref="RV1" pin="3" />
+      <node ref="SW1" pin="H" />
+      <node ref="RV2" pin="3" />
+      <node ref="SW2" pin="H" />
+      <node ref="RV3" pin="3" />
+      <node ref="SW3" pin="H" />
+      <node ref="RV4" pin="3" />
+      <node ref="SW4" pin="H" />
+      <node ref="RV5" pin="3" />
+      <node ref="SW5" pin="H" />
+      <node ref="RV6" pin="3" />
+      <node ref="SW6" pin="H" />
+      <node ref="RV7" pin="3" />
+      <node ref="SW7" pin="H" />
+      <node ref="RV8" pin="3" />
+      <node ref="SW8" pin="H" />
+      <node ref="RV9" pin="3" />
+      <node ref="SW9" pin="H" />
+      <node ref="RV10" pin="3" />
+      <node ref="SW10" pin="H" />
+      <node ref="R40" pin="1" />
+      <node ref="U7" pin="24" />
+      <node ref="C7" pin="1" />
+      <node ref="U8" pin="24" />
+      <node ref="C8" pin="1" />
+      <node ref="U9" pin="24" />
+      <node ref="C9" pin="1" />
+      <node ref="U6" pin="4" />
+      <node ref="C6" pin="1" />
+      <node ref="R87" pin="1" />
+      <node ref="U10" pin="5" />
+      <node ref="U11" pin="1" />
+      <node ref="C31" pin="1" />
+      <node ref="C33" pin="1" />
+      <node ref="R30" pin="1" />
+      <node ref="TP43" pin="1" />
+    </net>
+    <net code="3" name="+3V3D">
+      <node ref="R51" pin="1" />
+      <node ref="R52" pin="1" />
+      <node ref="J21" pin="5" />
+      <node ref="R84" pin="1" />
+      <node ref="R85" pin="1" />
+      <node ref="R86" pin="1" />
+      <node ref="TP46" pin="1" />
+    </net>
+    <net code="4" name="+5V_FUSED">
+      <node ref="J31" pin="2" />
+      <node ref="F1" pin="2" />
+      <node ref="U10" pin="1" />
+      <node ref="U10" pin="3" />
+      <node ref="C30" pin="1" />
+      <node ref="TP42" pin="1" />
+    </net>
+    <net code="5" name="ADC0">
+      <node ref="R20" pin="2" />
+      <node ref="C20" pin="1" />
+      <node ref="TP20" pin="1" />
+      <node ref="J21" pin="10" />
+    </net>
+    <net code="6" name="ADC1">
+      <node ref="R21" pin="2" />
+      <node ref="C21" pin="1" />
+      <node ref="TP21" pin="1" />
+      <node ref="J21" pin="9" />
+    </net>
+    <net code="7" name="ADC2">
+      <node ref="R22" pin="2" />
+      <node ref="C22" pin="1" />
+      <node ref="TP22" pin="1" />
+      <node ref="J21" pin="7" />
+    </net>
+    <net code="8" name="ADC_DRV0">
+      <node ref="U6" pin="1" />
+      <node ref="U6" pin="2" />
+      <node ref="R20" pin="1" />
+    </net>
+    <net code="9" name="ADC_DRV1">
+      <node ref="U6" pin="6" />
+      <node ref="U6" pin="7" />
+      <node ref="R21" pin="1" />
+    </net>
+    <net code="10" name="ADC_DRV2">
+      <node ref="U6" pin="8" />
+      <node ref="U6" pin="9" />
+      <node ref="R22" pin="1" />
+    </net>
+    <net code="11" name="ADDR0">
+      <node ref="U7" pin="10" />
+      <node ref="U8" pin="10" />
+      <node ref="U9" pin="10" />
+      <node ref="R66" pin="2" />
+      <node ref="R80" pin="1" />
+    </net>
+    <net code="12" name="ADDR0_SRC">
+      <node ref="J20" pin="4" />
+      <node ref="R66" pin="1" />
+    </net>
+    <net code="13" name="ADDR1">
+      <node ref="U7" pin="11" />
+      <node ref="U8" pin="11" />
+      <node ref="U9" pin="11" />
+      <node ref="R67" pin="2" />
+      <node ref="R81" pin="1" />
+    </net>
+    <net code="14" name="ADDR1_SRC">
+      <node ref="J20" pin="5" />
+      <node ref="R67" pin="1" />
+    </net>
+    <net code="15" name="ADDR2">
+      <node ref="U7" pin="14" />
+      <node ref="U8" pin="14" />
+      <node ref="U9" pin="14" />
+      <node ref="R68" pin="2" />
+      <node ref="R82" pin="1" />
+    </net>
+    <net code="16" name="ADDR2_SRC">
+      <node ref="J20" pin="6" />
+      <node ref="R68" pin="1" />
+    </net>
+    <net code="17" name="ADDR3">
+      <node ref="U7" pin="13" />
+      <node ref="U8" pin="13" />
+      <node ref="U9" pin="13" />
+      <node ref="R69" pin="2" />
+      <node ref="R83" pin="1" />
+    </net>
+    <net code="18" name="ADDR3_SRC">
+      <node ref="J20" pin="7" />
+      <node ref="R69" pin="1" />
+    </net>
+    <net code="19" name="CH01_BIAS">
+      <node ref="R101" pin="2" />
+      <node ref="R102" pin="2" />
+      <node ref="R103" pin="1" />
+      <node ref="C101" pin="1" />
+      <node ref="D1" pin="3" />
+      <node ref="U1" pin="3" />
+    </net>
+    <net code="20" name="CH01_BUF1">
+      <node ref="R104" pin="1" />
+      <node ref="U1" pin="1" />
+      <node ref="U1" pin="2" />
+    </net>
+    <net code="21" name="CH01_IN">
+      <node ref="J1" pin="3" />
+      <node ref="R101" pin="1" />
+    </net>
+    <net code="22" name="CH01_LP2">
+      <node ref="R104" pin="2" />
+      <node ref="C102" pin="1" />
+      <node ref="U1" pin="5" />
+    </net>
+    <net code="23" name="CH01_OUT">
+      <node ref="TP1" pin="1" />
+      <node ref="U1" pin="6" />
+      <node ref="U1" pin="7" />
+      <node ref="U7" pin="9" />
+    </net>
+    <net code="24" name="CH01_RANGE">
+      <node ref="R1112" pin="2" />
+      <node ref="C1112" pin="1" />
+      <node ref="U9" pin="9" />
+    </net>
+    <net code="25" name="CH01_RANGE_W">
+      <node ref="SW1" pin="C" />
+      <node ref="R1112" pin="1" />
+    </net>
+    <net code="26" name="CH01_TIME">
+      <node ref="R1111" pin="2" />
+      <node ref="C1111" pin="1" />
+      <node ref="U8" pin="9" />
+    </net>
+    <net code="27" name="CH01_TIME_W">
+      <node ref="RV1" pin="2" />
+      <node ref="R1111" pin="1" />
+    </net>
+    <net code="28" name="CH02_BIAS">
+      <node ref="R201" pin="2" />
+      <node ref="R202" pin="2" />
+      <node ref="R203" pin="1" />
+      <node ref="C201" pin="1" />
+      <node ref="D2" pin="3" />
+      <node ref="U1" pin="10" />
+    </net>
+    <net code="29" name="CH02_BUF1">
+      <node ref="R204" pin="1" />
+      <node ref="U1" pin="8" />
+      <node ref="U1" pin="9" />
+    </net>
+    <net code="30" name="CH02_IN">
+      <node ref="J2" pin="3" />
+      <node ref="R201" pin="1" />
+    </net>
+    <net code="31" name="CH02_LP2">
+      <node ref="R204" pin="2" />
+      <node ref="C202" pin="1" />
+      <node ref="U1" pin="12" />
+    </net>
+    <net code="32" name="CH02_OUT">
+      <node ref="TP2" pin="1" />
+      <node ref="U1" pin="13" />
+      <node ref="U1" pin="14" />
+      <node ref="U7" pin="8" />
+    </net>
+    <net code="33" name="CH02_RANGE">
+      <node ref="R1122" pin="2" />
+      <node ref="C1122" pin="1" />
+      <node ref="U9" pin="8" />
+    </net>
+    <net code="34" name="CH02_RANGE_W">
+      <node ref="SW2" pin="C" />
+      <node ref="R1122" pin="1" />
+    </net>
+    <net code="35" name="CH02_TIME">
+      <node ref="R1121" pin="2" />
+      <node ref="C1121" pin="1" />
+      <node ref="U8" pin="8" />
+    </net>
+    <net code="36" name="CH02_TIME_W">
+      <node ref="RV2" pin="2" />
+      <node ref="R1121" pin="1" />
+    </net>
+    <net code="37" name="CH03_BIAS">
+      <node ref="R301" pin="2" />
+      <node ref="R302" pin="2" />
+      <node ref="R303" pin="1" />
+      <node ref="C301" pin="1" />
+      <node ref="D3" pin="3" />
+      <node ref="U2" pin="3" />
+    </net>
+    <net code="38" name="CH03_BUF1">
+      <node ref="R304" pin="1" />
+      <node ref="U2" pin="1" />
+      <node ref="U2" pin="2" />
+    </net>
+    <net code="39" name="CH03_IN">
+      <node ref="J3" pin="3" />
+      <node ref="R301" pin="1" />
+    </net>
+    <net code="40" name="CH03_LP2">
+      <node ref="R304" pin="2" />
+      <node ref="C302" pin="1" />
+      <node ref="U2" pin="5" />
+    </net>
+    <net code="41" name="CH03_OUT">
+      <node ref="TP3" pin="1" />
+      <node ref="U2" pin="6" />
+      <node ref="U2" pin="7" />
+      <node ref="U7" pin="7" />
+    </net>
+    <net code="42" name="CH03_RANGE">
+      <node ref="R1132" pin="2" />
+      <node ref="C1132" pin="1" />
+      <node ref="U9" pin="7" />
+    </net>
+    <net code="43" name="CH03_RANGE_W">
+      <node ref="SW3" pin="C" />
+      <node ref="R1132" pin="1" />
+    </net>
+    <net code="44" name="CH03_TIME">
+      <node ref="R1131" pin="2" />
+      <node ref="C1131" pin="1" />
+      <node ref="U8" pin="7" />
+    </net>
+    <net code="45" name="CH03_TIME_W">
+      <node ref="RV3" pin="2" />
+      <node ref="R1131" pin="1" />
+    </net>
+    <net code="46" name="CH04_BIAS">
+      <node ref="R401" pin="2" />
+      <node ref="R402" pin="2" />
+      <node ref="R403" pin="1" />
+      <node ref="C401" pin="1" />
+      <node ref="D4" pin="3" />
+      <node ref="U2" pin="10" />
+    </net>
+    <net code="47" name="CH04_BUF1">
+      <node ref="R404" pin="1" />
+      <node ref="U2" pin="8" />
+      <node ref="U2" pin="9" />
+    </net>
+    <net code="48" name="CH04_IN">
+      <node ref="J4" pin="3" />
+      <node ref="R401" pin="1" />
+    </net>
+    <net code="49" name="CH04_LP2">
+      <node ref="R404" pin="2" />
+      <node ref="C402" pin="1" />
+      <node ref="U2" pin="12" />
+    </net>
+    <net code="50" name="CH04_OUT">
+      <node ref="TP4" pin="1" />
+      <node ref="U2" pin="13" />
+      <node ref="U2" pin="14" />
+      <node ref="U7" pin="6" />
+    </net>
+    <net code="51" name="CH04_RANGE">
+      <node ref="R1142" pin="2" />
+      <node ref="C1142" pin="1" />
+      <node ref="U9" pin="6" />
+    </net>
+    <net code="52" name="CH04_RANGE_W">
+      <node ref="SW4" pin="C" />
+      <node ref="R1142" pin="1" />
+    </net>
+    <net code="53" name="CH04_TIME">
+      <node ref="R1141" pin="2" />
+      <node ref="C1141" pin="1" />
+      <node ref="U8" pin="6" />
+    </net>
+    <net code="54" name="CH04_TIME_W">
+      <node ref="RV4" pin="2" />
+      <node ref="R1141" pin="1" />
+    </net>
+    <net code="55" name="CH05_BIAS">
+      <node ref="R501" pin="2" />
+      <node ref="R502" pin="2" />
+      <node ref="R503" pin="1" />
+      <node ref="C501" pin="1" />
+      <node ref="D5" pin="3" />
+      <node ref="U3" pin="3" />
+    </net>
+    <net code="56" name="CH05_BUF1">
+      <node ref="R504" pin="1" />
+      <node ref="U3" pin="1" />
+      <node ref="U3" pin="2" />
+    </net>
+    <net code="57" name="CH05_IN">
+      <node ref="J5" pin="3" />
+      <node ref="R501" pin="1" />
+    </net>
+    <net code="58" name="CH05_LP2">
+      <node ref="R504" pin="2" />
+      <node ref="C502" pin="1" />
+      <node ref="U3" pin="5" />
+    </net>
+    <net code="59" name="CH05_OUT">
+      <node ref="TP5" pin="1" />
+      <node ref="U3" pin="6" />
+      <node ref="U3" pin="7" />
+      <node ref="U7" pin="5" />
+    </net>
+    <net code="60" name="CH05_RANGE">
+      <node ref="R1152" pin="2" />
+      <node ref="C1152" pin="1" />
+      <node ref="U9" pin="5" />
+    </net>
+    <net code="61" name="CH05_RANGE_W">
+      <node ref="SW5" pin="C" />
+      <node ref="R1152" pin="1" />
+    </net>
+    <net code="62" name="CH05_TIME">
+      <node ref="R1151" pin="2" />
+      <node ref="C1151" pin="1" />
+      <node ref="U8" pin="5" />
+    </net>
+    <net code="63" name="CH05_TIME_W">
+      <node ref="RV5" pin="2" />
+      <node ref="R1151" pin="1" />
+    </net>
+    <net code="64" name="CH06_BIAS">
+      <node ref="R601" pin="2" />
+      <node ref="R602" pin="2" />
+      <node ref="R603" pin="1" />
+      <node ref="C601" pin="1" />
+      <node ref="D6" pin="3" />
+      <node ref="U3" pin="10" />
+    </net>
+    <net code="65" name="CH06_BUF1">
+      <node ref="R604" pin="1" />
+      <node ref="U3" pin="8" />
+      <node ref="U3" pin="9" />
+    </net>
+    <net code="66" name="CH06_IN">
+      <node ref="J6" pin="3" />
+      <node ref="R601" pin="1" />
+    </net>
+    <net code="67" name="CH06_LP2">
+      <node ref="R604" pin="2" />
+      <node ref="C602" pin="1" />
+      <node ref="U3" pin="12" />
+    </net>
+    <net code="68" name="CH06_OUT">
+      <node ref="TP6" pin="1" />
+      <node ref="U3" pin="13" />
+      <node ref="U3" pin="14" />
+      <node ref="U7" pin="4" />
+    </net>
+    <net code="69" name="CH06_RANGE">
+      <node ref="R1162" pin="2" />
+      <node ref="C1162" pin="1" />
+      <node ref="U9" pin="4" />
+    </net>
+    <net code="70" name="CH06_RANGE_W">
+      <node ref="SW6" pin="C" />
+      <node ref="R1162" pin="1" />
+    </net>
+    <net code="71" name="CH06_TIME">
+      <node ref="R1161" pin="2" />
+      <node ref="C1161" pin="1" />
+      <node ref="U8" pin="4" />
+    </net>
+    <net code="72" name="CH06_TIME_W">
+      <node ref="RV6" pin="2" />
+      <node ref="R1161" pin="1" />
+    </net>
+    <net code="73" name="CH07_BIAS">
+      <node ref="R701" pin="2" />
+      <node ref="R702" pin="2" />
+      <node ref="R703" pin="1" />
+      <node ref="C701" pin="1" />
+      <node ref="D7" pin="3" />
+      <node ref="U4" pin="3" />
+    </net>
+    <net code="74" name="CH07_BUF1">
+      <node ref="R704" pin="1" />
+      <node ref="U4" pin="1" />
+      <node ref="U4" pin="2" />
+    </net>
+    <net code="75" name="CH07_IN">
+      <node ref="J7" pin="3" />
+      <node ref="R701" pin="1" />
+    </net>
+    <net code="76" name="CH07_LP2">
+      <node ref="R704" pin="2" />
+      <node ref="C702" pin="1" />
+      <node ref="U4" pin="5" />
+    </net>
+    <net code="77" name="CH07_OUT">
+      <node ref="TP7" pin="1" />
+      <node ref="U4" pin="6" />
+      <node ref="U4" pin="7" />
+      <node ref="U7" pin="3" />
+    </net>
+    <net code="78" name="CH07_RANGE">
+      <node ref="R1172" pin="2" />
+      <node ref="C1172" pin="1" />
+      <node ref="U9" pin="3" />
+    </net>
+    <net code="79" name="CH07_RANGE_W">
+      <node ref="SW7" pin="C" />
+      <node ref="R1172" pin="1" />
+    </net>
+    <net code="80" name="CH07_TIME">
+      <node ref="R1171" pin="2" />
+      <node ref="C1171" pin="1" />
+      <node ref="U8" pin="3" />
+    </net>
+    <net code="81" name="CH07_TIME_W">
+      <node ref="RV7" pin="2" />
+      <node ref="R1171" pin="1" />
+    </net>
+    <net code="82" name="CH08_BIAS">
+      <node ref="R801" pin="2" />
+      <node ref="R802" pin="2" />
+      <node ref="R803" pin="1" />
+      <node ref="C801" pin="1" />
+      <node ref="D8" pin="3" />
+      <node ref="U4" pin="10" />
+    </net>
+    <net code="83" name="CH08_BUF1">
+      <node ref="R804" pin="1" />
+      <node ref="U4" pin="8" />
+      <node ref="U4" pin="9" />
+    </net>
+    <net code="84" name="CH08_IN">
+      <node ref="J8" pin="3" />
+      <node ref="R801" pin="1" />
+    </net>
+    <net code="85" name="CH08_LP2">
+      <node ref="R804" pin="2" />
+      <node ref="C802" pin="1" />
+      <node ref="U4" pin="12" />
+    </net>
+    <net code="86" name="CH08_OUT">
+      <node ref="TP8" pin="1" />
+      <node ref="U4" pin="13" />
+      <node ref="U4" pin="14" />
+      <node ref="U7" pin="2" />
+    </net>
+    <net code="87" name="CH08_RANGE">
+      <node ref="R1182" pin="2" />
+      <node ref="C1182" pin="1" />
+      <node ref="U9" pin="2" />
+    </net>
+    <net code="88" name="CH08_RANGE_W">
+      <node ref="SW8" pin="C" />
+      <node ref="R1182" pin="1" />
+    </net>
+    <net code="89" name="CH08_TIME">
+      <node ref="R1181" pin="2" />
+      <node ref="C1181" pin="1" />
+      <node ref="U8" pin="2" />
+    </net>
+    <net code="90" name="CH08_TIME_W">
+      <node ref="RV8" pin="2" />
+      <node ref="R1181" pin="1" />
+    </net>
+    <net code="91" name="CH09_BIAS">
+      <node ref="R901" pin="2" />
+      <node ref="R902" pin="2" />
+      <node ref="R903" pin="1" />
+      <node ref="C901" pin="1" />
+      <node ref="D9" pin="3" />
+      <node ref="U5" pin="3" />
+    </net>
+    <net code="92" name="CH09_BUF1">
+      <node ref="R904" pin="1" />
+      <node ref="U5" pin="1" />
+      <node ref="U5" pin="2" />
+    </net>
+    <net code="93" name="CH09_IN">
+      <node ref="J9" pin="3" />
+      <node ref="R901" pin="1" />
+    </net>
+    <net code="94" name="CH09_LP2">
+      <node ref="R904" pin="2" />
+      <node ref="C902" pin="1" />
+      <node ref="U5" pin="5" />
+    </net>
+    <net code="95" name="CH09_OUT">
+      <node ref="TP9" pin="1" />
+      <node ref="U5" pin="6" />
+      <node ref="U5" pin="7" />
+      <node ref="U7" pin="23" />
+    </net>
+    <net code="96" name="CH09_RANGE">
+      <node ref="R1192" pin="2" />
+      <node ref="C1192" pin="1" />
+      <node ref="U9" pin="23" />
+    </net>
+    <net code="97" name="CH09_RANGE_W">
+      <node ref="SW9" pin="C" />
+      <node ref="R1192" pin="1" />
+    </net>
+    <net code="98" name="CH09_TIME">
+      <node ref="R1191" pin="2" />
+      <node ref="C1191" pin="1" />
+      <node ref="U8" pin="23" />
+    </net>
+    <net code="99" name="CH09_TIME_W">
+      <node ref="RV9" pin="2" />
+      <node ref="R1191" pin="1" />
+    </net>
+    <net code="100" name="CH10_BIAS">
+      <node ref="R1001" pin="2" />
+      <node ref="R1002" pin="2" />
+      <node ref="R1003" pin="1" />
+      <node ref="C1001" pin="1" />
+      <node ref="D10" pin="3" />
+      <node ref="U5" pin="10" />
+    </net>
+    <net code="101" name="CH10_BUF1">
+      <node ref="R1004" pin="1" />
+      <node ref="U5" pin="8" />
+      <node ref="U5" pin="9" />
+    </net>
+    <net code="102" name="CH10_IN">
+      <node ref="J10" pin="3" />
+      <node ref="R1001" pin="1" />
+    </net>
+    <net code="103" name="CH10_LP2">
+      <node ref="R1004" pin="2" />
+      <node ref="C1002" pin="1" />
+      <node ref="U5" pin="12" />
+    </net>
+    <net code="104" name="CH10_OUT">
+      <node ref="TP10" pin="1" />
+      <node ref="U5" pin="13" />
+      <node ref="U5" pin="14" />
+      <node ref="U7" pin="22" />
+    </net>
+    <net code="105" name="CH10_RANGE">
+      <node ref="R1202" pin="2" />
+      <node ref="C1202" pin="1" />
+      <node ref="U9" pin="22" />
+    </net>
+    <net code="106" name="CH10_RANGE_W">
+      <node ref="SW10" pin="C" />
+      <node ref="R1202" pin="1" />
+    </net>
+    <net code="107" name="CH10_TIME">
+      <node ref="R1201" pin="2" />
+      <node ref="C1201" pin="1" />
+      <node ref="U8" pin="22" />
+    </net>
+    <net code="108" name="CH10_TIME_W">
+      <node ref="RV10" pin="2" />
+      <node ref="R1201" pin="1" />
+    </net>
+    <net code="109" name="GND">
+      <node ref="J1" pin="1" />
+      <node ref="R103" pin="2" />
+      <node ref="C101" pin="2" />
+      <node ref="D1" pin="1" />
+      <node ref="C102" pin="2" />
+      <node ref="J2" pin="1" />
+      <node ref="R203" pin="2" />
+      <node ref="C201" pin="2" />
+      <node ref="D2" pin="1" />
+      <node ref="C202" pin="2" />
+      <node ref="U1" pin="11" />
+      <node ref="C1" pin="2" />
+      <node ref="J3" pin="1" />
+      <node ref="R303" pin="2" />
+      <node ref="C301" pin="2" />
+      <node ref="D3" pin="1" />
+      <node ref="C302" pin="2" />
+      <node ref="J4" pin="1" />
+      <node ref="R403" pin="2" />
+      <node ref="C401" pin="2" />
+      <node ref="D4" pin="1" />
+      <node ref="C402" pin="2" />
+      <node ref="U2" pin="11" />
+      <node ref="C2" pin="2" />
+      <node ref="J5" pin="1" />
+      <node ref="R503" pin="2" />
+      <node ref="C501" pin="2" />
+      <node ref="D5" pin="1" />
+      <node ref="C502" pin="2" />
+      <node ref="J6" pin="1" />
+      <node ref="R603" pin="2" />
+      <node ref="C601" pin="2" />
+      <node ref="D6" pin="1" />
+      <node ref="C602" pin="2" />
+      <node ref="U3" pin="11" />
+      <node ref="C3" pin="2" />
+      <node ref="J7" pin="1" />
+      <node ref="R703" pin="2" />
+      <node ref="C701" pin="2" />
+      <node ref="D7" pin="1" />
+      <node ref="C702" pin="2" />
+      <node ref="J8" pin="1" />
+      <node ref="R803" pin="2" />
+      <node ref="C801" pin="2" />
+      <node ref="D8" pin="1" />
+      <node ref="C802" pin="2" />
+      <node ref="U4" pin="11" />
+      <node ref="C4" pin="2" />
+      <node ref="J9" pin="1" />
+      <node ref="R903" pin="2" />
+      <node ref="C901" pin="2" />
+      <node ref="D9" pin="1" />
+      <node ref="C902" pin="2" />
+      <node ref="J10" pin="1" />
+      <node ref="R1003" pin="2" />
+      <node ref="C1001" pin="2" />
+      <node ref="D10" pin="1" />
+      <node ref="C1002" pin="2" />
+      <node ref="U5" pin="11" />
+      <node ref="C5" pin="2" />
+      <node ref="RV1" pin="1" />
+      <node ref="C1111" pin="2" />
+      <node ref="SW1" pin="L" />
+      <node ref="C1112" pin="2" />
+      <node ref="RV2" pin="1" />
+      <node ref="C1121" pin="2" />
+      <node ref="SW2" pin="L" />
+      <node ref="C1122" pin="2" />
+      <node ref="RV3" pin="1" />
+      <node ref="C1131" pin="2" />
+      <node ref="SW3" pin="L" />
+      <node ref="C1132" pin="2" />
+      <node ref="RV4" pin="1" />
+      <node ref="C1141" pin="2" />
+      <node ref="SW4" pin="L" />
+      <node ref="C1142" pin="2" />
+      <node ref="RV5" pin="1" />
+      <node ref="C1151" pin="2" />
+      <node ref="SW5" pin="L" />
+      <node ref="C1152" pin="2" />
+      <node ref="RV6" pin="1" />
+      <node ref="C1161" pin="2" />
+      <node ref="SW6" pin="L" />
+      <node ref="C1162" pin="2" />
+      <node ref="RV7" pin="1" />
+      <node ref="C1171" pin="2" />
+      <node ref="SW7" pin="L" />
+      <node ref="C1172" pin="2" />
+      <node ref="RV8" pin="1" />
+      <node ref="C1181" pin="2" />
+      <node ref="SW8" pin="L" />
+      <node ref="C1182" pin="2" />
+      <node ref="RV9" pin="1" />
+      <node ref="C1191" pin="2" />
+      <node ref="SW9" pin="L" />
+      <node ref="C1192" pin="2" />
+      <node ref="RV10" pin="1" />
+      <node ref="C1201" pin="2" />
+      <node ref="SW10" pin="L" />
+      <node ref="C1202" pin="2" />
+      <node ref="R41" pin="2" />
+      <node ref="SW11" pin="2" />
+      <node ref="C51" pin="2" />
+      <node ref="SW12" pin="2" />
+      <node ref="C52" pin="2" />
+      <node ref="U7" pin="12" />
+      <node ref="U7" pin="17" />
+      <node ref="U7" pin="19" />
+      <node ref="U7" pin="21" />
+      <node ref="C7" pin="2" />
+      <node ref="U8" pin="12" />
+      <node ref="U8" pin="17" />
+      <node ref="U8" pin="19" />
+      <node ref="U8" pin="21" />
+      <node ref="C8" pin="2" />
+      <node ref="U9" pin="12" />
+      <node ref="U9" pin="17" />
+      <node ref="U9" pin="19" />
+      <node ref="U9" pin="21" />
+      <node ref="C9" pin="2" />
+      <node ref="U6" pin="11" />
+      <node ref="C6" pin="2" />
+      <node ref="C20" pin="2" />
+      <node ref="C21" pin="2" />
+      <node ref="C22" pin="2" />
+      <node ref="J20" pin="3" />
+      <node ref="J20" pin="8" />
+      <node ref="J20" pin="13" />
+      <node ref="J20" pin="18" />
+      <node ref="J21" pin="3" />
+      <node ref="J21" pin="8" />
+      <node ref="J21" pin="13" />
+      <node ref="J21" pin="18" />
+      <node ref="J30" pin="3" />
+      <node ref="J30" pin="8" />
+      <node ref="J30" pin="13" />
+      <node ref="J30" pin="18" />
+      <node ref="J31" pin="3" />
+      <node ref="J31" pin="8" />
+      <node ref="J31" pin="13" />
+      <node ref="J31" pin="18" />
+      <node ref="R80" pin="2" />
+      <node ref="R81" pin="2" />
+      <node ref="R82" pin="2" />
+      <node ref="R83" pin="2" />
+      <node ref="R88" pin="2" />
+      <node ref="U10" pin="2" />
+      <node ref="U11" pin="3" />
+      <node ref="C30" pin="2" />
+      <node ref="C31" pin="2" />
+      <node ref="C32" pin="2" />
+      <node ref="C33" pin="2" />
+      <node ref="R30" pin="2" />
+      <node ref="TP40" pin="1" />
+    </net>
+    <net code="110" name="HOLD_N">
+      <node ref="SW11" pin="1" />
+      <node ref="R51" pin="2" />
+      <node ref="C51" pin="1" />
+      <node ref="J20" pin="1" />
+    </net>
+    <net code="111" name="LCD_BL">
+      <node ref="J30" pin="17" />
+      <node ref="R64" pin="2" />
+      <node ref="R88" pin="1" />
+    </net>
+    <net code="112" name="LCD_BL_SRC">
+      <node ref="J20" pin="17" />
+      <node ref="R64" pin="1" />
+    </net>
+    <net code="113" name="LCD_CLK">
+      <node ref="J30" pin="14" />
+      <node ref="R62" pin="2" />
+    </net>
+    <net code="114" name="LCD_CLK_SRC">
+      <node ref="J20" pin="14" />
+      <node ref="R62" pin="1" />
+    </net>
+    <net code="115" name="LCD_CS">
+      <node ref="J30" pin="12" />
+      <node ref="R61" pin="2" />
+      <node ref="R84" pin="2" />
+    </net>
+    <net code="116" name="LCD_CS_SRC">
+      <node ref="J20" pin="12" />
+      <node ref="R61" pin="1" />
+    </net>
+    <net code="117" name="LCD_DC">
+      <node ref="J30" pin="11" />
+      <node ref="R60" pin="2" />
+    </net>
+    <net code="118" name="LCD_DC_SRC">
+      <node ref="J20" pin="11" />
+      <node ref="R60" pin="1" />
+    </net>
+    <net code="119" name="LCD_MISO">
+      <node ref="J20" pin="16" />
+      <node ref="J30" pin="16" />
+    </net>
+    <net code="120" name="LCD_MOSI">
+      <node ref="J30" pin="15" />
+      <node ref="R63" pin="2" />
+    </net>
+    <net code="121" name="LCD_MOSI_SRC">
+      <node ref="J20" pin="15" />
+      <node ref="R63" pin="1" />
+    </net>
+    <net code="122" name="LCD_RST">
+      <node ref="J30" pin="20" />
+      <node ref="R65" pin="2" />
+    </net>
+    <net code="123" name="LCD_RST_SRC">
+      <node ref="J20" pin="20" />
+      <node ref="R65" pin="1" />
+    </net>
+    <net code="124" name="LINK_N">
+      <node ref="SW12" pin="1" />
+      <node ref="R52" pin="2" />
+      <node ref="C52" pin="1" />
+      <node ref="J20" pin="2" />
+    </net>
+    <net code="125" name="MUX_DISABLE">
+      <node ref="U7" pin="15" />
+      <node ref="U8" pin="15" />
+      <node ref="U9" pin="15" />
+      <node ref="J20" pin="10" />
+      <node ref="R87" pin="2" />
+    </net>
+    <net code="126" name="MUX_OUT">
+      <node ref="U7" pin="1" />
+      <node ref="U6" pin="3" />
+    </net>
+    <net code="127" name="MUX_RANGE">
+      <node ref="U9" pin="1" />
+      <node ref="U6" pin="10" />
+    </net>
+    <net code="128" name="MUX_TIME">
+      <node ref="U8" pin="1" />
+      <node ref="U6" pin="5" />
+    </net>
+    <net code="129" name="RANGE_MID">
+      <node ref="SW1" pin="M" />
+      <node ref="SW2" pin="M" />
+      <node ref="SW3" pin="M" />
+      <node ref="SW4" pin="M" />
+      <node ref="SW5" pin="M" />
+      <node ref="SW6" pin="M" />
+      <node ref="SW7" pin="M" />
+      <node ref="SW8" pin="M" />
+      <node ref="SW9" pin="M" />
+      <node ref="SW10" pin="M" />
+      <node ref="R40" pin="2" />
+      <node ref="R41" pin="1" />
+    </net>
+    <net code="130" name="REF_RAW">
+      <node ref="U6" pin="12" />
+      <node ref="U11" pin="2" />
+      <node ref="C32" pin="1" />
+      <node ref="TP44" pin="1" />
+    </net>
+    <net code="131" name="SD_CS_N">
+      <node ref="J21" pin="12" />
+      <node ref="J31" pin="12" />
+      <node ref="R86" pin="2" />
+    </net>
+    <net code="132" name="TIMING_TP">
+      <node ref="J20" pin="19" />
+      <node ref="TP30" pin="1" />
+    </net>
+    <net code="133" name="TP_CS_N">
+      <node ref="J21" pin="20" />
+      <node ref="J31" pin="20" />
+      <node ref="R85" pin="2" />
+    </net>
+    <net code="134" name="VBUS_USB">
+      <node ref="J21" pin="1" />
+      <node ref="F1" pin="1" />
+      <node ref="TP41" pin="1" />
+    </net>
+  </nets>
+</export>
