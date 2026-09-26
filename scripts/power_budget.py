@@ -63,6 +63,16 @@ CITATIONS = {
         "url": "design/circuit.json",
         "retrieved_local": None,
     },
+    "module-power-json": {
+        "title": "design/evidence/module-power.json (structured module-power evidence: capacitance, backlight topology, the 180 mA claim, verified-schematic/allowance/unknown/rejected status per item)",
+        "url": "design/evidence/module-power.json",
+        "retrieved_local": None,
+    },
+    "fuse-catalog": {
+        "title": "catalog/components.json record id=fuse (F1 candidate: Littelfuse 1206L050YR, LCSC C163512)",
+        "url": "catalog/components.json",
+        "retrieved_local": None,
+    },
     "usb2-default-port": {
         "title": "USB 2.0 default-port current limits (100 mA before configuration, 500 mA once configured with bMaxPower granted) and the "
         "no-inrush-limiting-circuit bulk-capacitance guidance (commonly cited as <=10 uF equivalent at a hot attach), as stated in issue #8",
@@ -74,6 +84,42 @@ CITATIONS = {
 
 def load_circuit():
     return json.loads((R / "design/circuit.json").read_text())
+
+
+def load_module_power_evidence():
+    return json.loads((R / "design/evidence/module-power.json").read_text())
+
+
+def load_catalog():
+    return json.loads((R / "catalog/components.json").read_text())["records"]
+
+
+def evidence_entry(evidence, entry_id):
+    return next(e for e in evidence["entries"] if e["id"] == entry_id)
+
+
+def check_model_circuit_parity(parts, evidence):
+    """Explicit model-to-circuit parity checks (issue #35): C30 is on
+    +5V_FUSED, F1 sits between VBUS_USB and +5V_FUSED, and the evidence
+    file's carrier-capacitance figure matches what design/circuit.json
+    actually instantiates. Raises if the model and the evidence disagree."""
+    f1 = next(p for p in parts if p["ref"] == "F1")
+    f1_nets = set(f1["pins"].values())
+    if f1_nets != {"VBUS_USB", "+5V_FUSED"}:
+        raise AssertionError(f"F1 parity check failed: expected nets {{VBUS_USB, +5V_FUSED}}, found {f1_nets}")
+
+    c30 = next(p for p in parts if p["ref"] == "C30")
+    if "+5V_FUSED" not in c30["pins"].values():
+        raise AssertionError(f"C30 parity check failed: expected +5V_FUSED on a pin, found {c30['pins']}")
+
+    computed_farads, _ = cap_farads_on_net(parts, "c", "+5V_FUSED", parse_farads)
+    computed_uf = computed_farads * 1e6
+    carrier_ev = evidence_entry(evidence, "carrier-5v-fused-capacitance")
+    if abs(computed_uf - carrier_ev["value_uf"]) > 1e-9:
+        raise AssertionError(
+            f"module-power.json carrier-5v-fused-capacitance ({carrier_ev['value_uf']} uF) does not match "
+            f"design/circuit.json's +5V_FUSED capacitance ({computed_uf} uF)"
+        )
 
 
 def count_records(parts, record):
@@ -118,6 +164,10 @@ def parse_farads(value):
 def main():
     circuit = load_circuit()
     parts = circuit["parts"]
+    module_power = load_module_power_evidence()
+    catalog = load_catalog()
+
+    check_model_circuit_parity(parts, module_power)
 
     n_tlv9064 = count_records(parts, "tlv9064")  # quad amplifiers, 4 amps each
     n_mux = count_records(parts, "mux")
@@ -201,47 +251,50 @@ def main():
     allow_analog_ma = 40.0
     allow_total_ma = allow_display_ma + allow_pico_ma + allow_analog_ma
 
-    # --- Waveshare backlight/module current: checked, not found as a citable
-    # text figure. A WebFetch summary once reported "5V 180mA" attributed to
-    # an FAQ image; the two FAQ images at that URL were downloaded and
-    # visually inspected here and contain unrelated screenshots (file
-    # browser windows), not a current spec. That claim is rejected rather
-    # than reported. ---
-    waveshare_module_current_ma = None
+    # --- Waveshare module current and backlight topology: sourced from the
+    # single structured evidence file (design/evidence/module-power.json),
+    # which carries one status per claim so the g01 markdown, this script and
+    # the docs cannot disagree. ---
+    module_max_current_ev = evidence_entry(module_power, "module-max-current-180ma")
+    backlight_topology_ev = evidence_entry(module_power, "backlight-topology")
+    backlight_regulator_ev = evidence_entry(module_power, "backlight-regulator-identity")
+    display_allowance_ev = evidence_entry(module_power, "display-planning-allowance")
+
+    waveshare_module_current_ma = None  # the only claimed figure (180 mA) is status=rejected; not used in any calculation
     waveshare_current_check_note = (
-        "Checked https://www.waveshare.com/wiki/Pico-ResTouch-LCD-3.5 (raw HTML) and "
-        "https://www.waveshare.com/pico-restouch-lcd-3.5.htm (raw HTML): no textual mA/current "
-        "figure found. A prior automated fetch reported '5V 180mA' from an FAQ image on the wiki "
-        "page; both FAQ images (Pico-ResTouch-LCD-3.5-faq.png, -faq2.png) were downloaded and "
-        "visually inspected in this pass and show unrelated file-browser screenshots, not a power "
-        "figure. That claim is REJECTED, not used. The 300 mA display allowance therefore remains "
-        "an allowance with no manufacturer current citation found."
+        f"module-power.json[{module_max_current_ev['id']}]: status={module_max_current_ev['status']}. "
+        + module_max_current_ev["uncertainty"]
+        + f" The {display_allowance_ev['value_ma']} mA display allowance ({display_allowance_ev['id']}, "
+        f"status={display_allowance_ev['status']}) is independent of the rejected claim."
     )
 
-    # --- Waveshare schematic findings (text-extracted; layout order in a
-    # PDF text stream does not guarantee correct pin-to-net association, so
-    # these are reported as schematic observations, not confirmed facts). ---
     waveshare_schematic_notes = [
-        "Backlight LED anode (net LED-A) is fed from VSYS through three parallel resistors "
-        "silkscreened '2R' (R17/R18/R19, ~2 ohm each if read correctly) -- a resistor-limited "
-        "backlight drive, not a dedicated LED driver IC. LED count, forward voltage and hence "
-        "backlight current are NOT recoverable from text extraction alone; G01 already flags this "
-        "module's power strapping as requiring visual/physical verification.",
+        f"Backlight topology (module-power.json[{backlight_topology_ev['id']}], status={backlight_topology_ev['status']}): "
+        + backlight_topology_ev["claim"]
+        + ". " + backlight_topology_ev["uncertainty"],
+        f"Backlight regulator identity (module-power.json[{backlight_regulator_ev['id']}], status={backlight_regulator_ev['status']}): "
+        + backlight_regulator_ev["uncertainty"],
         "The module carries its own onboard 3.3V LDO (U7, marked 'RT9193-33') taking VSYS as "
         "input, with a 1uF capacitor (C11) shown near it; several 100nF ceramics (C1/C2/C7/C8/"
-        "C14/C16/C17/C18) appear near VSYS/3V3/LED-A nets. Exact pin association of each part "
-        "could not be confirmed from text-only PDF extraction (no page-image render tool was "
-        "available in this environment). Reported as an observation, not a bill-of-materials fact.",
+        "C14/C16/C17/C18) appear near VSYS/3V3/LED-A nets. Reported as an observation from the "
+        "schematic image, not a bill-of-materials fact -- fitted parts still need a physical check.",
     ]
 
-    # --- Downstream capacitance directly on +5V_FUSED, read from design/circuit.json ---
-    c30_farads, c30_refs = cap_farads_on_net(parts, "c", "+5V_FUSED", parse_farads)
-    carrier_5v_cap_uf = c30_farads * 1e6
+    # --- Downstream capacitance on the fused 5V path: module VSYS caps and
+    # carrier C30, both from design/evidence/module-power.json (module figure
+    # is schematic-verified; carrier figure is cross-checked against
+    # design/circuit.json by check_model_circuit_parity above). ---
+    module_cap_ev = evidence_entry(module_power, "module-vsys-capacitance")
+    carrier_cap_ev = evidence_entry(module_power, "carrier-5v-fused-capacitance")
+    combined_cap_ev = evidence_entry(module_power, "carrier-plus-module-known-subtotal")
+
+    known_module_cap_uf = module_cap_ev["value_uf"]
+    known_carrier_cap_uf = carrier_cap_ev["value_uf"]
+    known_downstream_cap_uf = combined_cap_ev["value_uf"]  # carrier + module; Pico-side bulk caps are unknown (see notes)
 
     inrush_guidance_uf = 10.0  # per issue text: "≤10 µF equivalent at attach"
-    known_downstream_cap_uf = carrier_5v_cap_uf  # carrier-side only; module/Pico-side VBUS/VSYS bulk caps are unknown (see notes)
-    inrush_known_status = "pass" if known_downstream_cap_uf <= inrush_guidance_uf else "fail"
-    inrush_overall_status = "unknown"  # Pico onboard VBUS/VSYS bulk capacitance not found in the datasheet text, and the module's exact net assignment is unconfirmed (see waveshare_schematic_notes)
+    inrush_known_status = "exceeds_guidance_figure" if known_downstream_cap_uf > inrush_guidance_uf else "within_guidance_figure"
+    inrush_overall_status = "unknown"  # Pico onboard VBUS/VSYS bulk capacitance not found in the datasheet text; this known-figure comparison is not a measured inrush compliance claim
 
     # --- USB 2.0 default-port budget check ---
     usb_unconfigured_limit_ma = 100.0
@@ -250,7 +303,7 @@ def main():
     total_allowance_vs_configured = "pass" if allow_total_ma <= usb_configured_limit_ma else "fail"
     configured_margin_ma = usb_configured_limit_ma - allow_total_ma
 
-    # The backlight (resistor-driven straight off VSYS/+5V_FUSED, per the
+    # The backlight (CAT1 regulator fed straight from VSYS/+5V_FUSED, per the
     # schematic note above) and the carrier's own analog rail power up as
     # soon as +5V_FUSED is present -- there is no firmware-controlled power
     # gate on either path recorded in design/circuit.json. That current can
@@ -282,10 +335,35 @@ def main():
     ldo_dissip_typ_mw = ldo_dissipation_mw(ldo_vin_nominal_v, ldo_vout_v, allow_analog_ma, ldo_own_current_typ_ma)
     ldo_dissip_worst_mw = ldo_dissipation_mw(ldo_vin_nominal_v, ldo_vout_v, allow_analog_ma, ldo_own_current_worst_ma)
 
-    # --- PPTC (F1) hold/trip requirement, parametrized (part is TBD) ---
-    pptc_derating_factor = 1.5  # ASSUMPTION: common PPTC application margin so normal load never nuisance-trips; not sourced from a specific vendor datasheet since F1's part is TBD
-    pptc_ihold_min_ma = allow_total_ma * pptc_derating_factor
-    pptc_vs_usb_configured_tension = pptc_ihold_min_ma > usb_configured_limit_ma
+    # --- F1 branch sizing (issue #35 item 3): F1 sits between VBUS_USB and
+    # +5V_FUSED and carries display+analog only -- Pico's own supply branches
+    # upstream of F1 (scripts/make_design.py J20/J21 vs F1/J30/J31), so F1
+    # must be sized from its own branch current, not the total USB allowance.
+    # Fields kept separate per the issue: total source current, F1-branch
+    # current, the assumed sizing factor/target, and the selected candidate's
+    # actual rating. A PPTC is not a precision USB current limiter. ---
+    total_source_current_ma = allow_total_ma  # 420 mA: display + pico + analog: the whole carrier's USB draw
+    f1_branch_current_ma = allow_display_ma + allow_analog_ma  # 340 mA: only what actually crosses F1 (display + analog); Pico is upstream of F1
+    f1_sizing_factor_assumption = 1.5  # ASSUMPTION: common PPTC application margin so normal load never nuisance-trips; not sourced from a specific vendor datasheet
+    f1_target_hold_current_ma = f1_branch_current_ma * f1_sizing_factor_assumption  # 510 mA
+
+    fuse_catalog_record = next((r for r in catalog if r["id"] == "fuse"), None)
+    f1_candidate_mpn = fuse_catalog_record["mpn"] if fuse_catalog_record else None
+    f1_candidate_hold_current_ma = 500.0  # Littelfuse 1206L050YR proposed 500 mA hold, per catalog/components.json record id=fuse
+    f1_candidate_derating_note = (
+        "No manufacturer temperature-derating curve for the 1206L050YR was retained in this pass "
+        "(catalog/components.json's fuse record cites the LCSC/JLC listing only, not a datasheet PDF). "
+        "Actual derated hold current at the carrier's operating temperature is UNKNOWN; do not assume "
+        "500 mA nominal holds at temperature. A PPTC is not a precision USB current limiter."
+    )
+    f1_vs_candidate_margin_ma = f1_candidate_hold_current_ma - f1_target_hold_current_ma  # -10 mA: candidate sits just under the naive 1.5x target
+    f1_vs_candidate_note = (
+        f"The {f1_sizing_factor_assumption}x-derated target of {f1_target_hold_current_ma} mA is "
+        f"{abs(f1_vs_candidate_margin_ma)} mA {'above' if f1_vs_candidate_margin_ma < 0 else 'below'} the "
+        f"candidate's 500 mA nominal (25C, undetermined temperature) hold rating. This is a nominal-vs-"
+        "nominal comparison, not a qualified fit: whoever selects/confirms F1 must reconcile the sizing "
+        "margin against the part's actual temperature-derated hold current once that curve is retained."
+    )
 
     report = {
         "basis": "CALCULATION-ONLY, NOT MEASURED. Every input cites a manufacturer datasheet, the "
@@ -302,17 +380,21 @@ def main():
             "TLV75533 ground current's -40C to 85C maximum was not separately broken out in the "
             "extracted table beyond the 25C max (31 uA); 31 uA is used as a worst-case stand-in "
             "pending a full re-read of that datasheet table.",
-            "PPTC (F1) hold-current derating factor of 1.5x is a common application margin, not "
-            "sourced from a specific vendor datasheet, because F1's exact part is still TBD (see "
-            "design/circuit.json note on F1: 'Protection component identity pending').",
+            "F1's hold-current sizing factor of 1.5x is a common PPTC application margin, not sourced "
+            "from a specific vendor datasheet. It is applied to the F1 branch's own 340 mA "
+            "(display+analog) current, not the 420 mA total USB allowance, because F1 sits between "
+            "VBUS_USB and +5V_FUSED and does not carry Pico's own supply branch (scripts/make_design.py).",
+            "The 1206L050YR candidate's actual temperature-derated hold current is unknown (no "
+            "manufacturer curve retained in this pass); its 500 mA figure is the datasheet-style "
+            "nominal rating from the catalog listing, not a derated value.",
             "Waveshare module backlight/total current has no citable manufacturer figure found in "
             "this pass (see waveshare_current_check_note); the 300 mA display allowance is carried "
             "forward from the architecture doc unverified.",
-            "Downstream capacitance for the USB inrush check only sums the carrier-side capacitor(s) "
-            "on +5V_FUSED found in design/circuit.json (C30, 1uF). The Waveshare module's and Pico's "
-            "own onboard VBUS/VSYS-side bulk capacitance are not established here (see "
-            "waveshare_schematic_notes and pico_notes) -- the inrush verdict is PASS only for the "
-            "known figure, UNKNOWN overall.",
+            "Downstream capacitance for the USB inrush check sums the verified-schematic module VSYS "
+            "capacitance and the carrier's own C30 on +5V_FUSED, both from design/evidence/"
+            "module-power.json. Pico's own onboard VBUS/VSYS-side bulk capacitance is not established "
+            "here (see pico_notes) -- the known-figure comparison against the informal 10 uF guidance "
+            "is not a measured inrush compliance claim, and the overall status stays UNKNOWN.",
             "Pico datasheet has no scenario matching this project's firmware; the BOOTSEL and "
             "Popcorn/VGA figures are cited only as a plausibility bracket around the existing 80 mA "
             "allowance, not a substitute measurement.",
@@ -359,13 +441,20 @@ def main():
             "schematic_notes": waveshare_schematic_notes,
         },
         "downstream_capacitance_5v_fused": {
-            "known_carrier_side_uf": round(known_downstream_cap_uf, 3),
-            "known_carrier_side_refs": c30_refs,
-            "citation": "circuit-json",
+            "known_module_uf": known_module_cap_uf,
+            "known_carrier_uf": known_carrier_cap_uf,
+            "known_carrier_plus_module_uf": round(known_downstream_cap_uf, 3),
+            "citation": "module-power-json",
+            "evidence_status": {
+                "module": module_cap_ev["status"],
+                "carrier": carrier_cap_ev["status"],
+                "combined_subtotal": combined_cap_ev["status"],
+            },
             "inrush_guidance_uf": inrush_guidance_uf,
             "status_known_figure_only": inrush_known_status,
             "status_overall": inrush_overall_status,
-            "overall_status_reason": "Module- and Pico-side VBUS/VSYS bulk capacitance are not established (see waveshare_schematic_notes and pico_notes).",
+            "overall_status_reason": combined_cap_ev["uncertainty"],
+            "not_a_measured_inrush_compliance_claim": True,
         },
         "usb_budget": {
             "documented_allowance_total_ma": allow_total_ma,
@@ -381,18 +470,26 @@ def main():
                 "note": unconfigured_risk_note,
             },
         },
-        "pptc_f1_requirement": {
-            "part_status": "TBD (design/circuit.json: 'Protection component identity pending; not an inrush/load-switch substitute')",
-            "derating_factor_assumption": pptc_derating_factor,
-            "worst_case_load_used_ma": allow_total_ma,
-            "min_hold_current_ma": pptc_ihold_min_ma,
-            "tension_with_usb_configured_limit": pptc_vs_usb_configured_tension,
-            "tension_note": "A hold current of derating_factor x the 420 mA design allowance ("
-            + str(pptc_ihold_min_ma)
-            + " mA) exceeds the 500 mA USB configured-port limit's usual safety margin. Either the "
-            "420 mA system allowance needs to come down (most likely by getting a real display "
-            "current figure), or F1 must be selected nearer the USB limit itself with a smaller "
-            "derating margin -- a choice that belongs to whoever selects F1, not to this script.",
+        "f1_branch_sizing": {
+            "note": "F1 sits between VBUS_USB and +5V_FUSED (design/circuit.json parts[ref=F1]) and "
+            "carries display+analog only; Pico's own supply branches upstream of F1 "
+            "(scripts/make_design.py). A PPTC is not a precision USB current limiter.",
+            "total_source_current_ma": total_source_current_ma,
+            "total_source_current_citation": "power-mdx",
+            "f1_branch_current_ma": f1_branch_current_ma,
+            "f1_branch_current_note": "display allowance (" + str(allow_display_ma) + " mA) + analog allowance (" + str(allow_analog_ma) + " mA); excludes the Pico allowance (" + str(allow_pico_ma) + " mA), which does not cross F1.",
+            "sizing_factor_assumption": f1_sizing_factor_assumption,
+            "target_hold_current_ma": f1_target_hold_current_ma,
+            "selected_candidate": {
+                "mpn": f1_candidate_mpn,
+                "citation": "fuse-catalog",
+                "hold_current_rating_ma": f1_candidate_hold_current_ma,
+                "rating_basis": "manufacturer nominal (25C, no temperature curve retained)",
+                "derating_from_temperature_curve_ma": None,
+                "derating_note": f1_candidate_derating_note,
+            },
+            "target_vs_candidate_margin_ma": f1_vs_candidate_margin_ma,
+            "target_vs_candidate_note": f1_vs_candidate_note,
         },
     }
 
