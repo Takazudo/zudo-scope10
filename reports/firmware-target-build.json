@@ -1,0 +1,16 @@
+{
+  "pico_sdk_tag": "2.1.1",
+  "pico_sdk_commit_sha": "bddd20f928ce76142793bef434d4f75f4af6e433",
+  "toolchain": "arm-none-eabi-gcc (15:13.2.rel1-2) 13.2.1 20231009",
+  "cmake": "cmake version 3.28.3",
+  "picotool_strategy": "PICOTOOL_FETCH_FROM_GIT_PATH (CMake FetchContent builds picotool 2.1.1 once into reference/downloads/picotool-fetch; no libusb-1.0-dev required)",
+  "target": "scope10_diagnostic",
+  "board": "pico",
+  "uf2_path": "firmware/build/scope10_diagnostic.uf2",
+  "uf2_size_bytes": 67584,
+  "uf2_sha256": "069a5eed318895dbd3bf900ab4a8b45d1c1d98766d0a16e731b12b25584d5279",
+  "compile_flags": "-Wall -Wextra",
+  "warning_count": 0,
+  "warning_baseline": 0,
+  "notes": "Target UF2 build only; hardware/bench behaviour is NOT tested here (G06 stays OPEN). LCD held dark, serial output rate-limited (unchanged from the diagnostic's host-tested behaviour)."
+}
