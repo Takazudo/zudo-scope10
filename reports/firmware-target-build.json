@@ -4,13 +4,27 @@
   "toolchain": "arm-none-eabi-gcc (15:13.2.rel1-2) 13.2.1 20231009",
   "cmake": "cmake version 3.28.3",
   "picotool_strategy": "PICOTOOL_FETCH_FROM_GIT_PATH (CMake FetchContent builds picotool 2.1.1 once into reference/downloads/picotool-fetch; no libusb-1.0-dev required)",
-  "target": "scope10_diagnostic",
   "board": "pico",
-  "uf2_path": "firmware/build/scope10_diagnostic.uf2",
-  "uf2_size_bytes": 67584,
-  "uf2_sha256": "069a5eed318895dbd3bf900ab4a8b45d1c1d98766d0a16e731b12b25584d5279",
   "compile_flags": "-Wall -Wextra",
+  "targets": [
+    {
+      "target": "scope10_diagnostic",
+      "uf2_path": "firmware/build/scope10_diagnostic.uf2",
+      "uf2_size_bytes": 67584,
+      "uf2_sha256": "069a5eed318895dbd3bf900ab4a8b45d1c1d98766d0a16e731b12b25584d5279",
+      "warning_count": 0,
+      "notes": "Slow USB CSV diagnostic; LCD held dark, serial output rate-limited."
+    },
+    {
+      "target": "scope10_acq",
+      "uf2_path": "firmware/build/scope10_acq.uf2",
+      "uf2_size_bytes": 81920,
+      "uf2_sha256": "8cfcc1a981f17f26772f7b427374f399167539ea8d64c10345806a7e9e54f941",
+      "warning_count": 0,
+      "notes": "10 kS/s/channel sequential acquisition engine (nominal design, see firmware/ACQUISITION.md); no rate, settle or jitter measured, G05 stays OPEN."
+    }
+  ],
   "warning_count": 0,
   "warning_baseline": 0,
-  "notes": "Target UF2 build only; hardware/bench behaviour is NOT tested here (G06 stays OPEN). LCD held dark, serial output rate-limited (unchanged from the diagnostic's host-tested behaviour)."
+  "notes": "Target UF2 builds only; hardware/bench behaviour is NOT tested here (G05 and G06 stay OPEN)."
 }

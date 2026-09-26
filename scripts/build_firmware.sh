@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Builds firmware/scope10_diagnostic.uf2 against the real Raspberry Pi Pico SDK.
+# Builds every firmware target (scope10_diagnostic, scope10_acq) against the real
+# Raspberry Pi Pico SDK, one target at a time so warnings are counted per target.
 #
 # Picotool strategy: SDK 2.x needs picotool present at CMake configure time
 # (tools/CMakeLists.txt pico_init_picotool() requires exactly version 2.1.1,
@@ -53,44 +54,62 @@ log "Configuring CMake (PICO_SDK_PATH=$PICO_SDK_PATH)"
 rm -rf "$BUILD_DIR"
 cmake -S "$ROOT/firmware" -B "$BUILD_DIR" -G Ninja -DCMAKE_BUILD_TYPE=Release
 
-BUILD_LOG="$(mktemp)"
-trap 'rm -f "$BUILD_LOG"' EXIT
+TARGETS=(scope10_diagnostic scope10_acq)
+LOG_DIR="$(mktemp -d)"
+trap 'rm -rf "$LOG_DIR"' EXIT
 
-log "Building scope10_diagnostic"
-cmake --build "$BUILD_DIR" -j"$(nproc)" 2>&1 | tee "$BUILD_LOG"
+TARGET_ARGS=()
+TOTAL_WARNINGS=0
+for TARGET in "${TARGETS[@]}"; do
+    log "Building $TARGET"
+    cmake --build "$BUILD_DIR" --target "$TARGET" -j"$(nproc)" 2>&1 | tee "$LOG_DIR/$TARGET.log"
+    UF2="$BUILD_DIR/$TARGET.uf2"
+    if [ ! -f "$UF2" ]; then
+        log "ERROR: expected UF2 output missing at $UF2"
+        exit 1
+    fi
+    WARNINGS="$(grep -c "warning:" "$LOG_DIR/$TARGET.log" || true)"
+    TOTAL_WARNINGS=$((TOTAL_WARNINGS + WARNINGS))
+    TARGET_ARGS+=("$TARGET" "$(stat -c%s "$UF2")" "$(sha256sum "$UF2" | cut -d' ' -f1)" "$WARNINGS")
+    log "$TARGET: $UF2 ($(stat -c%s "$UF2") bytes), warnings: $WARNINGS"
+done
 
-UF2="$BUILD_DIR/scope10_diagnostic.uf2"
-if [ ! -f "$UF2" ]; then
-    log "ERROR: expected UF2 output missing at $UF2"
-    exit 1
-fi
-
-WARNING_COUNT="$(grep -c "warning:" "$BUILD_LOG" || true)"
-UF2_SIZE="$(stat -c%s "$UF2")"
-UF2_SHA256="$(sha256sum "$UF2" | cut -d' ' -f1)"
 TOOLCHAIN_VERSION="$(arm-none-eabi-gcc --version | head -1)"
 CMAKE_VERSION="$(cmake --version | head -1)"
 
 mkdir -p "$(dirname "$REPORT")"
 python3 - "$REPORT" "$PICO_SDK_TAG" "$SDK_HEAD_SHA" "$TOOLCHAIN_VERSION" "$CMAKE_VERSION" \
-    "$UF2" "$UF2_SIZE" "$UF2_SHA256" "$WARNING_COUNT" <<'PY'
+    "$TOTAL_WARNINGS" "${TARGET_ARGS[@]}" <<'PY'
 import json, sys
-report, sdk_tag, sdk_sha, toolchain, cmake_v, uf2_path, uf2_size, uf2_sha256, warnings = sys.argv[1:10]
+report, sdk_tag, sdk_sha, toolchain, cmake_v, total_warnings = sys.argv[1:7]
+rest = sys.argv[7:]
+notes = {
+    "scope10_diagnostic": "Slow USB CSV diagnostic; LCD held dark, serial output rate-limited.",
+    "scope10_acq": "10 kS/s/channel sequential acquisition engine (nominal design, see firmware/ACQUISITION.md); no rate, settle or jitter measured, G05 stays OPEN.",
+}
+targets = []
+for i in range(0, len(rest), 4):
+    name, size, sha, warnings = rest[i:i + 4]
+    targets.append({
+        "target": name,
+        "uf2_path": f"firmware/build/{name}.uf2",
+        "uf2_size_bytes": int(size),
+        "uf2_sha256": sha,
+        "warning_count": int(warnings),
+        "notes": notes.get(name, ""),
+    })
 data = {
     "pico_sdk_tag": sdk_tag,
     "pico_sdk_commit_sha": sdk_sha,
     "toolchain": toolchain,
     "cmake": cmake_v,
     "picotool_strategy": "PICOTOOL_FETCH_FROM_GIT_PATH (CMake FetchContent builds picotool 2.1.1 once into reference/downloads/picotool-fetch; no libusb-1.0-dev required)",
-    "target": "scope10_diagnostic",
     "board": "pico",
-    "uf2_path": "firmware/build/scope10_diagnostic.uf2",
-    "uf2_size_bytes": int(uf2_size),
-    "uf2_sha256": uf2_sha256,
     "compile_flags": "-Wall -Wextra",
-    "warning_count": int(warnings),
+    "targets": targets,
+    "warning_count": int(total_warnings),
     "warning_baseline": 0,
-    "notes": "Target UF2 build only; hardware/bench behaviour is NOT tested here (G06 stays OPEN). LCD held dark, serial output rate-limited (unchanged from the diagnostic's host-tested behaviour).",
+    "notes": "Target UF2 builds only; hardware/bench behaviour is NOT tested here (G05 and G06 stay OPEN).",
 }
 with open(report, "w") as f:
     json.dump(data, f, indent=2)
@@ -98,9 +117,8 @@ with open(report, "w") as f:
 PY
 
 log "Wrote $REPORT"
-log "UF2: $UF2 ($UF2_SIZE bytes, sha256 $UF2_SHA256)"
-log "Warnings: $WARNING_COUNT"
+log "Warnings (all targets): $TOTAL_WARNINGS"
 
-if [ "$WARNING_COUNT" -ne 0 ]; then
-    log "WARNING: build produced $WARNING_COUNT warning(s) with -Wall -Wextra; see report for baseline."
+if [ "$TOTAL_WARNINGS" -ne 0 ]; then
+    log "WARNING: build produced $TOTAL_WARNINGS warning(s) with -Wall -Wextra; see report for baseline."
 fi
