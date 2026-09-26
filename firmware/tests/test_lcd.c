@@ -7,6 +7,7 @@
 #include "lcd_bridge.h"
 #include "scope_render.h"
 #include <assert.h>
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -278,18 +279,45 @@ static void test_layout(void) {
         assert(parts[1].w == SCOPE_PLOT_W && parts[1].h == SCOPE_PLOT_H);
     }
     assert(area == (uint32_t)SCOPE_DISPLAY_WIDTH * SCOPE_DISPLAY_HEIGHT);
-    assert(scope_code_to_row(4095, SCOPE_PLOT_H) == 0 && scope_code_to_row(0, SCOPE_PLOT_H) == SCOPE_PLOT_H - 1);
-    assert(scope_code_to_row(65535, SCOPE_PLOT_H) == 0);
-    for (unsigned c = 1; c < 4096; c++)
-        assert(scope_code_to_row((uint16_t)c, SCOPE_PLOT_H) <= scope_code_to_row((uint16_t)(c - 1), SCOPE_PLOT_H));
+    /* Vertical mapping: +range top, 0 V centre, -range at 2 x half, mirror-symmetric. */
+    const uint16_t half = (SCOPE_PLOT_H - 1u) / 2u;
+    assert(half == 32u);
+    assert(scope_volts_to_row(3.0f, 3.0f, SCOPE_PLOT_H) == 0 && scope_volts_to_row(-3.0f, 3.0f, SCOPE_PLOT_H) == 2u * half);
+    assert(scope_volts_to_row(0.0f, 5.0f, SCOPE_PLOT_H) == half);
+    assert(scope_volts_to_row(99.0f, 3.0f, SCOPE_PLOT_H) == 0 && scope_volts_to_row(-99.0f, 3.0f, SCOPE_PLOT_H) == 2u * half);
+    assert(scope_volts_to_row(NAN, 3.0f, SCOPE_PLOT_H) == half && scope_volts_to_row(1.0f, 0.0f, SCOPE_PLOT_H) == half);
+    for (int mv = -9000; mv <= 9000; mv += 7) {
+        float v = (float)mv / 1000.0f;
+        for (int r = 0; r < 3; r++) {
+            float rv = scope_range_volts(r);
+            uint16_t up = scope_volts_to_row(v, rv, SCOPE_PLOT_H), down = scope_volts_to_row(-v, rv, SCOPE_PLOT_H);
+            assert(up + down == 2u * half);                                          /* mirror row */
+            assert(scope_volts_to_row(v + 0.007f, rv, SCOPE_PLOT_H) <= up);          /* monotonic */
+        }
+    }
+    assert(scope_range_volts(0) == 3.0f && scope_range_volts(1) == 5.0f && scope_range_volts(2) == 8.0f);
+    assert(scope_range_volts(-1) == 8.0f); /* startup scale */
+    scope_calibration unit = {0.01f, 2000.0f, true}; /* code 2000 = 0 V, 100 codes per volt */
     uint16_t col[SCOPE_PLOT_H];
-    scope_bin b = {1000, 3000};
-    scope_render_column(&b, SCOPE_PLOT_H, 0xFFFF, col);
-    unsigned lit = 0;
-    for (unsigned r = 0; r < SCOPE_PLOT_H; r++) lit += col[r] == 0xFFFF;
-    assert(lit == (unsigned)(scope_code_to_row(1000, SCOPE_PLOT_H) - scope_code_to_row(3000, SCOPE_PLOT_H) + 1));
-    scope_render_column(NULL, SCOPE_PLOT_H, 0xFFFF, col);
-    for (unsigned r = 0; r < SCOPE_PLOT_H; r++) assert(col[r] != 0xFFFF);
+    scope_bin b = {1800, 2200}; /* -2 V .. +2 V at +-8 V: rows 24 .. 40 */
+    scope_render_column(&b, unit, 8.0f, SCOPE_PLOT_H, 0xFFFF, col);
+    for (unsigned r = 0; r < SCOPE_PLOT_H; r++) assert((col[r] == 0xFFFF) == (r >= 24u && r <= 40u));
+    scope_render_column(NULL, unit, 8.0f, SCOPE_PLOT_H, 0xFFFF, col);
+    for (unsigned r = 0; r < SCOPE_PLOT_H; r++) assert(col[r] == (r == half ? SCOPE_COLOUR_GRID : SCOPE_COLOUR_BG));
+    /* +6 V .. -6 V at +-3 V: pinned at both edges in the clip colour, a gap inside each marker. */
+    b = (scope_bin){1400, 2600};
+    scope_render_column(&b, unit, 3.0f, SCOPE_PLOT_H, 0xFFFF, col);
+    assert(col[0] == SCOPE_COLOUR_CLIP && col[1] == SCOPE_COLOUR_BG && col[2] == 0xFFFF);
+    assert(col[2u * half] == SCOPE_COLOUR_CLIP && col[2u * half - 1u] == SCOPE_COLOUR_BG && col[2u * half - 2u] == 0xFFFF);
+    /* Signal token: ADC SAT from raw codes, VIEW CLIP from converted volts. */
+    scope_bin six = {2600, 2600}, rail_hi = {2000, 4095}, rail_lo = {0, 2000};
+    assert(scope_bins_status(&six, 1, unit, 3.0f) == SCOPE_STATUS_VIEW_CLIP);
+    assert(scope_bins_status(&six, 1, unit, 8.0f) == SCOPE_STATUS_NONE);
+    assert(scope_bins_status(&rail_hi, 1, unit, 8.0f) == SCOPE_STATUS_ADC_SAT);
+    assert(scope_bins_status(&rail_lo, 1, unit, 8.0f) == SCOPE_STATUS_ADC_SAT);
+    scope_bin both[2] = {{2600, 2600}, {2000, 4095}};
+    assert(scope_bins_status(both, 2, unit, 3.0f) == SCOPE_STATUS_ADC_SAT); /* SAT outranks VIEW CLIP */
+    assert(scope_bins_status(NULL, 0, unit, 3.0f) == SCOPE_STATUS_NONE);
 }
 
 /* Decodes one text cell from GRAM against the firmware font table; '#' = no glyph matches or
@@ -346,7 +374,7 @@ static bool field_is(unsigned pane, scope_text_field f, const char *want, uint16
 
 static void test_font_and_labels(void) {
     /* Every glyph distinct (so decoding is unambiguous) and inside 5 columns. */
-    const char *set = "0123456789.+-?VmskACDHIKLNOPSTU \xb1";
+    const char *set = "0123456789.+-?VmskACDEHIKLNOPSTUW \xb1";
     for (const char *a = set; *a; a++) {
         const uint8_t *ga = scope_font_glyph((unsigned char)*a);
         assert(ga);
@@ -354,21 +382,23 @@ static void test_font_and_labels(void) {
         for (const char *b = a + 1; *b; b++) assert(memcmp(ga, scope_font_glyph((unsigned char)*b), SCOPE_GLYPH_H));
     }
     assert(!scope_font_glyph('Z') && !scope_font_glyph('\0'));
-    char out[SCOPE_FIELD_MAX + 1];
+    char out[SCOPE_WINDOW_LABEL_MAX + 1];
     assert(scope_render_window_label(0, 10000, out) == 5 && !strcmp(out, "2.0ms"));
     assert(scope_render_window_label(4095, 10000, out) == 5 && !strcmp(out, "8.19s"));
     assert(scope_render_window_label(65535, 10000, out) == 5 && !strcmp(out, "8.19s"));
     unsigned n_ms = 0, n_s = 0;
     for (unsigned c = 0; c < 4096; c++) {
         unsigned n = scope_render_window_label((uint16_t)c, 10000, out);
-        assert(n == strlen(out) && n >= 5 && n <= SCOPE_FIELD_MAX);
+        assert(n == strlen(out) && n >= 5 && n <= SCOPE_WINDOW_LABEL_MAX);
         for (unsigned i = 0; i < n; i++) assert(scope_font_glyph((unsigned char)out[i]));
         if (!strcmp(out + n - 2, "ms")) n_ms++; else { assert(out[n - 1] == 's'); n_s++; }
     }
     assert(n_ms && n_s);
     assert(!strcmp(scope_status_token_text(SCOPE_STATUS_UNCAL), "UNCAL"));
-    assert(!strcmp(scope_status_token_text(SCOPE_STATUS_CLIP), "CLIP"));
-    assert(!strcmp(scope_status_token_text(SCOPE_STATUS_SAT), "SAT"));
+    assert(!strcmp(scope_status_token_text(SCOPE_STATUS_VIEW_CLIP), "VIEW CLIP"));
+    assert(!strcmp(scope_status_token_text(SCOPE_STATUS_ADC_SAT), "ADC SAT"));
+    for (unsigned t = SCOPE_STATUS_UNCAL; t <= SCOPE_STATUS_ADC_SAT; t++)
+        for (const char *c = scope_status_token_text(t); *c; c++) assert(scope_font_glyph((unsigned char)*c));
     assert(!strcmp(scope_status_token_text(SCOPE_STATUS_NONE), "") && !strcmp(scope_status_token_text(99), ""));
     /* Fields sit on whole cells inside their row, disjoint from each other. */
     for (unsigned p = 0; p < SCOPE_CHANNELS; p++)
@@ -380,7 +410,8 @@ static void test_font_and_labels(void) {
                 assert(rect_disjoint(r, scope_pane_field_rect(p, (scope_text_field)g)));
         }
     assert(scope_pane_field_rect(0, SCOPE_FIELD_COUNT).w == 0);
-    assert(scope_pane_field_rect(0, SCOPE_FIELD_TOKEN).w >= 5u * SCOPE_CELL_W); /* "UNCAL" fits */
+    assert(scope_pane_field_rect(0, SCOPE_FIELD_CAL).w >= 5u * SCOPE_CELL_W);   /* "UNCAL" fits */
+    assert(scope_pane_field_rect(0, SCOPE_FIELD_TOKEN).w >= 9u * SCOPE_CELL_W); /* "VIEW CLIP" fits */
 }
 
 /* One item per step so the pass ends exactly at its boundary, with nothing of the next begun. */
@@ -394,12 +425,15 @@ static unsigned render_pass(scope_render_state *s, const scope_render_input *in)
 
 static scope_history H[SCOPE_CHANNELS];
 
+/* Nominal-transfer code of a small per-channel input, -1.45 V (CH1) .. +1.45 V (CH10). */
+static uint16_t renderer_code(unsigned ch) { return (uint16_t)(1678u + 40u * ch); }
+
 static void test_renderer(void) {
     rig_reset();
     lcd_init_panel(&bus);
     for (unsigned ch = 0; ch < SCOPE_CHANNELS; ch++) {
         scope_history_init(&H[ch]);
-        for (unsigned i = 0; i < 100; i++) scope_history_push(&H[ch], (uint16_t)(400u * ch + 10u));
+        for (unsigned i = 0; i < 100; i++) scope_history_push(&H[ch], renderer_code(ch));
     }
     scope_render_input in = {.hist = H, .samples_per_s = 10000, .hold = false, .link = false};
     for (unsigned ch = 0; ch < SCOPE_CHANNELS; ch++) { in.time_code[ch] = 0; in.range[ch] = (int8_t)(ch % 3u); }
@@ -415,7 +449,8 @@ static void test_renderer(void) {
     for (unsigned ch = 0; ch < SCOPE_CHANNELS; ch++) {
         scope_rect p = scope_pane_plot_rect(ch);
         uint16_t colour = scope_channel_colour(ch);
-        uint16_t row = scope_code_to_row((uint16_t)(400u * ch + 10u), SCOPE_PLOT_H);
+        float v = scope_code_to_volts(renderer_code(ch), scope_calibration_nominal());
+        uint16_t row = scope_volts_to_row(v, scope_range_volts(ch == 9 ? SCOPE_RANGE_STARTUP : (int)(ch % 3u)), SCOPE_PLOT_H);
         /* 2 ms = 20 samples, all held (100 pushed): stretched over every column */
         for (unsigned col = 0; col < SCOPE_PLOT_W; col++) assert(gram[p.y + row][p.x + col] == colour);
         scope_rect tag = scope_pane_tag_rect(ch);
@@ -426,14 +461,16 @@ static void test_renderer(void) {
         assert(field_is(ch, SCOPE_FIELD_ID, id, colour)); /* channel colour identity */
         assert(field_is(ch, SCOPE_FIELD_WINDOW, "2.0ms", SCOPE_COLOUR_TEXT));
         assert(field_is(ch, SCOPE_FIELD_TOKEN, "", 0) && field_is(ch, SCOPE_FIELD_LINK, "", 0));
+        assert(field_is(ch, SCOPE_FIELD_CAL, "UNCAL", SCOPE_COLOUR_WARN)); /* zeroed cal: nominal fallback */
         assert(field_is(ch, SCOPE_FIELD_HOLD, "", 0));
     }
     assert(field_is(0, SCOPE_FIELD_RANGE, "\xb1" "3V", SCOPE_COLOUR_TEXT));
     assert(field_is(5, SCOPE_FIELD_RANGE, "\xb1" "8V", SCOPE_COLOUR_TEXT));
-    assert(field_is(9, SCOPE_FIELD_RANGE, "\xb1" "?V", SCOPE_COLOUR_TEXT)); /* range == -1: unknown */
+    /* range == -1 before any valid decode: drawn at the startup +-8 V, named in the warning colour. */
+    assert(field_is(9, SCOPE_FIELD_RANGE, "\xb1" "8V", SCOPE_COLOUR_WARN));
     assert(s.text_rects == text_calls);
-    /* Worst case, every field dirty: ID 1 + RANGE 2 + WINDOW 3 + TOKEN 3 + LINK 2 + HOLD 2 calls. */
-    const unsigned text_worst_per_pass = 13u * SCOPE_CHANNELS;
+    /* Worst case, every field dirty: ID 1 + RANGE 2 + WINDOW 3 + CAL 3 + TOKEN 5 + LINK 2 + HOLD 2 calls. */
+    const unsigned text_worst_per_pass = 18u * SCOPE_CHANNELS;
     assert(text_calls == text_worst_per_pass);
     printf("renderer: first pass %u display calls, %u of them text (worst case)\n", (unsigned)rect_calls,
            (unsigned)text_calls);
@@ -455,13 +492,13 @@ static void test_renderer(void) {
     assert(field_is(9, SCOPE_FIELD_WINDOW, "8.19s", SCOPE_COLOUR_TEXT));
     assert(field_is(5, SCOPE_FIELD_WINDOW, "2.0ms", SCOPE_COLOUR_TEXT));
 
-    /* Status token slot: CH6 shows CLIP, then clears. */
-    in.status_token[5] = SCOPE_STATUS_CLIP;
+    /* A valid calibration on CH6 clears exactly its UNCAL field (3 calls); zeroing it restores UNCAL. */
+    in.cal[5] = (scope_calibration){0.008f, 1858.0f, true};
     assert(render_pass(&s, &in) == 3);
-    assert(field_is(5, SCOPE_FIELD_TOKEN, "CLIP", SCOPE_COLOUR_WARN) && field_is(4, SCOPE_FIELD_TOKEN, "", 0));
-    in.status_token[5] = SCOPE_STATUS_NONE;
-    render_pass(&s, &in);
-    assert(field_is(5, SCOPE_FIELD_TOKEN, "", 0));
+    assert(field_is(5, SCOPE_FIELD_CAL, "", 0) && field_is(4, SCOPE_FIELD_CAL, "UNCAL", SCOPE_COLOUR_WARN));
+    in.cal[5] = (scope_calibration){0};
+    assert(render_pass(&s, &in) == 3);
+    assert(field_is(5, SCOPE_FIELD_CAL, "UNCAL", SCOPE_COLOUR_WARN));
 
     /* HOLD: plots frozen (no plot-area transfers, even when pressed mid-pane), text still
      * updates and shows HOLD. */
@@ -473,7 +510,8 @@ static void test_renderer(void) {
     render_pass(&s, &in);
     assert(plot_calls == 0);
     for (unsigned ch = 0; ch < SCOPE_CHANNELS; ch++) assert(field_is(ch, SCOPE_FIELD_HOLD, "HOLD", SCOPE_COLOUR_HOLD));
-    assert(field_is(5, SCOPE_FIELD_RANGE, "\xb1" "3V", SCOPE_COLOUR_TEXT));
+    /* The RANGE label names the frozen plot's scale, so it waits for the plot. */
+    assert(field_is(5, SCOPE_FIELD_RANGE, "\xb1" "8V", SCOPE_COLOUR_TEXT));
 
     /* LINK: every pane takes CH1's TIME window, and its label says so. */
     in.hold = false;
@@ -486,6 +524,7 @@ static void test_renderer(void) {
         assert(field_is(ch, SCOPE_FIELD_HOLD, "", 0));
         assert(field_is(ch, SCOPE_FIELD_WINDOW, "8.19s", SCOPE_COLOUR_LINK));
     }
+    assert(field_is(5, SCOPE_FIELD_RANGE, "\xb1" "3V", SCOPE_COLOUR_TEXT)); /* plot redrawn after HOLD */
     in.link = false;
     render_pass(&s, &in);
     assert(field_is(5, SCOPE_FIELD_WINDOW, "2.0ms", SCOPE_COLOUR_TEXT) && field_is(5, SCOPE_FIELD_LINK, "", 0));
@@ -495,6 +534,7 @@ static void test_renderer(void) {
      * newest 20 samples, 980..999, are represented; the older 980 are excluded. */
     for (unsigned ch = 0; ch < SCOPE_CHANNELS; ch++) {
         in.time_code[ch] = 0;
+        in.range[ch] = 2; /* +-8 V: the newest codes, 980..999, are about -7 V under the nominal transfer */
         scope_history_init(&H[ch]);
         for (unsigned i = 0; i < 1000; i++) scope_history_push(&H[ch], (uint16_t)i);
     }
@@ -509,12 +549,17 @@ static void test_renderer(void) {
     assert(lo == 980 && hi == 999);
     assert(cols[0].lo == 980 && cols[SCOPE_PLOT_W - 1u].hi == 999); /* oldest left, newest right */
     render_pass(&s, &in);
-    uint16_t top = scope_code_to_row(999, SCOPE_PLOT_H), bottom = scope_code_to_row(980, SCOPE_PLOT_H);
+    scope_calibration nominal = scope_calibration_nominal();
+    uint16_t top = scope_volts_to_row(scope_code_to_volts(999, nominal), 8.0f, SCOPE_PLOT_H);
+    uint16_t bottom = scope_volts_to_row(scope_code_to_volts(980, nominal), 8.0f, SCOPE_PLOT_H);
     for (unsigned ch = 0; ch < SCOPE_CHANNELS; ch++) {
         scope_rect p = scope_pane_plot_rect(ch);
         for (unsigned col = 0; col < SCOPE_PLOT_W; col++)
-            for (unsigned r = 0; r < SCOPE_PLOT_H; r++)
+            for (unsigned r = 0; r < SCOPE_PLOT_H; r++) {
                 if (gram[p.y + r][p.x + col] == scope_channel_colour(ch)) assert(r >= top && r <= bottom);
+                assert(gram[p.y + r][p.x + col] != SCOPE_COLOUR_CLIP); /* older, lower codes excluded */
+            }
+        assert(field_is(ch, SCOPE_FIELD_TOKEN, "", 0)); /* code 0, the oldest sample, is not in the window */
     }
 
     /* A failing backend is counted, never reported as drawn. */
@@ -547,7 +592,7 @@ static uint32_t oldest_edge(scope_window w) { return w.lag + ((uint32_t)w.bins <
 static void test_time_window(void) {
     static scope_history hist;
     scope_bin cols[SCOPE_PLOT_W];
-    char label[SCOPE_FIELD_MAX + 1];
+    char label[SCOPE_WINDOW_LABEL_MAX + 1];
 
     /* Endpoint and intermediate codes, with the newest bins at every stage of completion:
      * each edge of the represented interval lies within one coarse bin (2^L samples). */
@@ -625,7 +670,9 @@ static void test_time_window(void) {
     scope_render_init(&s);
     render_pass(&s, &in);
     scope_rect p = scope_pane_plot_rect(0);
-    assert(gram[p.y + scope_code_to_row(4095, SCOPE_PLOT_H)][p.x + impulse_col] == scope_channel_colour(0));
+    /* range 0 (+-3 V): the full-scale impulse is pinned at the top edge, reported as an ADC limit. */
+    assert(gram[p.y][p.x + impulse_col] == SCOPE_COLOUR_CLIP && gram[p.y + 2][p.x + impulse_col] == scope_channel_colour(0));
+    assert(field_is(0, SCOPE_FIELD_TOKEN, "ADC SAT", SCOPE_COLOUR_WARN));
     assert(field_is(0, SCOPE_FIELD_WINDOW, "8.19s", SCOPE_COLOUR_TEXT));
 
     /* LINK uses the same mapping: CH6 linked to CH1 at 4095 draws exactly what CH6 draws at
@@ -649,6 +696,176 @@ static void test_time_window(void) {
         for (unsigned c = 0; c < SCOPE_PLOT_W; c++) assert(gram[p6.y + r][p6.x + c] == own[r][c]);
     assert(scope_render_time_code(&in, 5) == 4095);
     assert(field_is(5, SCOPE_FIELD_WINDOW, "8.19s", SCOPE_COLOUR_LINK));
+}
+
+/* ---- #42: calibrated +-3/5/8 V vertical mapping, judged on actual plot pixels ---- */
+static uint16_t plot_img[SCOPE_CHANNELS][SCOPE_PLOT_H][SCOPE_PLOT_W];
+
+static void fill_flat(unsigned ch, uint16_t code) {
+    scope_history_init(&H[ch]);
+    for (unsigned i = 0; i < 100; i++) scope_history_push(&H[ch], code);
+}
+
+static void grab_plots(void) {
+    for (unsigned ch = 0; ch < SCOPE_CHANNELS; ch++) {
+        scope_rect p = scope_pane_plot_rect(ch);
+        for (unsigned r = 0; r < SCOPE_PLOT_H; r++)
+            for (unsigned c = 0; c < SCOPE_PLOT_W; c++) plot_img[ch][r][c] = gram[p.y + r][p.x + c];
+    }
+}
+
+/* Whole-plot check: every column holds exactly the expected column pixels. */
+static bool plot_is(unsigned ch, const uint16_t want[SCOPE_PLOT_H]) {
+    for (unsigned c = 0; c < SCOPE_PLOT_W; c++)
+        for (unsigned r = 0; r < SCOPE_PLOT_H; r++)
+            if (plot_img[ch][r][c] != want[r]) {
+                fprintf(stderr, "pane %u col %u row %u: got %04x want %04x\n", ch, c, r, plot_img[ch][r][c], want[r]);
+                return false;
+            }
+    return true;
+}
+
+/* Expected column: background, 0 V grid at row 32, trace rows [a, b] in the channel colour. */
+static void expect_column(uint16_t out[SCOPE_PLOT_H], unsigned ch, unsigned a, unsigned b) {
+    for (unsigned r = 0; r < SCOPE_PLOT_H; r++) out[r] = r == 32u ? SCOPE_COLOUR_GRID : SCOPE_COLOUR_BG;
+    for (unsigned r = a; r <= b; r++) out[r] = scope_channel_colour(ch);
+}
+
+static void test_vertical_mapping(void) {
+    rig_reset();
+    lcd_init_panel(&bus);
+    scope_render_input in = {.hist = H, .samples_per_s = 10000};
+    scope_render_state s;
+    scope_render_init(&s);
+    uint16_t want[SCOPE_PLOT_H];
+    const scope_calibration nominal = scope_calibration_nominal();
+
+    /* Fixed +3 V through the nominal transfer: code 2230 (2230 - 1858.378) x 8.0696 mV = 2.999 V.
+     * CH1 at +-3 V, CH2 at +-5 V, CH3 at +-8 V; all channels calibrated = false (nominal). */
+    const uint16_t plus3 = 2230;
+    assert(fabsf(scope_code_to_volts(plus3, nominal) - 3.0f) < 0.005f);
+    for (unsigned ch = 0; ch < SCOPE_CHANNELS; ch++) { fill_flat(ch, plus3); in.range[ch] = (int8_t)(ch % 3u); }
+    render_pass(&s, &in);
+    grab_plots();
+    expect_column(want, 0, 0, 0);   /* +-3 V: positive edge */
+    assert(plot_is(0, want));
+    expect_column(want, 1, 13, 13); /* +-5 V: 3/5 x 32 = 19.2 rows above zero */
+    assert(plot_is(1, want));
+    expect_column(want, 2, 20, 20); /* +-8 V: 3/8 of the 32-row positive half = 12 rows above zero */
+    assert(plot_is(2, want));
+    for (unsigned ch = 0; ch < 3; ch++) {
+        assert(field_is(ch, SCOPE_FIELD_TOKEN, "", 0));  /* 2.999 V does not exceed +-3 V */
+        assert(field_is(ch, SCOPE_FIELD_CAL, "UNCAL", SCOPE_COLOUR_WARN));
+    }
+    /* Same samples, only the range differs: the whole plot buffers differ (#22 saw zero change). */
+    assert(memcmp(plot_img[0], plot_img[1], sizeof plot_img[0]) && memcmp(plot_img[0], plot_img[2], sizeof plot_img[0]));
+    /* Switching CH1's range redraws its own plot at the new scale (same pane, same samples). */
+    in.range[0] = 2;
+    render_pass(&s, &in);
+    grab_plots();
+    expect_column(want, 0, 20, 20);
+    assert(plot_is(0, want));
+
+    /* Symmetry and electrical zero, exact fixture: 100 codes per volt, zero at code 2000. */
+    const scope_calibration unit = {0.01f, 2000.0f, true};
+    for (unsigned ch = 0; ch < SCOPE_CHANNELS; ch++) in.cal[ch] = unit;
+    fill_flat(0, 2300); in.range[0] = 2;  /* +3 V at +-8 V: row 20 */
+    fill_flat(1, 1700); in.range[1] = 2;  /* -3 V at +-8 V: mirror row 44 */
+    fill_flat(2, 2000); in.range[2] = 0;  /* electrical zero: on the zero line */
+    fill_flat(3, 1700); in.range[3] = 0;  /* -3 V at +-3 V: negative edge, row 64 */
+    render_pass(&s, &in);
+    grab_plots();
+    expect_column(want, 0, 20, 20); assert(plot_is(0, want));
+    expect_column(want, 1, 44, 44); assert(plot_is(1, want));
+    expect_column(want, 2, 32, 32); assert(plot_is(2, want));
+    expect_column(want, 3, 64, 64); assert(plot_is(3, want));
+    assert(field_is(0, SCOPE_FIELD_CAL, "", 0) && field_is(3, SCOPE_FIELD_TOKEN, "", 0));
+    /* Nominal zero code 1858 is 3 mV below 0 V: it too sits on the zero line. */
+    in.cal[2] = (scope_calibration){0};
+    fill_flat(2, 1858);
+    render_pass(&s, &in);
+    grab_plots();
+    expect_column(want, 2, 32, 32); assert(plot_is(2, want));
+
+    /* Ten deliberately different calibrations (distinct zero and gain), each channel fed the
+     * code its own fixture reads as +2.0 V; at +-5 V that is 12.8 -> 13 rows above zero (row 19)
+     * on every channel. The same codes through the nominal transfer land elsewhere. */
+    unsigned nominal_rows_differ = 0;
+    for (unsigned ch = 0; ch < SCOPE_CHANNELS; ch++) {
+        in.cal[ch] = (scope_calibration){0.0055f + 0.0006f * (float)ch, 1400.0f + 30.0f * (float)ch, true};
+        uint16_t code = (uint16_t)(in.cal[ch].zero_code + 2.0f / in.cal[ch].volts_per_code + 0.5f);
+        fill_flat(ch, code);
+        in.range[ch] = 1;
+        nominal_rows_differ += scope_volts_to_row(scope_code_to_volts(code, nominal), 5.0f, SCOPE_PLOT_H) != 19u;
+    }
+    render_pass(&s, &in);
+    grab_plots();
+    for (unsigned ch = 0; ch < SCOPE_CHANNELS; ch++) {
+        expect_column(want, ch, 19, 19);
+        assert(plot_is(ch, want));
+        assert(field_is(ch, SCOPE_FIELD_CAL, "", 0));
+    }
+    assert(nominal_rows_differ == SCOPE_CHANNELS);
+
+    /* Missing / invalid calibration: UNCAL and exactly the nominal mapping, never the fixture. */
+    const scope_calibration bad[4] = {
+        {0.0f, 0.0f, false},        /* missing (zeroed) */
+        {NAN, 2000.0f, true},       /* non-finite gain */
+        {-0.01f, 2000.0f, true},    /* negative gain */
+        {0.01f, 2000.0f, false},    /* plausible numbers, not calibrated */
+    };
+    for (unsigned k = 0; k < 4; k++) {
+        in.cal[k] = bad[k];
+        fill_flat(k, plus3);
+        in.range[k] = 2;
+    }
+    render_pass(&s, &in);
+    grab_plots();
+    for (unsigned k = 0; k < 4; k++) {
+        expect_column(want, k, 20, 20); /* nominal +3 V at +-8 V; the 0.01 V/code numbers would give row 23 */
+        assert(plot_is(k, want));
+        assert(field_is(k, SCOPE_FIELD_CAL, "UNCAL", SCOPE_COLOUR_WARN));
+    }
+
+    /* VIEW CLIP vs ADC SAT (nominal transfer). +6 V at +-3 V: the view clips, the ADC does not. */
+    for (unsigned ch = 0; ch < SCOPE_CHANNELS; ch++) in.cal[ch] = (scope_calibration){0};
+    const uint16_t plus6 = 2602; /* (2602 - 1858.378) x 8.0696 mV = 6.001 V */
+    fill_flat(0, plus6); in.range[0] = 0;
+    fill_flat(1, plus6); in.range[1] = 2;  /* same input at +-8 V: inside the view */
+    fill_flat(2, 4095);  in.range[2] = 2;  /* raw ADC rail */
+    fill_flat(3, 0);     in.range[3] = 2;  /* raw ADC floor */
+    fill_flat(4, 1115);  in.range[4] = 0;  /* -6.0 V at +-3 V */
+    render_pass(&s, &in);
+    grab_plots();
+    for (unsigned r = 0; r < SCOPE_PLOT_H; r++) want[r] = r == 32u ? SCOPE_COLOUR_GRID : SCOPE_COLOUR_BG;
+    want[0] = SCOPE_COLOUR_CLIP;
+    assert(plot_is(0, want));                                    /* pinned at the edge, clip colour */
+    assert(field_is(0, SCOPE_FIELD_TOKEN, "VIEW CLIP", SCOPE_COLOUR_WARN));
+    expect_column(want, 1, 8, 8);                                /* 6/8 x 32 = 24 rows above zero */
+    assert(plot_is(1, want));
+    assert(field_is(1, SCOPE_FIELD_TOKEN, "", 0));
+    assert(field_is(2, SCOPE_FIELD_TOKEN, "ADC SAT", SCOPE_COLOUR_WARN));
+    assert(field_is(3, SCOPE_FIELD_TOKEN, "ADC SAT", SCOPE_COLOUR_WARN));
+    for (unsigned r = 0; r < SCOPE_PLOT_H; r++) want[r] = r == 32u ? SCOPE_COLOUR_GRID : SCOPE_COLOUR_BG;
+    want[64] = SCOPE_COLOUR_CLIP;
+    assert(plot_is(4, want));
+    assert(field_is(4, SCOPE_FIELD_TOKEN, "VIEW CLIP", SCOPE_COLOUR_WARN));
+    /* Back inside the view: the token clears. */
+    fill_flat(0, plus3);
+    render_pass(&s, &in);
+    assert(field_is(0, SCOPE_FIELD_TOKEN, "", 0));
+
+    /* Deadband (-1) keeps the last valid scale; the label keeps naming it. */
+    fill_flat(0, plus3);
+    in.range[0] = 0;
+    render_pass(&s, &in);
+    in.range[0] = -1;
+    render_pass(&s, &in);
+    grab_plots();
+    expect_column(want, 0, 0, 0);
+    assert(plot_is(0, want));
+    assert(field_is(0, SCOPE_FIELD_RANGE, "\xb1" "3V", SCOPE_COLOUR_TEXT));
+    printf("vertical mapping: +3 V -> row 0 at +-3 V, row 13 at +-5 V, row 20 at +-8 V (zero row 32)\n");
 }
 
 static void test_buttons(void) {
@@ -675,6 +892,7 @@ int main(void) {
     test_font_and_labels();
     test_renderer();
     test_time_window();
+    test_vertical_mapping();
     test_buttons();
     puts("LCD bridge framing, clipping, pane layout and renderer host tests passed (models only; G06 OPEN)");
     return 0;

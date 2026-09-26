@@ -4,6 +4,16 @@
 float scope_code_to_volts(uint16_t code, scope_calibration cal) {
     return ((float)(code > 4095 ? 4095 : code) - cal.zero_code) * cal.volts_per_code;
 }
+scope_calibration scope_calibration_nominal(void) {
+    return (scope_calibration){SCOPE_NOMINAL_VOLTS_PER_CODE, SCOPE_NOMINAL_ZERO_CODE, false};
+}
+bool scope_calibration_valid(scope_calibration c) {
+    return c.calibrated && isfinite(c.volts_per_code) && isfinite(c.zero_code)
+        && c.volts_per_code > 0 && c.volts_per_code < 1;
+}
+scope_calibration scope_calibration_effective(scope_calibration c) {
+    return scope_calibration_valid(c) ? c : scope_calibration_nominal();
+}
 bool scope_calibrate(float c0, float v0, float c1, float v1, scope_calibration *out) {
     if (!out || !isfinite(c0) || !isfinite(c1) || !isfinite(v0) || !isfinite(v1)
         || c0 < 0 || c1 > 4095 || c1-c0 < 100 || v1 <= v0) return false;
