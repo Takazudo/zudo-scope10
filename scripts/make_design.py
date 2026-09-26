@@ -164,7 +164,8 @@ for page,sh in enumerate(names,2):
    rot=0 if dx<0 else 180
    s.append(f'(global_label {q(net)} (shape passive) (at {xx2} {yy} {rot}) (effects (font (size 1.0 1.0)) (justify left)) (uuid {uid(p["ref"]+"/label/"+pin)}) (property "Intersheetrefs" "${{INTERSHEET_REFS}}" (at {xx2} {yy} {rot}) {effect(1,True)}))')
  s.append(')');(ROOT/f'hardware/kicad/{sh}.kicad_sch').write_text('\n'.join(s)+'\n')
-s=[f'(kicad_sch (version 20231120) (generator "eeschema") (uuid {rootid}) (paper "A3") (lib_symbols)', '(title_block (title "zudo-scope10 / P0 schematic review") (date "2026-09-26") (rev "P0 PRELAYOUT"))',f'(text "TEN INPUTS / ONE LCD / NO HOME SOLDERING\nSchematic draft, not an approved netlist. Read START_HERE.md and design/release-gates.json." (at 20 15 0) (effects (font (size 2 2)) (justify left)) (uuid {uid("root/text")}))']
+# KiCad 9's S-expression reader rejects a raw newline inside a quoted string ("Failed to load"); emit \\n escapes.
+s=[f'(kicad_sch (version 20231120) (generator "eeschema") (uuid {rootid}) (paper "A3") (lib_symbols)', '(title_block (title "zudo-scope10 / P0 schematic review") (date "2026-09-26") (rev "P0 PRELAYOUT"))',f'(text "TEN INPUTS / ONE LCD / NO HOME SOLDERING\\nSchematic draft, not an approved netlist. Read START_HERE.md and design/release-gates.json." (at 20 15 0) (effects (font (size 2 2)) (justify left)) (uuid {uid("root/text")}))']
 for n,sh in enumerate(names):
  x=20+(n%3)*128;y=42+(n//3)*55;sid=uid('sheet/'+sh)
  s.append(f'(sheet (at {x} {y}) (size 108 32) (stroke (width 0.254) (type default)) (fill (color 0 0 0 0)) (uuid {sid}) (property "Sheetname" {q(sh)} (at {x} {y-1} 0) (effects (font (size 1.5 1.5)) (justify left bottom))) (property "Sheetfile" {q(sh+".kicad_sch")} (at {x} {y+33} 0) (effects (font (size 1.27 1.27)) (justify left top))) (instances (project "zudo-scope10-p0" (path "/{rootid}" (page {q(n+2)})))))')
@@ -180,7 +181,7 @@ pcb='''(kicad_pcb (version 20240108) (generator "pcbnew")
  (38 "B.Mask" user) (39 "F.Mask" user) (46 "B.CrtYd" user) (47 "F.CrtYd" user) (48 "B.Fab" user) (49 "F.Fab" user))
  (setup (pad_to_mask_clearance 0)) (net 0 "")
  (gr_rect (start 50 50) (end 300 230) (stroke (width 0.1) (type default)) (fill none) (layer "Edge.Cuts") (uuid "'''+uid('pcb/outline')+'''"))
- (gr_text "OUTLINE STUDY ONLY - NO COMPONENTS OR ROUTING\nP0 / DO NOT FABRICATE" (at 175 140) (layer "Dwgs.User") (uuid "'''+uid('pcb/warn')+'''") (effects (font (size 3 3) (thickness 0.5))))
+ (gr_text "OUTLINE STUDY ONLY - NO COMPONENTS OR ROUTING\\nP0 / DO NOT FABRICATE" (at 175 140) (layer "Dwgs.User") (uuid "'''+uid('pcb/warn')+'''") (effects (font (size 3 3) (thickness 0.5))))
 )'''
 (ROOT/'hardware/kicad/zudo-scope10-p0.kicad_pcb').write_text(pcb+'\n')
 print(f'{len(parts)} physical schematic instances / {len(nets)} nets / {len(names)+1} native sheets')

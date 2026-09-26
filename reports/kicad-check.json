@@ -1,0 +1,65 @@
+{
+  "result": "PASS",
+  "scope": "Native kicad-cli load + ERC totals + netlist parity. NOT a clean ERC, NOT DRC of a placed/routed board, NOT layout or fabrication approval. Gate G03 stays OPEN.",
+  "kicad_cli_version": "9.0.9",
+  "root_schematic": {
+    "file": "hardware/kicad/zudo-scope10-p0.kicad_sch",
+    "loaded": true,
+    "sheets": 11,
+    "expected_sheets": 11
+  },
+  "pcb": {
+    "file": "hardware/kicad/zudo-scope10-p0.kicad_pcb",
+    "loaded": true,
+    "note": "Load check only. The board is an outline study with no footprints or routing; its DRC output is not layout evidence and is not recorded here."
+  },
+  "erc": {
+    "loaded": true,
+    "sheets": 11,
+    "sheet_paths": [
+      "/",
+      "/power/",
+      "/module-interfaces/",
+      "/acquisition/",
+      "/inputs-01-02/",
+      "/inputs-03-04/",
+      "/inputs-05-06/",
+      "/inputs-07-08/",
+      "/inputs-09-10/",
+      "/controls-left/",
+      "/controls-right/"
+    ],
+    "total": 874,
+    "by_severity": {
+      "error": 2,
+      "warning": 872
+    },
+    "by_type": {
+      "endpoint_off_grid": 872,
+      "power_pin_not_driven": 2
+    },
+    "by_severity_and_type": {
+      "error:power_pin_not_driven": 2,
+      "warning:endpoint_off_grid": 872
+    },
+    "note": "Recorded as found by kicad-cli; not cleaned. ERC cleanup is a separate topic."
+  },
+  "netlist_parity": {
+    "result": "PASS",
+    "instances": {
+      "circuit_json": 224,
+      "kicad": 224
+    },
+    "named_nets": {
+      "circuit_json": 134,
+      "kicad": 134
+    },
+    "pins_checked": 691,
+    "no_connect_pins": {
+      "circuit_json_null": 43,
+      "kicad_single_pin_unconnected_nets": 43
+    },
+    "note": "KiCad emits one \"unconnected-(REF-PIN-PadN)\" single-pin net per no-connect pin; these are compared against null pins in design/circuit.json, not counted as named nets.",
+    "differences": []
+  }
+}

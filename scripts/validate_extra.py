@@ -11,11 +11,23 @@ structural checks or their ordering. Each entry in EXTRA_CHECKS is a callable
   no re-parsing: `R` (project root Path), `cat` (component records list),
   `byid` (records keyed by id), `circuit` (design/circuit.json contents),
   `parts` (circuit['parts']), `pby` (parts keyed by ref).
-
-Starts empty: no sub-issue has added a check yet.
 """
 
-EXTRA_CHECKS = []
+
+def kicad_native_parity(check, ctx):
+    # Native KiCad load + netlist parity; only runs where kicad-cli is installed.
+    import kicad_check
+    report, ok = kicad_check.check(write_report=False)
+    if report is None:
+        print('SKIP: kicad-cli not found; native KiCad load/netlist parity not run.')
+        return
+    p = report['netlist_parity']
+    check('KiCad root sheet, PCB load and netlist parity with circuit.json', ok,
+          f"sheets={report['root_schematic']['sheets']} pcb_loaded={report['pcb']['loaded']} "
+          f"parity={p['result']} differences={len(p.get('differences', []))}")
+
+
+EXTRA_CHECKS = [kicad_native_parity]
 
 
 def run(check, ctx):
