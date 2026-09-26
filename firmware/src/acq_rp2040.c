@@ -3,7 +3,9 @@
  * the design and its budget are in firmware/ACQUISITION.md. All figures are NOMINAL
  * design values: no sample rate, jitter or settle time has been measured (G05 OPEN).
  * Channels are sampled sequentially through the mux, never simultaneously.
- * The LCD is held dark and unselected, exactly as in pico_diagnostic.c.
+ * The LCD is held dark and unselected (lcd_safe_pins.c, from before main) unless the
+ * target is configured with SCOPE_ENABLE_LCD=1; then core0 also runs the ten-pane
+ * renderer between drain batches (firmware/LCD-BACKEND.md, G06 OPEN).
  *
  * Hardware use:
  *   PWM slice 0  slot timer, wrap every 1000 cycles; its DREQ paces DMA "start", which
@@ -14,6 +16,7 @@
  *   DMA "col A/B" ping-pong the ADC FIFO (DREQ_ADC) into the engine ring; core0 drains
  *                it into scope_core histories and prints counters over USB serial. */
 #include "acq_engine.h"
+#include "lcd_safe_pins.h"
 #include "hardware/adc.h"
 #include "hardware/clocks.h"
 #include "hardware/dma.h"
@@ -24,6 +27,14 @@
 #include "pico/multicore.h"
 #include "pico/stdlib.h"
 #include <stdio.h>
+#if SCOPE_ENABLE_LCD
+#include "display_port.h"
+#include "scope_render.h"
+#define RENDER_ITEMS_PER_PASS 4u
+#define LCD_STATE "LCD ENABLED (SCOPE_ENABLE_LCD=1, unverified: G01/G06 OPEN)"
+#else
+#define LCD_STATE "LCD OFF"
+#endif
 
 #define PIN_HOLD_N 0u
 #define PIN_LINK_N 1u
@@ -206,13 +217,14 @@ static void report_line(unsigned line) {
 int main(void) {
     out(PIN_MUX_DISABLE, true); /* all mux banks disconnected until acquisition starts */
     for (unsigned p = PIN_ADDR0; p < PIN_ADDR0 + 4u; p++) out(p, false);
-    out(9, true); out(16, true); out(22, true); out(13, false); out(15, false); out(PIN_TIMING_TP, false);
+    lcd_safe_pins_apply(); /* already applied by the runtime-init hook; kept explicit */
+    out(PIN_TIMING_TP, false);
     for (unsigned p = PIN_HOLD_N; p <= PIN_LINK_N; p++) { gpio_init(p); gpio_set_dir(p, GPIO_IN); gpio_pull_up(p); }
 
     bool clock_ok = set_sys_clock_khz(ACQ_SYS_CLK_HZ / 1000u, false);
     stdio_init_all();
     sleep_ms(1500);
-    puts("scope10_acq P0 / LCD OFF / UNCALIBRATED / no fault-voltage testing authorized");
+    puts("scope10_acq P0 / " LCD_STATE " / UNCALIBRATED / no fault-voltage testing authorized");
     puts("Nominal design: 10000 S/s per channel, 10 channels sampled SEQUENTIALLY (not simultaneous); "
          "rate, settle and jitter NOT measured (G05 OPEN)");
     if (!clock_ok || clock_get_hz(clk_sys) != ACQ_SYS_CLK_HZ) {
@@ -225,6 +237,16 @@ int main(void) {
     acq_schedule_default(&sched);
     acq_engine_init(&eng, &sched, hist);
     acq_hw_init();
+#if SCOPE_ENABLE_LCD
+    /* Before acquisition starts: panel reset, init and the full-screen clear block core0 for about 0.4 s. */
+    static scope_render_state rs;
+    static scope_button hold_btn, link_btn;
+    scope_render_init(&rs);
+    bool lcd_ok = scope_display_init();
+    if (lcd_ok) scope_display_backlight(100);
+    printf("lcd,init_sequence_sent=%u (no panel readback exists; not a display verification)\n",
+           (unsigned)lcd_ok);
+#endif
     multicore_launch_core1(core1_main);
     (void)multicore_fifo_pop_blocking();
     acq_hw_start();
@@ -247,5 +269,21 @@ int main(void) {
             next_report += REPORT_INTERVAL_US;
             report = 0;
         }
+#if SCOPE_ENABLE_LCD
+        if (lcd_ok) {
+            uint32_t now_ms = to_ms_since_boot(get_absolute_time());
+            scope_render_input in = {
+                .hist = hist,
+                .samples_per_s = ACQ_SAMPLES_PER_CH_S,
+                .hold = scope_button_update(&hold_btn, !gpio_get(PIN_HOLD_N), now_ms),
+                .link = scope_button_update(&link_btn, !gpio_get(PIN_LINK_N), now_ms),
+            };
+            for (unsigned ch = 0; ch < ACQ_CHANNELS; ch++) {
+                in.time_code[ch] = eng.time_code[ch];
+                in.range[ch] = (int8_t)eng.range[ch].stable;
+            }
+            scope_render_step(&rs, &in, RENDER_ITEMS_PER_PASS);
+        }
+#endif
     }
 }

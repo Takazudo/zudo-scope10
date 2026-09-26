@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Builds every firmware target (scope10_diagnostic, scope10_acq) against the real
 # Raspberry Pi Pico SDK, one target at a time so warnings are counted per target.
+# scope10_acq is built twice: the default configuration (LCD off) and a second build
+# tree configured with -DSCOPE_ENABLE_LCD=1 (LCD backend + renderer, firmware/LCD-BACKEND.md).
 #
 # Picotool strategy: SDK 2.x needs picotool present at CMake configure time
 # (tools/CMakeLists.txt pico_init_picotool() requires exactly version 2.1.1,
@@ -23,6 +25,7 @@ CACHE_DIR="$ROOT/reference/downloads"
 SDK_CACHE_DIR="$CACHE_DIR/pico-sdk"
 PICOTOOL_CACHE_DIR="$CACHE_DIR/picotool-fetch"
 BUILD_DIR="$ROOT/firmware/build"
+LCD_BUILD_DIR="$BUILD_DIR/lcd-enabled"
 REPORT="$ROOT/reports/firmware-target-build.json"
 
 log() { echo "[build_firmware] $*" >&2; }
@@ -54,24 +57,33 @@ log "Configuring CMake (PICO_SDK_PATH=$PICO_SDK_PATH)"
 rm -rf "$BUILD_DIR"
 cmake -S "$ROOT/firmware" -B "$BUILD_DIR" -G Ninja -DCMAKE_BUILD_TYPE=Release
 
-TARGETS=(scope10_diagnostic scope10_acq)
+log "Configuring CMake with SCOPE_ENABLE_LCD=1 in $LCD_BUILD_DIR"
+cmake -S "$ROOT/firmware" -B "$LCD_BUILD_DIR" -G Ninja -DCMAKE_BUILD_TYPE=Release -DSCOPE_ENABLE_LCD=1
+
+# Entries: report name, build dir, CMake target.
+BUILDS=(
+    "scope10_diagnostic" "$BUILD_DIR" "scope10_diagnostic"
+    "scope10_acq" "$BUILD_DIR" "scope10_acq"
+    "scope10_acq+lcd" "$LCD_BUILD_DIR" "scope10_acq"
+)
 LOG_DIR="$(mktemp -d)"
 trap 'rm -rf "$LOG_DIR"' EXIT
 
 TARGET_ARGS=()
 TOTAL_WARNINGS=0
-for TARGET in "${TARGETS[@]}"; do
-    log "Building $TARGET"
-    cmake --build "$BUILD_DIR" --target "$TARGET" -j"$(nproc)" 2>&1 | tee "$LOG_DIR/$TARGET.log"
-    UF2="$BUILD_DIR/$TARGET.uf2"
+for ((i = 0; i < ${#BUILDS[@]}; i += 3)); do
+    NAME="${BUILDS[i]}"; DIR="${BUILDS[i + 1]}"; TARGET="${BUILDS[i + 2]}"
+    log "Building $NAME"
+    cmake --build "$DIR" --target "$TARGET" -j"$(nproc)" 2>&1 | tee "$LOG_DIR/$NAME.log"
+    UF2="$DIR/$TARGET.uf2"
     if [ ! -f "$UF2" ]; then
         log "ERROR: expected UF2 output missing at $UF2"
         exit 1
     fi
-    WARNINGS="$(grep -c "warning:" "$LOG_DIR/$TARGET.log" || true)"
+    WARNINGS="$(grep -c "warning:" "$LOG_DIR/$NAME.log" || true)"
     TOTAL_WARNINGS=$((TOTAL_WARNINGS + WARNINGS))
-    TARGET_ARGS+=("$TARGET" "$(stat -c%s "$UF2")" "$(sha256sum "$UF2" | cut -d' ' -f1)" "$WARNINGS")
-    log "$TARGET: $UF2 ($(stat -c%s "$UF2") bytes), warnings: $WARNINGS"
+    TARGET_ARGS+=("$NAME" "${UF2#"$ROOT"/}" "$(stat -c%s "$UF2")" "$(sha256sum "$UF2" | cut -d' ' -f1)" "$WARNINGS")
+    log "$NAME: $UF2 ($(stat -c%s "$UF2") bytes), warnings: $WARNINGS"
 done
 
 TOOLCHAIN_VERSION="$(arm-none-eabi-gcc --version | head -1)"
@@ -85,14 +97,15 @@ report, sdk_tag, sdk_sha, toolchain, cmake_v, total_warnings = sys.argv[1:7]
 rest = sys.argv[7:]
 notes = {
     "scope10_diagnostic": "Slow USB CSV diagnostic; LCD held dark, serial output rate-limited.",
-    "scope10_acq": "10 kS/s/channel sequential acquisition engine (nominal design, see firmware/ACQUISITION.md); no rate, settle or jitter measured, G05 stays OPEN.",
+    "scope10_acq": "10 kS/s/channel sequential acquisition engine (nominal design, see firmware/ACQUISITION.md); no rate, settle or jitter measured, G05 stays OPEN. Default build: LCD off.",
+    "scope10_acq+lcd": "scope10_acq configured with -DSCOPE_ENABLE_LCD=1: Waveshare LCD backend + ten-pane renderer (firmware/LCD-BACKEND.md). Not for use before G01 is physically verified; no display output verified, G06 stays OPEN.",
 }
 targets = []
-for i in range(0, len(rest), 4):
-    name, size, sha, warnings = rest[i:i + 4]
+for i in range(0, len(rest), 5):
+    name, uf2, size, sha, warnings = rest[i:i + 5]
     targets.append({
         "target": name,
-        "uf2_path": f"firmware/build/{name}.uf2",
+        "uf2_path": uf2,
         "uf2_size_bytes": int(size),
         "uf2_sha256": sha,
         "warning_count": int(warnings),
