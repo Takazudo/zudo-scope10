@@ -62,7 +62,7 @@
       "compliant_with_ordinary_host_port": "unknown_pending_declared_value",
       "compliant_with_ordinary_host_port_note": "declared_max_power_ma (250, see override_investigation) is currently below the 420 mA allowance, so scripts/power_budget.py's usb_budget.vs_declared_limit reports 'fail'. This is the honest state of an unmodified SDK descriptor; only a source meeting source_contract, not an ordinary host's configured grant, is supported today.",
       "requires_source_contract": true,
-      "backlight_default": "Firmware-controlled, active-low on GP13: OFF (GP13 high) from the early hook onward; the LCD-enabled build drives GP13 low (ON) only after scope_display_init() reports the init sequence sent. The default LCD-off build leaves it OFF.",
+      "backlight_default": "Firmware-controlled, active-low on GP13: scope10_acq drives GP13 high (OFF) from the early hook onward in both SCOPE_ENABLE_LCD states; the LCD-enabled build drives GP13 low (ON) only after scope_display_init() reports the init sequence sent. scope10_diagnostic does not link lcd_safe_pins.c and never drives GP13, so under it the backlight stays ON (gate 0 V via R88); the pad is unaffected.",
       "gp13_pad_voltage": "Driven: V_OL or V_OH, within 0 V .. IOVDD.",
       "bench_procedure": "LOCAL-HANDOFF.md G07 bench item 2 (configured current, no display / dark display / bright display)."
     },

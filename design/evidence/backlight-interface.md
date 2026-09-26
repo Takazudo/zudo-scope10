@@ -34,7 +34,7 @@ Q1 source -- GND
 | driven low | off | VSYS via R16 | ON |
 | driven high | on | ≈ 0 V | **OFF** |
 
-The backlight is **default ON** and the GPIO control is **active-low** (GP13 high = off). Any future PWM dimming is inverted as well. Firmware is updated accordingly (`firmware/src/lcd_safe_pins.[ch]`, `firmware/src/display_waveshare.c`).
+The backlight is **default ON** and the GPIO control is **active-low** (GP13 high = off). Any future PWM dimming is inverted as well. Firmware is updated accordingly (`firmware/src/lcd_safe_pins.[ch]`, `firmware/src/display_waveshare.c`): `scope10_acq` drives GP13 high from its early runtime-init hook in both `SCOPE_ENABLE_LCD` states, and the LCD-enabled build drives it low only after a successful panel init. `scope10_diagnostic` does not link `lcd_safe_pins.c` and never drives GP13, so under the diagnostic firmware the backlight stays ON; the pad still sits at 0 V through R88.
 
 ## Voltage/current table
 

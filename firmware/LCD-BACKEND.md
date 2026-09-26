@@ -101,7 +101,7 @@ The source is `https://files.waveshare.com/upload/f/fc/Pico-ResTouch-LCD-X_X_Cod
   - `scope10_acq.elf.map` confirms the order: `.preinit_array.00100`, `.00101`, `.00110`, …, `.00500`.
   - The hook disassembles to register writes and `gpio_set_function` only, with no library calls, so it does not depend on the later runtime-init steps.
   - `main()` re-applies it without calling `gpio_init()`, because `gpio_init()` would briefly release the pin (which would flash the backlight on, not stress it).
-  - It runs in **both** `SCOPE_ENABLE_LCD` states, so the default LCD-off build turns the backlight off shortly after boot and leaves it off. `SCOPE_ENABLE_LCD` stays default OFF.
+  - It runs in **both** `SCOPE_ENABLE_LCD` states of `scope10_acq`, so the default LCD-off build turns the backlight off shortly after boot and leaves it off. `SCOPE_ENABLE_LCD` stays default OFF. `scope10_diagnostic` does not link `lcd_safe_pins.c` and never drives GP13, so under the diagnostic firmware the backlight simply stays **ON**; that is harmless to the pad (gate at 0 V through R88) and is expected at the bench.
 - **Backlight on/off only.** `scope_display_backlight(p > 0)` drives GP13 low (`LCD_BL_LEVEL_ON`), and only after a successful init; `scope_display_backlight(0)` drives it high. The regulator (CAT1) is unidentified and its EN thresholds are unknown, so PWM dimming on its EN is not assumed; if it is added later the duty is inverted too.
 - **What is not measured:** the LCD_BL and gate waveforms from power-on, the pre-hook lit interval, and the CAT1 EN thresholds. These are G01/G06 bench items for the assembler/bench provider on a factory-assembled prototype.
 
