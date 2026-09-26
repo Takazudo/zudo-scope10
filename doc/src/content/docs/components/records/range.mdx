@@ -17,6 +17,8 @@ sidebar_position: 8
 | Fit | PROPOSED_NOT_ASSEMBLED |
 | References | SW1 SW2 SW3 SW4 SW5 SW6 SW7 SW8 SW9 SW10 |
 | Footprint candidate | NOT ASSIGNED |
+| Contact material | silver (NKK product page General Specifications: "Contact Finish: Silver Plating") |
+| Application suitability | OPEN_REQUIRES_MANUFACTURER_CONFIRMATION_AND_QUALIFICATION |
 
 ## Intended function
 
@@ -33,6 +35,12 @@ Terminal spacing code D (0.100 in): single row 1-2-3 at 2.54 mm, 3-4 at 5.08 mm;
 Body (15.8) x (4.0) mm, (4.5) mm high; terminals (3.0) mm below body per H48 ((3.4) in H47 isometric; conflict unresolved); actuator (1.2) x (1.5) mm protruding (2.0) mm above body; (2.0) mm travel per step. Actuator top about 6.5 mm above PCB (derived). All reference dims, no tolerances.
 
 Terminal 3 lies on the body and actuator centreline (centre marks, not toleranced). Four corner standoff bosses on the underside; no PCB mounting pegs.
+
+Contact material is silver, not gold: the NKK product page's General Specifications table states "Contact Finish: Silver Plating" (source range-contact-finish).
+
+NKK Electrical Ratings page Z33 (source range-z33) defines Low Level / dry circuits as &lt;=0.4 VA at &lt;=28 V AC or DC max, and recommends gold-plated contacts there because no arc forms to break down tarnish; it recommends silver for Power Level (~100 mA-10 A @125 V AC), stating an arc only develops above about 12 VDC / 0.5 A, which is what keeps a silver contact's oxidation cleaned off. The companion operating-range page (source range-operating-range) restates the same gold-for-dry-circuit recommendation.
+
+Actual sense path (scripts/make_design.py ~47-49): switch COMMON -&gt; 1 k-ohm -&gt; 100 nF -&gt; mux/buffer. For a full 0&lt;-&gt;3.3 V throw: initial capacitor current = 3.3 V / 1 k-ohm = 3.3 mA; RC time constant tau = 1 k-ohm x 100 nF = 100 microseconds. Current then decays to leakage/input-bias current; the centre throw additionally sources through the R40/R41 divider, about 5 k-ohm source impedance. There is no continuous wetting current. The manufacturer's 100 mA / 30 V maximum rating is a ceiling, not evidence that this near-zero-current dry circuit is a suitable application for a silver contact.
 
 ## Pin map
 
@@ -55,7 +63,8 @@ No original model or source binary was recovered for this record in this package
 
 - STOP: pad geometry and 2 mm lever/panel access are not qualified; numeric terminal map resolved from NKK catalogue H46/H47, still needs a drawn footprint and real-part fit check.
 - OPEN: terminal 2/3 (M/C) mapping is a vendor fact (C-&gt;3 is COM, M-&gt;2); terminal 1/4 (L/H) follows NKK Left/Right naming but the panel-legend direction is a layout decision, not yet confirmed. Swap to L-&gt;4 / H-&gt;1 if the panel reads the other way at layout.
-- Approve signal-level switching and cleaning process (not process sealed: hand clean locally, NKK H44); price/lead time via RFQ.
+- OPEN_REQUIRES_MANUFACTURER_CONFIRMATION_AND_QUALIFICATION (#27/#38): SS14MDP2's silver contacts sit in a near-zero-current dry sense circuit (3.3 mA initial transient decaying in ~100 us to leakage/bias current, no continuous wetting current) that NKK's own page Z33 describes as the case gold contacts are recommended for. Not substituted under the decided option (#27 option 2): keep SS14MDP2, do not invent a substitute MPN. Before this switch is approved for this application: get NKK's specific confirmation for this exact load, and run application-level qualification (contact-resistance measurement at the actual load, a cycling/durability run, and an environmental/cleaning exposure check per the factory process) beyond initial continuity. See design/evidence/range-contact.md. A maintained break-before-make SP3T with manufacturer-supported dry-circuit (e.g. gold) contacts remains a listed OPEN alternative, not a decision -- any real substitute needs its own exact pin map, footprint, actuator-height and factory-process review.
+- Cleaning process not process sealed (hand clean locally, NKK H44); price/lead time via RFQ.
 
 The presence of a part number, datasheet or model closes none of these remaining gates automatically.
 
@@ -72,3 +81,21 @@ Evidence state: `read_online`. Exact SP3T On-On-On, top-actuated, straight PC te
 [https://jlcpcb.com/partdetail/NKKSwitches-SS14MDP2/C6684954](https://jlcpcb.com/partdetail/NKKSwitches-SS14MDP2/C6684954)
 
 Evidence state: `read_online`. Listing exists; observed zero stock. This is a pre-order/external sourcing candidate, not allocated inventory.
+
+### NKK SS14MDP2 contact finish
+
+[https://www.nkkswitches.eu/products/Slides/Slides%20SS/SS14MDP2/](https://www.nkkswitches.eu/products/Slides/Slides%20SS/SS14MDP2/)
+
+Evidence state: `read_online`. Re-fetched 2026-09-26 for #27/#38. General Specifications table states "Contact Finish: Silver Plating" -- confirms the switch is silver-contact, not gold.
+
+### NKK Electrical Ratings, page Z33 (dry-circuit contact material)
+
+[https://www.nkkswitches.eu/documents/products/support/electricalratings.pdf](https://www.nkkswitches.eu/documents/products/support/electricalratings.pdf)
+
+Evidence state: `read_online`. Fetched and read 2026-09-26 for #27/#38 (PDF page 3 of this document, printed page Z33). Quoted: "Low Level ~ 0.4VA maximum @ 28V AC or DC maximum ... Gold plated contacts are recommended for dry circuits ... In circuits where the voltage is below 28 volts DC and current is below 100 milliamps (dry circuits), no arc develops ... Power Level ~ 100mA to 10 amps @ 125V AC ... Silver contacts are recommended for electrical levels above 0.4VA ... In circuits where the voltage is above about 12 volts DC and the current above .5 amps, an arc develops ... This arc keeps the oxidation cleaned off."
+
+### NKK engineering: electrical (operating-range dry-circuit guidance)
+
+[https://www.nkkswitches.eu/engineering/electrical.html](https://www.nkkswitches.eu/engineering/electrical.html)
+
+Evidence state: `read_online`. Fetched and read 2026-09-26 for #27/#38. Quoted: "Gold plated contacts are recommended for dry circuits, which are defined as very low energy. In circuits where the voltage is below 28 volts DC and current is below 100 milliamps (dry circuits), no arc develops as the contacts open or close." Restates the page Z33 guidance in range-z33.

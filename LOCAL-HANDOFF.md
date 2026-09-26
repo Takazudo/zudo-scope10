@@ -88,22 +88,35 @@ step is the real-part check the desk work could not do.
    `catalog/components.json`). L→1 and H→4 were applied by #13 but are **OPEN pending panel
    orientation** — confirm against the actual panel layout (which physical throw position reads
    as low vs. high once mounted) before trusting the schematic-to-panel sense.
-2. **Jack (SHOU HAN PJ-313 5JCJ):** the leg→contact map is OPEN — the manufacturer drawing does
+2. **Range switch contact suitability (#27/#38):** SS14MDP2 is a silver-contact part
+   (`catalog/components.json`'s `range.contact_material`) used in a near-zero-current dry sense
+   circuit; NKK's own page Z33 guidance recommends gold contacts for that regime
+   (`design/evidence/range-contact.md`). Concrete decision step before this switch is approved for
+   the application: (a) request NKK's written confirmation for this exact load (3.3 mA initial
+   transient, 100 µs RC decay to leakage/bias current, no continuous wetting current); (b) measure
+   contact resistance at the actual load, not a generic continuity check; (c) run a cycling/
+   durability check under that same load; (d) run an environmental/cleaning-exposure check against
+   the factory's actual flux/wash process. Record results against
+   `manufacturing/acceptance-results.csv`'s `RANGE_CONTACT_QUALIFICATION` row and update
+   `catalog/components.json`'s `application_suitability_status` only once real evidence exists. Not
+   substituted under the decided option (#27 option 2); a manufacturer-supported dry-circuit part
+   remains a listed OPEN alternative only.
+3. **Jack (SHOU HAN PJ-313 5JCJ):** the leg→contact map is OPEN — the manufacturer drawing does
    not say which physical leg carries which of the 3 logical contacts across its 5 physical legs.
    Get continuity with an ohmmeter on a sample part (no soldering needed), or get written
    confirmation from SHOU HAN/LCSC, before wiring any leg to a specific node.
-3. **Waveshare module:** mounting-hole drill diameter and the under-board standoff thread/bore
+4. **Waveshare module:** mounting-hole drill diameter and the under-board standoff thread/bore
    need a caliper check on the received module (STEP gives Ø4.30 through-hole, Ø5.5×4.0 mm
    standoff with Ø2.5 bore, but no thread spec).
-4. **Pico H:** header height is undefined by any Raspberry Pi source; measure a physical unit.
-5. **1×20 2.54 mm strips (J20/J21/J30/J31 mating hardware):** no orderable part is selected yet.
+5. **Pico H:** header height is undefined by any Raspberry Pi source; measure a physical unit.
+6. **1×20 2.54 mm strips (J20/J21/J30/J31 mating hardware):** no orderable part is selected yet.
    Once the Pico H header height and the module's standoff height are both measured, compute the
    stack: `design/evidence/g02-mechanical-pins.md` §5 shows the module's own standoffs likely fall
    short of the carrier by `h_ins + 5.0 mm`, meaning **extra spacers (or longer standoffs) will be
    needed** — budget for them in the mechanical BOM.
-6. Confirm button (XUNPU TS1088) foot dimensions against a real part; the drawn footprint
+7. Confirm button (XUNPU TS1088) foot dimensions against a real part; the drawn footprint
    candidate is provisional.
-7. Update `catalog/components.json`'s `fit_state`/`identity_state` fields and
+8. Update `catalog/components.json`'s `fit_state`/`identity_state` fields and
    `design/release-gates.json`'s G02 entry once each item above is actually checked.
 
 ## G03 — native KiCad validation (finish placement, routing, DRC/ERC)
@@ -208,6 +221,13 @@ along with `operator` and `date`.
    time (a listing is not allocated stock).
 4. Confirm the external module/socket/knob supply chain (genuine Pico H, genuine Waveshare
    SKU 19907) and their exact header orientation with the assembler.
+5. **Range switch contact suitability (#27/#38):** same concrete decision step as G02 item 2 above
+   — request NKK's written confirmation for the actual 3.3 mA / 100 µs-decay dry-circuit load, then
+   run the contact-resistance, cycling/durability and environmental/cleaning-exposure checks
+   (`design/evidence/range-contact.md`) — must close before this switch is included in a factory
+   order. Zero stock at C6684954 (item 1's sibling concern) is a separate, still-OPEN sourcing
+   question; resolving stock does not resolve contact suitability, and resolving suitability does
+   not resolve stock.
 
 ## G09 — physical review
 
