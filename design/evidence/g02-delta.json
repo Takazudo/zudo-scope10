@@ -1,0 +1,160 @@
+{
+  "gate": "G02",
+  "evidence_doc": "design/evidence/g02-mechanical-pins.md",
+  "status": "evidence_partial",
+  "gate_status_change": null,
+  "sources": [
+    {"id": "range-cat", "url": "https://www.nkkswitches.eu/user/pdf-download/SS14MDP2", "via": "https://www.nkkswitches.eu/products/Slides/Slides%20SS/SS14MDP2/ (Catalog PDF button)", "sha256": "bd75fbd29c691ec3fcd443570714081c51ab03e47ffacecc763228121b122fb5", "committed": false},
+    {"id": "jack", "path": "reference/assets/jack/PJ-313-5JCJ.pdf", "sha256": "8c3be622655208735ec21158f79aba16f5b1ae0b6621efa6ea6e2e89ac0d7199", "committed": true},
+    {"id": "button", "path": "reference/assets/button/TS-1088-AR02016.pdf", "sha256": "368d4cc2c26b08cb63e1b67193f671d0860b6d3fb2e6b9f2696ffade401afc30", "committed": true},
+    {"id": "display-cad", "url": "https://files.waveshare.com/upload/e/e4/Pico-ResTouch-LCD-3_5.zip", "sha256": "3ac36201418be8a033f13303aad4dc06f11b1a9fe1f44042c57d23e331fbcaf5", "inner_file_sha256": {"Pico-ResTouch-LCD-3_5.stp": "f94fee5c475b1ea6bb0ad1380c8afacc3192be3ca467238edd0212df139de548"}, "committed": false},
+    {"id": "display-size", "url": "https://www.waveshare.com/w/upload/0/0e/Pico-ResTouch-LCD-3.5-details-size.jpg", "sha256": "f1f7c86aad75b6944e72ff14b878a6b773b0cabb2375c719d827b9a8758e95a1", "committed": false},
+    {"id": "display-inter", "url": "https://www.waveshare.com/w/upload/c/c9/Pico-ResTouch-LCD-3.5-details-inter.jpg", "sha256": "bddbc75e6e4ecc8085569dc9b9a9bb1345b81463186514d9cc3470958ac07857", "committed": false},
+    {"id": "pico-ds", "url": "https://datasheets.raspberrypi.com/pico/pico-datasheet.pdf", "sha256": "757ff485227493b9fcc0c2c96c4dea9de020e1d8b2b11e2aa4f9ee8b25aa89eb", "committed": false}
+  ],
+  "items": [
+    {"item": 1, "record": "range", "verdict": "RESOLVED", "note": "Numeric pins, pitch, holes, heights resolved; panel direction of L/H is a layout decision."},
+    {"item": 2, "record": "jack", "verdict": "OPEN", "reason": "Manufacturer drawing never numbers individual legs and its parts table is inconsistent (plastic base given terminal 5; items 3 and 4 share drawing no. PJ-313D-03). Leg-to-node map needs sample continuity or vendor confirmation. Hole pattern itself is resolved."},
+    {"item": 3, "record": "button", "verdict": "RESOLVED", "note": "Two terminals, no internally joined pairs; existing review footprint matches drawing pad-for-pad."},
+    {"item": 4, "record": "display", "verdict": "RESOLVED_EXCEPT_DRILL", "reason": "Outline, sockets, active area, hole centres and heights from vendor STEP + dimension image; PCB drill diameter and standoff thread not dimensioned by Waveshare."},
+    {"item": 4, "record": "pico-h", "verdict": "PARTIAL", "reason": "Pin positions resolved from pico-ds; factory header height not dimensioned in any Raspberry Pi source found."},
+    {"item": 5, "record": "socket20/header20", "verdict": "OPEN", "reason": "No orderable selected; stack inequalities recorded instead."}
+  ],
+  "changes": [
+    {
+      "op": "set_pins",
+      "target": "records[id=range].pins",
+      "value": {"1": "THROW_LEFT", "2": "THROW_CENTER", "3": "COMMON", "4": "THROW_RIGHT"},
+      "reason": "Replace logical placeholders C/L/M/H with vendor numeric terminals. Terminal numbers are not marked on the part; orientation comes from the 2.54/2.54/5.08 pitch.",
+      "citation": "NKK Series SS catalogue H46 Poles & Circuits row SS14M (Right 3-4, Center 3-2, Left 3-1; 3 = COM; 'Terminal numbers are not actually on switch')"
+    },
+    {
+      "op": "remap_part_pins",
+      "target": "parts[record=range]",
+      "value": {"C": "3", "M": "2", "L": "1", "H": "4"},
+      "reason": "C->3 and M->2 are vendor facts. L->1 / H->4 follows NKK Left/Right naming; confirm against the printed panel legend and part rotation at layout, swap to L->4 / H->1 if the panel reads the other way.",
+      "citation": "NKK H46 Poles & Circuits; 'ON-OFF-ON circuit can be created by not connecting terminal 2' confirms 2 = centre"
+    },
+    {
+      "op": "add_facts",
+      "target": "records[id=range].facts",
+      "value": [
+        "Terminal spacing code D (0.100 in): single row 1-2-3 at 2.54 mm, 3-4 at 5.08 mm; recommended PCB hole (0.8) dia; terminal section (0.4) x (0.6) mm.",
+        "Body (15.8) x (4.0) mm, (4.5) mm high; terminals (3.0) mm below body; actuator (1.2) x (1.5) mm protruding (2.0) mm above body; (2.0) mm travel per step. Actuator top about 6.5 mm above PCB (derived). All reference dims, no tolerances.",
+        "Terminal 3 lies on the body and actuator centreline (centre marks, not toleranced). Four corner standoff bosses on the underside; no PCB mounting pegs."
+      ],
+      "citation": "NKK H47 Terminal Spacing D / 3-On Models; NKK H48 3-On Circuit Top Actuated SS14MDP2 views; NKK H46 ordering chart (D, P, 2)"
+    },
+    {
+      "op": "replace_open_questions",
+      "target": "records[id=range].open_questions",
+      "value": [
+        "Numeric terminal map resolved from NKK catalogue H46/H47; pad geometry still needs a drawn footprint and real-part fit check.",
+        "Decide L/H panel direction versus terminals 1/4 at layout; terminal numbers are not marked on the part.",
+        "Approve signal-level switching and cleaning process (not process sealed: hand clean locally, NKK H44); price/lead time via RFQ."
+      ],
+      "citation": "NKK H44 PCB Processing / Cleaning; H46; H47"
+    },
+    {
+      "op": "add_facts",
+      "target": "records[id=jack].facts",
+      "value": [
+        "Through-hole: land view titled 'PCB hole dimensions (+/-0.1), shown as bottom face'; pin tails 3.2 mm below body.",
+        "Five slot openings drawn about 1.5 (along axis) x 1.0 mm; callout reads '(6-1.X1.5)' against 5 drawn (typo). Near row at 1.8 / 5.0 / 8.5 mm from the nose shoulder, far row at 1.8 / 8.5 mm; row pitch 5.8 mm.",
+        "Two locating posts dia 1.0 on the part; board holes 2 x dia 1.3 at 2.3 and 8.3 mm from the shoulder, midway between rows.",
+        "Body 11.5 + 2.5 nose, 6 wide, 5 high; nose OD 5, opening dia 3.6. Contact schematic: 1 = sleeve bar, 2 = V spring, 3 = ^ spring; no normally-closed contact."
+      ],
+      "citation": "reference/assets/jack/PJ-313-5JCJ.pdf p1: land view 5F-9G and title 14B; side view 2C-5E; front view 7C-8D; bottom view 11C-15D; schematic 16E-16F"
+    },
+    {
+      "op": "keep_open",
+      "target": "parts[record=jack].notes",
+      "value": "3 logical contacts / 5 physical legs: duplicated pad mapping is OPEN",
+      "reason": "Drawing parts table (1 -> terminal 1; contact 2 qty 2 -> terminals 2-3; contact 3 -> 4; PPA base -> 5) cannot be tied to slot positions and is internally inconsistent. A third-party EasyEDA footprint (C668607, contributor Xkcc) numbers near row 1/3/2 and far row 1/2 but its geometry contradicts the manufacturer drawing, so it is not evidence.",
+      "citation": "reference/assets/jack/PJ-313-5JCJ.pdf p1 parts table 11F-16G; https://easyeda.com/api/products/C668607/components"
+    },
+    {
+      "op": "add_facts",
+      "target": "records[id=button].facts",
+      "value": [
+        "Variant code AR02016 = A stainless dome, R no locating post, 020 = H 2.0 mm actuator top above seating plane, 16 = 160 gf.",
+        "Exactly two terminals (1 left, 2 right in top view), single NO contact; no internally joined terminal pairs. Terminals 1.30 wide spanning 5.00; actuator dia 1.80; body height 1.50.",
+        "Recommended pads 5.50 outside / 3.40 inside / 2.00 high => 1.05 x 2.00 at +/-2.225; ZudoScope10:SW_XUNPU_TS1088_AR02016_REVIEW matches pad-for-pad (pad 1 at -2.225)."
+      ],
+      "citation": "reference/assets/button/TS-1088-AR02016.pdf p1: ordering code 7D-11F, top view 2D-4F, side views 2B-7B, H table 5D-6E, circuit diagram 5I-6I, PCB welding drawing 8H-9I"
+    },
+    {
+      "op": "replace_open_questions",
+      "target": "records[id=button].open_questions",
+      "value": [
+        "Pads and pin identity verified against drawing; remaining: real-part fit, panel/cap reach to a 2.0 mm actuator."
+      ],
+      "citation": "reference/assets/button/TS-1088-AR02016.pdf p1"
+    },
+    {
+      "op": "add_facts",
+      "target": "records[id=display].facts",
+      "value": [
+        "Outline 86.00 x 57.20 x 1.6 mm PCB, R1.0 corners; two 1.0 mm recesses on the pin-1 edge (RUN 38.64-47.62, microSD 61.06-76.95 from the header-side edge).",
+        "Mounting holes 4.10 from each corner, 77.80 x 49.00 pitch; STEP models dia 5.5 x 4.0 mm standoffs (dia 2.5 bore) on the socket side. Drill diameter not dimensioned.",
+        "Female Pico sockets on the non-LCD side: pins 1-20 row 10.45 mm and pins 21-40 row 28.25 mm from the header-side edge (17.80 in STEP, 17.78 nominal); pin 1 and pin 40 at 1.62 mm from the pin-1 edge; pitch 2.54.",
+        "Socket housing extends 9.0 mm below the module PCB; modelled cavity depth 8.0 mm. Other underside parts <= 4.0 mm (standoffs), RUN switch 3.5 mm.",
+        "Active area 73.44 x 48.96 mm at 3.60 (header side) / 8.96 / 3.97 (pin-1 edge) / 4.27 mm from the board edges; glass top 5.2 mm above module PCB top."
+      ],
+      "citation": "display-cad STEP (planes z=-9.411/-1.411/-0.411/1.189/6.339/6.389; cylinders r=1.0/1.25/2.15/2.75); display-size image; display-inter image"
+    },
+    {
+      "op": "replace_open_questions",
+      "target": "records[id=display].open_questions",
+      "value": [
+        "STOP: inspect R11/R12/R14/R15 regulator straps and module revision before connecting power.",
+        "Do not tie Pico 3V3_OUT to the display regulator output.",
+        "Verify high/low unused chip-select states and SPI word framing.",
+        "Measure mounting-hole drill and standoff thread; confirm socket engagement spec on the received module."
+      ],
+      "reason": "CAD is no longer missing (downloaded and read); keep the G01 power items.",
+      "citation": "g02-mechanical-pins.md section 4a"
+    },
+    {
+      "op": "add_facts",
+      "target": "records[id=pico-h].facts",
+      "value": [
+        "51 x 21 x 1.0 mm; pin rows 17.78 apart, 48.26 first-to-last, 2.54 pitch; micro-USB overhangs the pin-1 edge by 1.3 mm; 4 x dia 2.1 holes 11.4 apart, 2.0 from the USB edge and 2.4 from the far edge.",
+        "Physical numbering: pin 1 top-left beside USB, 1-20 down the left, 40 top-right. Orderable SC0917."
+      ],
+      "citation": "pico-ds section 2 p6 Figure 3; p7 Figure 4; Appendix A Table 6 p24"
+    },
+    {
+      "op": "add_open_question",
+      "target": "records[id=pico-h].open_questions",
+      "value": "Pico H factory header insulator height and pin length are not dimensioned in the Pico datasheet/product brief; measure a unit or obtain a Raspberry Pi drawing.",
+      "citation": "pico-ds (no header dimension); Pico-R3-step.zip has no header parts"
+    },
+    {
+      "op": "add_facts",
+      "target": "records[id=header20].facts",
+      "value": [
+        "Mating length above insulator must be <= 8.0 mm (modelled display socket cavity) and >= the socket's minimum engagement (unknown).",
+        "Display PCB underside sits at (insulator height + 9.0 mm) above the carrier; module 4.0 mm standoffs fall short by (insulator height + 5.0 mm), so added spacers are required for support."
+      ],
+      "citation": "display-cad STEP socket planes z=-9.411/-1.411 and standoff cylinders z=-0.411..-4.411"
+    },
+    {
+      "op": "add_facts",
+      "target": "records[id=socket20].facts",
+      "value": [
+        "Pico H clearance = socket height + Pico H seated header height (OPEN). Allow 1.3 mm USB overhang beyond the pin-1 edge plus plug access. If the Pico sits under the display, the display gap must exceed the Pico stack."
+      ],
+      "citation": "pico-ds Figure 3; g02-mechanical-pins.md section 5"
+    }
+  ],
+  "unresolved": [
+    "PJ-313 5JCJ physical leg to contact node map (sample continuity or vendor)",
+    "PJ-313 5JCJ slot-count typo and 14.0 vs 14.1 mm length chain",
+    "SS14MDP2 L/H panel direction (layout decision)",
+    "Waveshare mounting-hole drill diameter, standoff thread, socket engagement spec",
+    "Pico H header height",
+    "1x20 female/male orderables and resulting stack height",
+    "Real-part fit of all items (local gate)"
+  ]
+}
