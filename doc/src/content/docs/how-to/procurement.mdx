@@ -4,6 +4,10 @@ title: "Sourcing and no-home-soldering contract"
 sidebar_position: 3
 ---
 
+## Prototype approval precedes any prototype order
+
+An RFQ for a **prototype** quantity still needs the separate prototype-approval decision recorded first: `design/release-gates.json`'s `decisions.prototype.allowed` set `true`, every listed prerequisite `met` with real evidence, and an explicit human `approval` record (approver/date/revision, never auto-filled). `manufacturing/release_guard.py --route prototype` refuses (exit 2) until then. This is separate from, and never a substitute for, the full production release decision (`--route production`, G01-G10) below -- ordering an approved prototype authorizes exactly one factory-soldered prototype board, not a production run.
+
 ## Factory scope
 
 Deliver the custom carrier with every fitted electrical item soldered: all passives, six op amps, three muxes, reference/regulator, ten jacks, ten pots, ten range switches, two buttons and all four module connector strips. No “hand-fit after delivery” connector, wire link or programming header is acceptable.
