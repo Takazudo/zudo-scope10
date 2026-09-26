@@ -87,7 +87,10 @@ def cap_farads_on_net(parts, record_prefix, net, value_map):
     hits = []
     for p in parts:
         rec = p.get("record", "")
-        if not rec.startswith(record_prefix):
+        # capacitor records in this project are named e.g. "c1u", "c100n" --
+        # require a digit right after the prefix so a record like "clamp"
+        # (the BAV199 diode) never matches.
+        if not (rec.startswith(record_prefix) and len(rec) > len(record_prefix) and rec[len(record_prefix)].isdigit()):
             continue
         pins = p.get("pins", {})
         if net in (pins.get("1"), pins.get("2")):
