@@ -176,6 +176,51 @@ def _docs_browser_smoke(check, ctx):
 EXTRA_CHECKS.append(_docs_browser_smoke)
 
 
+def _acceptance_csv(check, ctx):
+    """#29/#32: manufacturing/acceptance-results.csv has no column shift, and
+    every row is still NOT_RUN because no physical measurement has been
+    performed yet. Allowed `result` values, per LOCAL-HANDOFF.md's bench
+    section (around lines 151-156): NOT_RUN, PASS, FAIL, BLOCKED.
+    """
+    import csv
+
+    R = ctx['R']
+    ALLOWED_RESULTS = {'NOT_RUN', 'PASS', 'FAIL', 'BLOCKED'}
+    path = R / 'manufacturing/acceptance-results.csv'
+    with path.open(newline='') as f:
+        reader = csv.DictReader(f)
+        header_width = len(reader.fieldnames)
+        rows = list(reader)
+
+    check(
+        'acceptance-results.csv rows match header width (no unnamed/None field)',
+        all(None not in row and len(row) == header_width for row in rows),
+    )
+    check(
+        'acceptance-results.csv result values are all allowed',
+        all(row.get('result') in ALLOWED_RESULTS for row in rows),
+        detail=str(sorted({row.get('result') for row in rows})),
+    )
+    check(
+        'acceptance-results.csv PASS/FAIL rows cite evidence, operator and date',
+        all(
+            (row.get('evidence_file') and (R / row['evidence_file']).exists()
+             and row.get('operator') and row.get('date'))
+            for row in rows if row.get('result') in ('PASS', 'FAIL')
+        ),
+    )
+    # No physical measurement has been performed yet (see LOCAL-HANDOFF.md's
+    # G04 bench section). Once a real bench result lands, this assertion must
+    # be deliberately updated alongside evidence from G04/G05/G07.
+    check(
+        'acceptance-results.csv: every row is still NOT_RUN (no physical measurement performed)',
+        all(row.get('result') == 'NOT_RUN' for row in rows),
+    )
+
+
+EXTRA_CHECKS.append(_acceptance_csv)
+
+
 def run(check, ctx):
     for extra in EXTRA_CHECKS:
         extra(check, ctx)
