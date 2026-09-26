@@ -1,6 +1,8 @@
 node_modules/
 doc/dist/
 doc/.zfb/
+doc/.zfb-build/
+doc/.zudo-doc/
 firmware/build/
 __pycache__/
 *.pyc
