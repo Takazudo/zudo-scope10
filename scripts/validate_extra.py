@@ -181,6 +181,8 @@ def _check_renderer_capture(check, ctx):
 
 
 EXTRA_CHECKS.append(_check_renderer_capture)
+
+
 def _power_budget_report(check, ctx):
     """G07: reports/power-budget.json exists, cites its inputs, and never
     claims a gate close."""
