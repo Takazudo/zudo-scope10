@@ -3,14 +3,12 @@
 <p><code>firmware/src/pico_diagnostic.c</code> initializes the specified pins, scans the three mux outputs with conservative delays, and writes raw CSV values over USB serial. It deliberately leaves the LCD off and does not implement the ten-channel high-rate engine. No prebuilt UF2 is supplied because target compilation and hardware execution were unavailable.</p>
 <h2>Local target build</h2>
 <p>Install a reviewed Pico SDK and an ARM compiler in your usual local toolchain. Set <code>PICO_SDK_PATH</code> to the checkout. The package does not run an unpinned SDK download during CMake configure.</p>
-<pre><code class="language-sh">cmake -S firmware -B firmware/build -DPICO_BOARD=pico
-cmake --build firmware/build
-</code></pre>
+<pre><code>cmake -S firmware -B firmware/build -DPICO_BOARD=pico
+cmake --build firmware/build</code></pre>
 <p>The above builds only <code>scope10_diagnostic</code>, after local source/toolchain review. Record compiler/SDK versions and build hashes. Do not flash/energize the assembled module interface before G01 power/pin checks.</p>
 <h2>LCD integration remains open</h2>
 <p>Download the vendor example archive from the source manifest. Its module uses an SPI-to-parallel bridge around ILI9488; this is not necessarily the same transfer framing as a raw ILI9488 SPI panel. Adapt the exact 3.5-inch vendor driver to the GPIO table and disable touch/SD access. Confirm reset, CS, DC, RGB565 byte order, orientation, address-window writes and backlight behavior using color bars and corner markers before waveform drawing.</p>
 <p><code>display_port.h</code> specifies the renderer's small-rectangle API. There is intentionally no no-op fake backend: an application using these calls cannot link until a real implementation is supplied. Do not allocate a 307,200-byte framebuffer or use a generic driver with an assumed RGB666 pixel protocol.</p>
 <h2>Calibration and data provenance</h2>
 <p><code>firmware/tools/calibrate.py measured.csv calibration.json</code> requires two measured DC points for every channel. Input columns are <code>channel,volts,mean_code</code>. Use the actual DMM-measured fixture voltage; do not pass an assumed front-panel generator setting as ground truth. Inspect intermediate 0, ±3, ±5 and ±8 V residuals after fitting. Store board serial, date, fixture identity, temperature, firmware hash and source CSV with the calibration file.</p>
-<p>Persistent flash storage, CRC/versioning, safe defaults, a real-time display renderer, trigger alignment, DMA/PIO acquisition and hardware tests are not complete. They have explicit acceptance tasks rather than success claims. Never perform automatic “zero at startup” on attached signals.</p>
-<footer>Pre-layout evidence. No factory approval or hardware measurements are implied.</footer></main></html>
+<p>Persistent flash storage, CRC/versioning, safe defaults, a real-time display renderer, trigger alignment, DMA/PIO acquisition and hardware tests are not complete. They have explicit acceptance tasks rather than success claims. Never perform automatic “zero at startup” on attached signals.</p><footer>Pre-layout evidence. No factory approval or hardware measurements are implied.</footer></main></html>

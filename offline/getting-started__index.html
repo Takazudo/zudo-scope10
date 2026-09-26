@@ -5,12 +5,5 @@
 <p>Use one factory-populated custom carrier, one factory-headered Raspberry Pi Pico H, and one preassembled Waveshare Pico-ResTouch-LCD-3.5 (SKU 19907). Keep ten independent inputs, ten TIME pots and ten three-position RANGE switches. One LCD shows ten panes at once.</p>
 <p>No soldering at home is required or assumed. All PCB components, including through-hole controls, connectors and headers, belong on the factory BOM. Modules are plugged into already-soldered connectors with power off. Any needed electrical repair goes to the assembler or a contracted rework service.</p>
 <h2>Local sequence</h2>
-<ol>
-<li>Run <code>python3 scripts/validate.py</code> from the project root. This checks the data and generated files, not electrical safety.</li>
-<li>Run <code>python3 scripts/serve.py</code>, then browse <code>http://127.0.0.1:8000/</code>. The offline catalogue and UI simulation work without npm packages.</li>
-<li>Read the power/interface gates and the component pin maps before opening <code>hardware/kicad/zudo-scope10-p0.kicad_pro</code>.</li>
-<li>Resolve the display module's power/header revision and the physical jack, switch, socket and cap drawings before finishing footprints or placement.</li>
-<li>Complete local KiCad review, layout, ERC/DRC and assembly review. Do not order the outline-only <code>.kicad_pcb</code>.</li>
-</ol>
-<p>The documentation can be read immediately as Markdown. The included <code>doc/</code> contains native zudo-doc configuration and MDX content. Use <code>scripts/bootstrap_doc.sh</code> to obtain the official scaffold in a new directory when you prefer that route. No repository, online document or order has been modified.</p>
-<footer>Pre-layout evidence. No factory approval or hardware measurements are implied.</footer></main></html>
+<ol><li>Run <code>python3 scripts/validate.py</code> from the project root. This checks the data and generated files, not electrical safety.</li><li>Run <code>python3 scripts/serve.py</code>, then browse <code>http://127.0.0.1:8000/</code>. The offline catalogue and UI simulation work without npm packages.</li><li>Read the power/interface gates and the component pin maps before opening <code>hardware/kicad/zudo-scope10-p0.kicad_pro</code>.</li><li>Resolve the display module's power/header revision and the physical jack, switch, socket and cap drawings before finishing footprints or placement.</li><li>Complete local KiCad review, layout, ERC/DRC and assembly review. Do not order the outline-only <code>.kicad_pcb</code>.</li></ol>
+<p>The documentation can be read immediately as Markdown. The included <code>doc/</code> contains native zudo-doc configuration and MDX content. Use <code>scripts/bootstrap_doc.sh</code> to obtain the official scaffold in a new directory when you prefer that route. No repository, online document or order has been modified.</p><footer>Pre-layout evidence. No factory approval or hardware measurements are implied.</footer></main></html>

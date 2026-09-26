@@ -5,6 +5,7 @@ from collections import Counter,defaultdict
 from html.parser import HTMLParser
 from urllib.parse import urlsplit,unquote
 import json,re,hashlib,xml.etree.ElementTree as ET,subprocess,sys
+sys.path.insert(0,str(Path(__file__).resolve().parent));import validate_extra
 R=Path(__file__).resolve().parents[1];checks=[]
 def check(name,value,detail=''):
  checks.append({'check':name,'result':'PASS' if value else 'FAIL','detail':detail})
@@ -44,7 +45,7 @@ def parse(text):
  if stack or len(roots)!=1:raise ValueError('Unclosed or multiple roots')
  return roots[0]
 def children(node,kind):return [n for n in node[1:] if isinstance(n,list) and n and n[0]==kind]
-parsed={};native=list((R/'hardware').rglob('*.kicad_sch'))+list((R/'hardware').rglob('*.kicad_sym'))+list((R/'hardware').rglob('*.kicad_pcb'))+list((R/'hardware').rglob('*.kicad_mod'))
+parsed={};native=sorted((R/'hardware').rglob('*.kicad_sch'))+sorted((R/'hardware').rglob('*.kicad_sym'))+sorted((R/'hardware').rglob('*.kicad_pcb'))+sorted((R/'hardware').rglob('*.kicad_mod'))
 for f in native:
  try:parsed[f]=parse(f.read_text());check('S-expression '+f.name,True)
  except Exception as e:check('S-expression '+f.name,False,str(e))
@@ -70,7 +71,7 @@ class Links(HTMLParser):
   for key in ('href','src'):
    if key in d:self.refs.append(d[key])
 missing=[]
-for f in [R/'index.html']+list((R/'offline').glob('*.html'))+list((R/'doc/public').rglob('*.html')):
+for f in [R/'index.html']+sorted((R/'offline').glob('*.html'))+sorted((R/'doc/public').rglob('*.html')):
  parser=Links();parser.feed(f.read_text())
  for uri in parser.refs:
   u=urlsplit(uri)
@@ -85,11 +86,13 @@ check('No catalog footprint or factory approval fabricated',all(not r['footprint
 g=json.loads((R/'design/release-gates.json').read_text());guard=subprocess.run([sys.executable,str(R/'manufacturing/release_guard.py')],capture_output=True,text=True)
 check('Release guard blocks this package',guard.returncode!=0 and not g['release_allowed'])
 # Deterministic generated content. Regenerate and compare input/output bytes.
-paths=list((R/'hardware/kicad').glob('*'))+[R/'design/circuit.json',R/'design/gpio.json',R/'design/connections.csv',R/'manufacturing/bom-planning.csv']+list((R/'doc/src/content/docs').rglob('*.mdx'))
+paths=sorted((R/'hardware/kicad').glob('*'))+[R/'design/circuit.json',R/'design/gpio.json',R/'design/connections.csv',R/'manufacturing/bom-planning.csv']+sorted((R/'doc/src/content/docs').rglob('*.mdx'))
 before={p:hashlib.sha256(p.read_bytes()).hexdigest() for p in paths if p.is_file()}
 for script in ['make_design.py','analyze.py','build_docs.py']:
  subprocess.run([sys.executable,str(R/'scripts'/script)],check=True,capture_output=True,text=True)
 check('Regeneration preserves generated design/page bytes',all(hashlib.sha256(p.read_bytes()).hexdigest()==sha for p,sha in before.items()))
+# Extension point: later topics register checks in scripts/validate_extra.py.
+validate_extra.run(check,{'R':R,'cat':cat,'byid':byid,'circuit':c,'parts':parts,'pby':pby})
 report={'result':'PASS' if all(c['result']=='PASS' for c in checks) else 'FAIL','scope':'Offline structural checks only. NOT native ERC/DRC or assembly approval.','physical_instances':len(parts),'nets':len(expected),'component_records':len(cat),'retained_source_files':assetcount,'checks':checks,'not_run':['Native KiCad parsing/ERC/DRC','Native zudo-doc npm install/build','Pico/ARM target compilation','Vendor LCD backend integration','Electrical or mechanical hardware measurements','Factory DFM/quote/acceptance']}
 (R/'reports/validation.json').write_text(json.dumps(report,indent=2)+'\n')
 print(f'{report["result"]}: {len(checks)} structural checks / {len(parts)} instances / {len(expected)} nets')
