@@ -460,8 +460,9 @@ def test_invalid_route_is_malformed():
             [sys.executable, str(GUARD), '--manifest', str(manifest), '--route', 'bogus'],
             capture_output=True, text=True,
         )
-        # argparse itself rejects an unlisted --route choice before run_guard is reached.
-        assert r.returncode == 2, f'expected argparse to reject an unknown --route, got {r.returncode}\n{r.stderr}'
+        # Argument parsing rejects an unlisted --route choice as malformed (exit 3), never
+        # with exit 2, which the exit-code contract reserves for a considered refusal.
+        assert r.returncode == 3, f'expected an unknown --route to exit 3 (MALFORMED), got {r.returncode}\n{r.stderr}'
         print('PASS: an unknown --route value is rejected by argument parsing')
     finally:
         shutil.rmtree(workdir, ignore_errors=True)

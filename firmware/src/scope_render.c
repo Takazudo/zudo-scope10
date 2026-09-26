@@ -274,10 +274,14 @@ static void field_content(const scope_render_state *s, const scope_render_input 
         if (!s->range_known[pane]) *colour = SCOPE_COLOUR_WARN; /* startup scale, switch not yet read */
         break;
     }
-    case SCOPE_FIELD_WINDOW:
-        scope_render_window_label(scope_render_time_code(in, pane), in->samples_per_s, raw);
-        if (in->link) *colour = SCOPE_COLOUR_LINK; /* the window comes from CH1's TIME */
+    case SCOPE_FIELD_WINDOW: {
+        /* Latched with the plot (frozen under HOLD); live only before the pane is first mapped. */
+        bool known = s->window_known[pane];
+        uint16_t code = known ? s->view_time_code[pane] : scope_render_time_code(in, pane);
+        scope_render_window_label(code, in->samples_per_s, raw);
+        if (known ? s->view_linked[pane] : in->link) *colour = SCOPE_COLOUR_LINK; /* window from CH1's TIME */
         break;
+    }
     case SCOPE_FIELD_CAL:
         if (!scope_calibration_valid(in->cal[pane])) copy_text(raw, scope_status_token_text(SCOPE_STATUS_UNCAL));
         *colour = SCOPE_COLOUR_WARN;
@@ -346,7 +350,10 @@ unsigned scope_render_step(scope_render_state *s, const scope_render_input *in, 
                 s->item = ITEM_TEXT0;
                 continue;
             }
-            uint32_t window = scope_window_samples(scope_render_time_code(in, pane), in->samples_per_s);
+            s->view_time_code[pane] = scope_render_time_code(in, pane);
+            s->view_linked[pane] = in->link;
+            s->window_known[pane] = true;
+            uint32_t window = scope_window_samples(s->view_time_code[pane], in->samples_per_s);
             s->window = scope_window_map(&in->hist[pane], window, SCOPE_PLOT_W, s->cols);
             int r = in->range[pane];
             if (r >= 0 && r < 3) { /* -1 (deadband / not yet decoded) keeps the last valid scale */

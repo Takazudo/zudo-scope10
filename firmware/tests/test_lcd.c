@@ -506,12 +506,15 @@ static void test_renderer(void) {
     assert(s.item > 1u && s.item < 1u + SCOPE_PLOT_W); /* inside CH1's plot columns */
     in.hold = true;
     in.range[5] = 0;
+    in.time_code[5] = 4095;
     plot_calls = 0;
     render_pass(&s, &in);
     assert(plot_calls == 0);
     for (unsigned ch = 0; ch < SCOPE_CHANNELS; ch++) assert(field_is(ch, SCOPE_FIELD_HOLD, "HOLD", SCOPE_COLOUR_HOLD));
     /* The RANGE label names the frozen plot's scale, so it waits for the plot. */
     assert(field_is(5, SCOPE_FIELD_RANGE, "\xb1" "8V", SCOPE_COLOUR_TEXT));
+    /* Likewise the window duration: turning TIME under HOLD does not relabel the frozen plot. */
+    assert(field_is(5, SCOPE_FIELD_WINDOW, "2.0ms", SCOPE_COLOUR_TEXT));
 
     /* LINK: every pane takes CH1's TIME window, and its label says so. */
     in.hold = false;

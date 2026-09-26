@@ -320,8 +320,18 @@ def run_guard(manifest_path, route='production'):
     )
 
 
+class _GuardArgumentParser(argparse.ArgumentParser):
+    """A command-line usage error is malformed input (exit 3), never argparse's
+    default exit 2, which the contract above reserves for a considered refusal."""
+
+    def error(self, message):
+        self.print_usage(sys.stderr)
+        print(f'MALFORMED: {self.prog}: {message}', file=sys.stderr)
+        sys.exit(3)
+
+
 def main(argv=None):
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = _GuardArgumentParser(description=__doc__)
     parser.add_argument('--manifest', type=Path, default=DEFAULT_MANIFEST,
                          help='path to the release-gates manifest (default: design/release-gates.json)')
     parser.add_argument('--route', choices=sorted(ROUTES), default='production',

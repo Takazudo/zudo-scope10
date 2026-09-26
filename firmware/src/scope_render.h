@@ -32,7 +32,7 @@
  * clips), else nothing. UNCAL has its own slot, so neither hides the other.
  * LINK makes every pane use CH1's TIME window: a time-link of views, not phase sync. The
  * channels are still sampled sequentially. HOLD freezes the plots; text keeps updating,
- * except the RANGE label and signal token, which describe the frozen plot. */
+ * except the RANGE label, window duration and signal token, which describe the frozen plot. */
 #include "scope_core.h"
 #include <stdbool.h>
 #include <stdint.h>
@@ -114,6 +114,9 @@ typedef struct {
     scope_calibration cal;                  /* current pane's effective calibration */
     int8_t view_range[SCOPE_CHANNELS];      /* range index each plot is drawn at, latched per pane */
     bool range_known[SCOPE_CHANNELS];       /* a valid range has decoded at least once */
+    uint16_t view_time_code[SCOPE_CHANNELS]; /* TIME code each plot was drawn at, latched per pane */
+    bool view_linked[SCOPE_CHANNELS];       /* that TIME code came from CH1 under LINK */
+    bool window_known[SCOPE_CHANNELS];      /* the pane's plot has been mapped at least once */
     uint8_t signal[SCOPE_CHANNELS];         /* NONE / VIEW_CLIP / ADC_SAT of the drawn window */
     struct {                                /* last drawn text per field; redraw on change only */
         char text[SCOPE_FIELD_MAX + 1u];

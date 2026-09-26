@@ -1,7 +1,7 @@
 {
   "width": 320,
   "height": 480,
-  "sha256": "998bde63803727c09378b9bd7cef1590b9cf29f6ff5a251431a14e8dac4aab91",
+  "sha256": "1cec74e020aa50b171391967ba285cd82545e61f0a4a8e9cc0e3f5d6dcd449b2",
   "source": "firmware/tools/capture_renderer.c",
   "host_compiler": "/usr/bin/cc",
   "channels": "ch1(index0): sine, normal, UNCAL (invalid calibration). ch2: square, normal. ch3: ramp, normal. ch4: sine, VIEW CLIP (~4.0V swing at +-3V RANGE, raw codes off the ADC rails). ch5: square, normal. ch6: ramp, normal. ch7: sine, ADC SAT (raw codes driven to 0/4095). ch8: square, normal. ch9: ramp, normal. ch10: sine, normal. HOLD and LINK are both latched for the captured frame.",

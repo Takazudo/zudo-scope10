@@ -138,7 +138,7 @@ All duration text comes from `scope_render_window_label()` (`2.0ms` … `99.9ms`
 
 **HOLD and LINK.**
 
-- HOLD freezes the plots, including a pass already part-way through a pane. The text keeps updating, except the RANGE label and signal token, which describe the frozen plot.
+- HOLD freezes the plots, including a pass already part-way through a pane. The text keeps updating, except the RANGE label, window duration and signal token, which describe the frozen plot. Turning TIME or LINK under HOLD relabels nothing until the plot is redrawn.
 - LINK makes every pane use CH1's TIME window, and the duration text turns the LINK colour. This is a **time-link of views, not phase synchronisation**: channels are still sampled sequentially (see `ACQUISITION.md`).
 - Both are press-to-toggle with 20 ms debounce, on the active-low GP0/GP1.
 
