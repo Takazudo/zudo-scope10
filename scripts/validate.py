@@ -53,7 +53,8 @@ scsymbols=[]
 for f,t in parsed.items():
  if f.suffix=='.kicad_sch':
   for sym in children(t,'symbol'):
-   props={p[1]:p[2] for p in children(sym,'property')};scsymbols.append(props['Reference'])
+   props={p[1]:p[2] for p in children(sym,'property')}
+   if not props['Reference'].startswith('#'):scsymbols.append(props['Reference'])  # '#' = KiCad power/flag symbol, not a physical part
 check('Native schematic instance inventory matches graph',Counter(scsymbols)==Counter(pby.keys()))
 root=parse((R/'hardware/kicad/zudo-scope10-p0.kicad_sch').read_text());check('Root has ten child sheets',len(children(root,'sheet'))==10)
 for sh in children(root,'sheet'):
