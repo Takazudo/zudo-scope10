@@ -28,16 +28,22 @@ Manufacturer states SP3T On-On-On, top actuation, straight PC terminals, break-b
 
 Listing showed zero stock; price is not an availability guarantee.
 
+Terminal spacing code D (0.100 in): single row 1-2-3 at 2.54 mm, 3-4 at 5.08 mm; recommended PCB hole (0.8) dia; terminal section (0.4) x (0.6) mm.
+
+Body (15.8) x (4.0) mm, (4.5) mm high; terminals (3.0) mm below body per H48 ((3.4) in H47 isometric; conflict unresolved); actuator (1.2) x (1.5) mm protruding (2.0) mm above body; (2.0) mm travel per step. Actuator top about 6.5 mm above PCB (derived). All reference dims, no tolerances.
+
+Terminal 3 lies on the body and actuator centreline (centre marks, not toleranced). Four corner standoff bosses on the underside; no PCB mounting pegs.
+
 ## Pin map
 
 Pin assignments below are electrical evidence or explicitly logical placeholders. They are not footprint qualification.
 
 | Pin | Function |
 |---|---|
-| C | COMMON_LOGICAL |
-| L | LOW_RANGE_LOGICAL |
-| M | MID_RANGE_LOGICAL |
-| H | HIGH_RANGE_LOGICAL |
+| 1 | THROW_LEFT |
+| 2 | THROW_CENTER |
+| 3 | COMMON |
+| 4 | THROW_RIGHT |
 
 ## Documents and models
 
@@ -47,9 +53,9 @@ No original model or source binary was recovered for this record in this package
 
 **Footprint independently qualified: NO. Factory order approved: NO. Bench result: NOT TESTED.**
 
-- STOP: numeric pin numbers, pad geometry and 2 mm lever/panel access are not qualified.
-- Logical terminal letters in schematic are intentional placeholders, not pad numbers.
-- Approve signal-level switching and cleaning process; price/lead time via RFQ.
+- STOP: pad geometry and 2 mm lever/panel access are not qualified; numeric terminal map resolved from NKK catalogue H46/H47, still needs a drawn footprint and real-part fit check.
+- OPEN: terminal 2/3 (M/C) mapping is a vendor fact (C-&gt;3 is COM, M-&gt;2); terminal 1/4 (L/H) follows NKK Left/Right naming but the panel-legend direction is a layout decision, not yet confirmed. Swap to L-&gt;4 / H-&gt;1 if the panel reads the other way at layout.
+- Approve signal-level switching and cleaning process (not process sealed: hand clean locally, NKK H44); price/lead time via RFQ.
 
 The presence of a part number, datasheet or model closes none of these remaining gates automatically.
 

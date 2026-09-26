@@ -28,6 +28,16 @@ Jack axis parallel to PCB; rear/edge/raised patch strip layout, not Thonkiconn f
 
 
 
+Through-hole: land view titled 'PCB hole dimensions (+/-0.1), shown as bottom face'; pin tails 3.2 mm below body.
+
+Five slot openings drawn about 1.5 (along axis) x 1.0 mm; callout reads '(6-1.X1.5)' against 5 drawn (typo). Near row at 1.8 / 5.0 / 8.5 mm from the nose shoulder, far row at 1.8 / 8.5 mm; row pitch 5.8 mm.
+
+Two locating posts dia 1.0 on the part; board holes 2 x dia 1.3 at 2.3 and 8.3 mm from the shoulder, midway between rows. Plating of post holes and slots not stated.
+
+Body 11.5 + 2.5 nose, 6 wide, 5 high; nose OD 5, opening dia 3.6. Contact schematic: 1 = sleeve bar, 2 = V spring, 3 = ^ spring; no normally-closed contact.
+
+3 logical contacts / 5 physical legs: duplicated pad mapping is OPEN (G02 #6).
+
 ## Pin map
 
 Pin assignments below are electrical evidence or explicitly logical placeholders. They are not footprint qualification.
@@ -54,6 +64,7 @@ SHA-256: `8c3be622655208735ec21158f79aba16f5b1ae0b6621efa6ea6e2e89ac0d7199`.
 - Factory soldering and mechanical support required; no home electrical rework.
 - STOP: five physical legs represent three contacts; duplicated pads and extra-slot notation are unresolved. No normal switch.
 - Open unconnected jack is biased and must NOT be interpreted as zero volts; shorted-input calibration is required.
+- OPEN (G02 #6): drawing parts table (1 -&gt; terminal 1; contact 2 qty 2 -&gt; terminals 2-3; contact 3 -&gt; 4; PPA base -&gt; 5) cannot be tied to slot positions and is internally inconsistent. A third-party EasyEDA footprint (C668607, contributor Xkcc) numbers near row 1/3/2 and far row 1/2 but its geometry contradicts the manufacturer drawing, so it is not evidence. Needs sample continuity or vendor confirmation.
 
 The presence of a part number, datasheet or model closes none of these remaining gates automatically.
 

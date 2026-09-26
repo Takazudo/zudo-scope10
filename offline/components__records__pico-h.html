@@ -6,6 +6,8 @@
 <p>Factory H version only; the ordinary bare-header Pico does not meet the no-soldering purchase specification.</p>
 <p>Pico ADC inputs are GP26-28; GP29 is not a free external ADC pin on this board.</p>
 <p>500 kS/s is aggregate. Ten inputs are acquired sequentially.</p>
+<p>51 x 21 x 1.0 mm; pin rows 17.78 apart, 48.26 first-to-last, 2.54 pitch; micro-USB overhangs the pin-1 edge by 1.3 mm; 4 x dia 2.1 holes 11.4 apart, 2.0 from the USB edge and 2.4 from the far edge.</p>
+<p>Physical numbering: pin 1 top-left beside USB, 1-20 down the left, 40 top-right. Orderable SC0917.</p>
 <h2>Pin map</h2>
 <p>Pin assignments below are electrical evidence or explicitly logical placeholders. They are not footprint qualification.</p>
 <table><thead><tr><th>Pin</th><th>Function</th></tr></thead><tbody><tr><td>1</td><td>GP0</td></tr><tr><td>2</td><td>GP1</td></tr><tr><td>3</td><td>GND</td></tr><tr><td>4</td><td>GP2</td></tr><tr><td>5</td><td>GP3</td></tr><tr><td>6</td><td>GP4</td></tr><tr><td>7</td><td>GP5</td></tr><tr><td>8</td><td>GND</td></tr><tr><td>9</td><td>GP6</td></tr><tr><td>10</td><td>GP7</td></tr><tr><td>11</td><td>GP8</td></tr><tr><td>12</td><td>GP9</td></tr><tr><td>13</td><td>GND</td></tr><tr><td>14</td><td>GP10</td></tr><tr><td>15</td><td>GP11</td></tr><tr><td>16</td><td>GP12</td></tr><tr><td>17</td><td>GP13</td></tr><tr><td>18</td><td>GND</td></tr><tr><td>19</td><td>GP14</td></tr><tr><td>20</td><td>GP15</td></tr><tr><td>21</td><td>GP16</td></tr><tr><td>22</td><td>GP17</td></tr><tr><td>23</td><td>GND</td></tr><tr><td>24</td><td>GP18</td></tr><tr><td>25</td><td>GP19</td></tr><tr><td>26</td><td>GP20</td></tr><tr><td>27</td><td>GP21</td></tr><tr><td>28</td><td>GND</td></tr><tr><td>29</td><td>GP22</td></tr><tr><td>30</td><td>RUN</td></tr><tr><td>31</td><td>GP26_ADC0</td></tr><tr><td>32</td><td>GP27_ADC1</td></tr><tr><td>33</td><td>AGND</td></tr><tr><td>34</td><td>GP28_ADC2</td></tr><tr><td>35</td><td>ADC_VREF</td></tr><tr><td>36</td><td>3V3_OUT</td></tr><tr><td>37</td><td>3V3_EN</td></tr><tr><td>38</td><td>GND</td></tr><tr><td>39</td><td>VSYS</td></tr><tr><td>40</td><td>VBUS</td></tr></tbody></table>
@@ -13,7 +15,7 @@
 <p>No original model or source binary was recovered for this record in this package. See the sources and the local download manifest; no nominal model is presented as an exact replacement.</p>
 <h2>Coverage and unresolved questions</h2>
 <p><strong>Footprint independently qualified: NO. Factory order approved: NO. Bench result: NOT TESTED.</strong></p>
-<ul><li>Module socket exact MPN, standoff height and USB access; verify Pico H module pinout against assembly.</li></ul>
+<ul><li>Module socket exact MPN, standoff height and USB access; verify Pico H module pinout against assembly.</li><li>Pico H factory header insulator height and pin length are not dimensioned in the Pico datasheet/product brief; measure a unit or obtain a Raspberry Pi drawing.</li></ul>
 <p>The presence of a part number, datasheet or model closes none of these remaining gates automatically.</p>
 <h2>Sources</h2>
 <h3>Raspberry Pi Pico / Pico H</h3>

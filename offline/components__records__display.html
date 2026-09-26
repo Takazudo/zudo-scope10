@@ -6,6 +6,11 @@
 <p>480 x 320; portrait logical surface 320 x 480. Active area 48.96 x 73.44 mm in portrait.</p>
 <p>5 V module; 3.3 V logic. Vendor module uses a serial-to-16-bit-parallel bridge and RGB565.</p>
 <p>Factory female Pico socket headers are present.</p>
+<p>Outline 86.00 x 57.20 x 1.6 mm PCB, R1.0 corners; two 1.0 mm recesses on the pin-1 edge (RUN 38.64-47.62, microSD 61.06-76.95 from the header-side edge).</p>
+<p>Mounting holes 4.10 from each corner, 77.80 x 49.00 pitch; STEP models dia 5.5 x 4.0 mm standoffs (dia 2.5 bore) on the socket side. Drill diameter not dimensioned.</p>
+<p>Female Pico sockets on the non-LCD side: pins 1-20 row 10.45 mm and pins 21-40 row 28.25 mm from the header-side edge (17.80 in STEP, 17.78 nominal); pin 1 and pin 40 at 1.62 mm from the pin-1 edge; pitch 2.54.</p>
+<p>Socket housing extends 9.0 mm below the module PCB; modelled cavity depth 8.0 mm. Other underside parts &amp;lt;= 4.0 mm (standoffs), RUN switch 3.5 mm.</p>
+<p>Active area 73.44 x 48.96 mm at 3.60 (header side) / 8.96 / 3.97 (pin-1 edge) / 4.27 mm from the board edges; glass top 5.2 mm above module PCB top.</p>
 <h2>Pin map</h2>
 <p>Pin assignments below are electrical evidence or explicitly logical placeholders. They are not footprint qualification.</p>
 <table><thead><tr><th>Pin</th><th>Function</th></tr></thead><tbody><tr><td>1</td><td>GP0</td></tr><tr><td>2</td><td>GP1</td></tr><tr><td>3</td><td>GND</td></tr><tr><td>4</td><td>GP2</td></tr><tr><td>5</td><td>GP3</td></tr><tr><td>6</td><td>GP4</td></tr><tr><td>7</td><td>GP5</td></tr><tr><td>8</td><td>GND</td></tr><tr><td>9</td><td>GP6</td></tr><tr><td>10</td><td>GP7</td></tr><tr><td>11</td><td>GP8</td></tr><tr><td>12</td><td>GP9</td></tr><tr><td>13</td><td>GND</td></tr><tr><td>14</td><td>GP10</td></tr><tr><td>15</td><td>GP11</td></tr><tr><td>16</td><td>GP12</td></tr><tr><td>17</td><td>GP13</td></tr><tr><td>18</td><td>GND</td></tr><tr><td>19</td><td>GP14</td></tr><tr><td>20</td><td>GP15</td></tr><tr><td>21</td><td>GP16</td></tr><tr><td>22</td><td>GP17</td></tr><tr><td>23</td><td>GND</td></tr><tr><td>24</td><td>GP18</td></tr><tr><td>25</td><td>GP19</td></tr><tr><td>26</td><td>GP20</td></tr><tr><td>27</td><td>GP21</td></tr><tr><td>28</td><td>GND</td></tr><tr><td>29</td><td>GP22</td></tr><tr><td>30</td><td>RUN</td></tr><tr><td>31</td><td>GP26_ADC0</td></tr><tr><td>32</td><td>GP27_ADC1</td></tr><tr><td>33</td><td>AGND</td></tr><tr><td>34</td><td>GP28_ADC2</td></tr><tr><td>35</td><td>ADC_VREF</td></tr><tr><td>36</td><td>3V3_OUT</td></tr><tr><td>37</td><td>3V3_EN</td></tr><tr><td>38</td><td>GND</td></tr><tr><td>39</td><td>VSYS</td></tr><tr><td>40</td><td>VBUS</td></tr></tbody></table>
@@ -13,7 +18,7 @@
 <p>No original model or source binary was recovered for this record in this package. See the sources and the local download manifest; no nominal model is presented as an exact replacement.</p>
 <h2>Coverage and unresolved questions</h2>
 <p><strong>Footprint independently qualified: NO. Factory order approved: NO. Bench result: NOT TESTED.</strong></p>
-<ul><li>STOP: inspect R11/R12/R14/R15 regulator straps and module revision before connecting power.</li><li>Do not tie Pico 3V3_OUT to the display regulator output.</li><li>Verify high/low unused chip-select states, SPI word framing, actual mounting holes and board stack.</li><li>Exact module STEP and vendor driver were linked but binary downloads failed in this environment.</li></ul>
+<ul><li>STOP: inspect R11/R12/R14/R15 regulator straps and module revision before connecting power.</li><li>Do not tie Pico 3V3_OUT to the display regulator output.</li><li>Verify high/low unused chip-select states and SPI word framing.</li><li>Measure mounting-hole drill and standoff thread; confirm socket engagement spec on the received module.</li></ul>
 <p>The presence of a part number, datasheet or model closes none of these remaining gates automatically.</p>
 <h2>Sources</h2>
 <h3>Waveshare SKU 19907</h3>

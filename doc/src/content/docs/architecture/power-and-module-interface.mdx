@@ -45,3 +45,11 @@ All address changes occur while mux disable is high in the diagnostic firmware. 
 ## Provisional power allocation
 
 Allocate 300 mA to the screen/backlight module, 80 mA to Pico and 40 mA to carrier analog/control circuitry for planning. These are **budget allowances, not measured or manufacturer maximum currents**. Their sum is 420 mA; verify USB startup/enumeration limits, F1 derating, local capacitance and connector ratings. At 40 mA the analog LDO's ideal 5-to-3.3 V dissipation is about 68 mW, excluding any abnormal condition. Do not infer a thermal pass from this estimate.
+
+## G01/G06 pending decision — backlight default-on conflict (not applied)
+
+Desk evidence (#3) found that the display module's own R16 (10k, VSYS -> LCD_BL) pulls the backlight-enable/CAT1-EN node toward the module's ~5 V VSYS rail. Against the carrier's R88 (100k, LCD_BL -> GND), and with GP13 left high-impedance until firmware drives it, the node sits near 4.5 V: the backlight defaults **ON**, not off (the carrier pull-down does not give an off default), and 4.5 V is above the RP2040 GPIO absolute maximum of IOVDD + 0.5 V (small clamp current, estimated below 0.1 mA, unmeasured). This appears to be the vendor's own stacked behaviour, not a carrier design error.
+
+This is recorded as a **pending G01/G06 proposal only** (`pending_g01_changes` in `design/circuit.json`, id `g01-r88-backlight-default`): no component value is changed here, and R88's value/net is unchanged in the generator. The local G01 procedure (issue #16's `LOCAL-HANDOFF.md`) decides, after the physical module check, whether to keep R88, remove it, or accept and document the default-on behaviour.
+
+Citations: Waveshare Pico-ResTouch-LCD-3.5 schematic p1, LCD BACKLIGHT (3A), R16 10K VSYS->LCD_BL/CAT1 EN; RP2040 datasheet Sec 5.5.3.1, Table 622 (PDF p615).
