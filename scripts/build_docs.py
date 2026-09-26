@@ -14,6 +14,8 @@ allpages=json.loads((R/'design/narrative-pages.json').read_text())
 def esc(s):return str(s).replace('|','\\|').replace('<','&lt;').replace('>','&gt;').replace('{','&#123;').replace('}','&#125;')
 for r in cat:
  fields={'Record':r['id'],'Manufacturer':r['manufacturer'],'Orderable identity':r['mpn'] or 'NOT SELECTED','JLC/LCSC':r['jlc_code'] or 'NOT VERIFIED / NOT APPLICABLE','Package':r['package'],'Identity':r['identity_state'],'Fit':r['fit_state'],'References':' '.join(placements[r['id']]) or ('External plug-in module' if r['id'] in circuit['external_modules'] else 'Not fitted in P0'),'Footprint candidate':r['footprint_candidate'] or 'NOT ASSIGNED'}
+ if 'contact_material' in r:fields['Contact material']=r['contact_material']
+ if 'application_suitability_status' in r:fields['Application suitability']=r['application_suitability_status']
  body='## Identity\n\n| Field | Value |\n|---|---|\n'+'\n'.join(f'| {k} | {esc(v)} |' for k,v in fields.items())+'\n\n## Intended function\n\n'+r['role']+'\n\n## Recorded findings\n\n'
  for fact in r['facts']:body+=esc(fact)+'\n\n'
  body+='## Pin map\n\nPin assignments below are electrical evidence or explicitly logical placeholders. They are not footprint qualification.\n\n| Pin | Function |\n|---|---|\n'+'\n'.join(f'| {esc(k)} | {esc(v)} |' for k,v in r['pins'].items())+'\n\n'

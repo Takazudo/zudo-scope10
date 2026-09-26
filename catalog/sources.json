@@ -154,6 +154,30 @@
       "retrieval": "read_online"
     },
     {
+      "id": "range-contact-finish",
+      "title": "NKK SS14MDP2 contact finish",
+      "url": "https://www.nkkswitches.eu/products/Slides/Slides%20SS/SS14MDP2/",
+      "evidence_note": "Re-fetched 2026-09-26 for #27/#38. General Specifications table states \"Contact Finish: Silver Plating\" -- confirms the switch is silver-contact, not gold.",
+      "local_path": null,
+      "retrieval": "read_online"
+    },
+    {
+      "id": "range-z33",
+      "title": "NKK Electrical Ratings, page Z33 (dry-circuit contact material)",
+      "url": "https://www.nkkswitches.eu/documents/products/support/electricalratings.pdf",
+      "evidence_note": "Fetched and read 2026-09-26 for #27/#38 (PDF page 3 of this document, printed page Z33). Quoted: \"Low Level ~ 0.4VA maximum @ 28V AC or DC maximum ... Gold plated contacts are recommended for dry circuits ... In circuits where the voltage is below 28 volts DC and current is below 100 milliamps (dry circuits), no arc develops ... Power Level ~ 100mA to 10 amps @ 125V AC ... Silver contacts are recommended for electrical levels above 0.4VA ... In circuits where the voltage is above about 12 volts DC and the current above .5 amps, an arc develops ... This arc keeps the oxidation cleaned off.\"",
+      "local_path": null,
+      "retrieval": "read_online"
+    },
+    {
+      "id": "range-operating-range",
+      "title": "NKK engineering: electrical (operating-range dry-circuit guidance)",
+      "url": "https://www.nkkswitches.eu/engineering/electrical.html",
+      "evidence_note": "Fetched and read 2026-09-26 for #27/#38. Quoted: \"Gold plated contacts are recommended for dry circuits, which are defined as very low energy. In circuits where the voltage is below 28 volts DC and current is below 100 milliamps (dry circuits), no arc develops as the contacts open or close.\" Restates the page Z33 guidance in range-z33.",
+      "local_path": null,
+      "retrieval": "read_online"
+    },
+    {
       "id": "hs-display",
       "title": "Cost-down display HS35B01A",
       "url": "https://jlcpcb.com/partdetail/HS-HS35B01A/C19632787",
