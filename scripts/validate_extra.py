@@ -146,6 +146,35 @@ def _lcd_backend_default_off(check, ctx):
 
 EXTRA_CHECKS.append(_lcd_backend_default_off)
 
+def _docs_browser_smoke(check, ctx):
+    """#15: doc/ builds natively and the HTTP browser smoke passed.
+
+    Self-contained and skips (no check recorded) rather than failing when
+    doc/node_modules is absent, so a checkout that has not run `pnpm install`
+    in doc/ is not penalized by this check alone.
+    """
+    import json
+
+    R = ctx['R']
+    if not (R / 'doc/node_modules').is_dir():
+        print('SKIP: doc/node_modules absent; native zudo-doc build not run here.')
+        return
+    dist_marker = R / 'doc/dist/__zfb/routes.json'
+    check('doc/ zfb build produced doc/dist (routes.json present)', dist_marker.exists())
+    smoke_path = R / 'reports/browser-smoke.json'
+    if not smoke_path.exists():
+        check('reports/browser-smoke.json exists', False, 'run scripts/browser_smoke.py')
+        return
+    smoke = json.loads(smoke_path.read_text())
+    check(
+        'HTTP browser smoke passed (catalogue, ten-pane UI, GLB viewer, built site)',
+        smoke.get('result') == 'PASS' and not smoke.get('page_errors'),
+        json.dumps(smoke.get('checks', [])),
+    )
+
+
+EXTRA_CHECKS.append(_docs_browser_smoke)
+
 
 def run(check, ctx):
     for extra in EXTRA_CHECKS:
