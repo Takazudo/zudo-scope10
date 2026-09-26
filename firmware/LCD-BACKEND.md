@@ -1,0 +1,190 @@
+# LCD backend and ten-pane renderer
+
+**Status: a clean-room backend, host-tested models, and target builds only. Gate G06 ("Firmware/display integration") stays OPEN.** Nothing here has been run on a module. The backend is **not compiled unless `scope10_acq` is configured with `-DSCOPE_ENABLE_LCD=1`**, and the default is off until G01 (the module's power path and straps) is physically verified. `scope10_diagnostic` and `pico_diagnostic.c` are unchanged.
+
+The module is the Waveshare Pico-ResTouch-LCD-3.5 (SKU 19907): an ILI9488 panel (vendor wiki) behind a write-only SPI to 16-bit parallel bridge on SPI1. Pins: SCK GP10, MOSI GP11, DC GP8, CS GP9, backlight GP13, reset GP15. Touch CS GP16 and SD CS GP22 stay deselected. MISO GP12 is not used.
+
+## Files
+
+| File | Role |
+|---|---|
+| `src/display_port.h` | The unchanged contract, plus `SCOPE_DISPLAY_WIDTH/HEIGHT` and the meaning of a `false` return. |
+| `src/lcd_bridge.[ch]` | Portable bridge framing, the init table, the address window, clipping, and blit/fill. No RP2040 headers. |
+| `src/display_waveshare.c` | RP2040 SPI1/GPIO bus for `lcd_bridge` and the `display_port.h` implementation. It fails with `#error` unless `SCOPE_ENABLE_LCD=1`. |
+| `src/scope_render.[ch]` | The ten-pane portrait renderer, which draws `scope_core` history in small rectangles. It also holds the debounced HOLD/LINK toggle. |
+| `src/lcd_safe_pins.[ch]` | The "LCD dark, all SPI1 slaves deselected" pin state. It is applied from an SDK runtime-init hook before `main()`, in **both** flag states. |
+| `tests/test_lcd.c` | Host tests, run by `scripts/test_firmware.py`. They include a bit-level model of the bridge and a minimal ILI9488 memory model. |
+
+## Build
+
+```sh
+python3 scripts/test_firmware.py                             # host tests, includes test_lcd
+PICO_SDK_PATH=... bash scripts/build_firmware.sh             # builds both flag states
+cmake -S firmware -B firmware/build -DSCOPE_ENABLE_LCD=1     # manual LCD configuration
+```
+
+`build_firmware.sh` builds three UF2s and records each one's warning count in `reports/firmware-target-build.json`:
+
+- `firmware/build/scope10_diagnostic.uf2`
+- `firmware/build/scope10_acq.uf2`: LCD off, the default
+- `firmware/build/lcd-enabled/scope10_acq.uf2`: `SCOPE_ENABLE_LCD=1`, reported as `scope10_acq+lcd`
+
+Build-time knobs:
+
+- `SCOPE_LCD_SPI_HZ` (default 15 MHz)
+- `LCD_VENDOR_PANEL_TUNING` (default 1; see Licensing)
+
+## Licensing decision: clean-room, nothing vendor-owned committed
+
+The source is `https://files.waveshare.com/upload/f/fc/Pico-ResTouch-LCD-X_X_Code.zip`, SHA-256 `a489c0b03b274ede3eef5f6470d960da6aba4500f55522c5ac1068ed3f95779a`. It is the same archive as the `display-code` source in `design/evidence/g01-display-power.md`. It was retrieved on 2026-09-26 into the gitignored `reference/downloads/`.
+
+**No licence covers the driver code.** The archive has no LICENSE file. The files that carry the 3.5-inch driver have no licence grant or copyright notice at all, only "Author: Waveshare team":
+
+- `C/lib/lcd/LCD_Driver.c` (SHA-256 `4b837c51…`)
+- `C/lib/config/DEV_Config.[ch]` (`f64da8ee…` for the `.c`)
+- `Python/3inch5/main_3inch5.py` (`80fc3d6e…`)
+
+**The licences that do appear cover other files:**
+
+- `C/examples/lcd_test.c` and `main.h` carry an MIT-style permission text with no copyright line. It covers those example files only, and nothing from them is used.
+- `C/lib/fatfs` is under ChaN's licence and the fonts are under STMicroelectronics' BSD-3. Neither is used.
+- `Python/2inch8/nanoguilib` is MIT (Peter Hinch) and is for a different panel. It is not used.
+
+**Decision:** the vendor code is not copied, ported or committed. The backend was written from:
+
+- the ILI9488 datasheet V1.00 (2012-11-28): §4.7.5 16-bit MCU interface, §5.2.13 SLPOUT, §5.2.22–24 CASET/PASET/RAMWR, §5.2.30 MADCTL, §5.2.34 COLMOD, §5.3.7 DISCTRL, §13.4 reset timing. It was fetched from lcdwiki.com, SHA-256 `aeb23170…`, and is not committed.
+- the module schematic (`display-sch` in the G01 evidence);
+- a behavioural description of the vendor driver: which pins it uses, how it frames commands and parameters, and which registers it programs. The vendor code is cited as a reference, not reproduced.
+
+**Facts taken from the vendor reference and the reason for each:**
+
+- **Pin numbers.** They already agree with `design/gpio.json` and the G01 evidence.
+- **Word layout.** Parameters and pixels go out as 16-bit words, MSB first.
+- **Portrait scan setting:** MADCTL `0x08` (BGR = 1) with DISCTRL SS = 1. This orientation and colour order depend on how the glass is wired, which the IC datasheet cannot give.
+- **INVON.**
+- **Panel analogue tuning:** power control 3 `C2h`, VCOM `C5h`, frame rate `B1h`, gamma `E0h/E1h`. These are numerical parameters of this glass, not expressive code, and they cannot be derived from the IC datasheet.
+
+**Reviewer decision:** whether these numeric facts are acceptable. Building with `LCD_VENDOR_PANEL_TUNING=0` leaves them out and keeps the datasheet defaults, so the image quality may differ.
+
+`catalog/sources.json` is owned by the generator-integrator topic (#13) and was not edited. #13 may add a `display-code` note that points here.
+
+## Bridge framing (derived from the module schematic, "LCD SPI ->16BIT", Sch p1 1A–2A)
+
+- **U1 74HC4040:** `~CP` = SCLK, so it counts falling edges. `MR` = LCD_CS, so it is held reset while CS is high. `Q3` = `CLK/16`.
+- **U2, U3 74HC4094:** `CP` = SCLK, so they shift on rising edges. U2 `DATA` = MOSI, and U2 `QS1` feeds U3 `DATA`. `STR` = `CLK/16`, so the latch is transparent while it is high. The outputs are D0–D7 (U2) and D8–D15 (U3). After 16 clocks, the first bit sent sits on D15.
+- **U4, printed "74HC04D":** its input is `CLK/16` and its output is `LCD_CLK`, the panel's WRX. The symbol is drawn with 74HC164 pin names, so the inversion is inferred from the part label, not from the drawn symbol.
+
+**What follows from these connections, with CS low:**
+
+- WRX falls after the 8th clock, and rises (the panel latches) on the 16th falling edge.
+- By then the latch holds the complete word.
+- D/CX is sampled at that edge, so D/C is changed only while CS is high.
+- SPI mode 0, 8-bit frames, MSB first.
+
+**Framing used: every bus write is one whole 16-bit word.**
+
+- A command goes out as `0x00cc` and each parameter as `0x00pp`. The ILI9488 reads commands and parameters on D7–D0, and D15–D8 are "don't care".
+- A pixel goes out as one RGB565 word, with COLMOD `0x55`, meaning DBI = 101, 16 bit/pixel on the 16-bit bus (datasheet §4.7.5.1).
+- There is no RGB666 path anywhere, and a host test asserts it.
+
+**Deviation from the vendor C driver.** The vendor driver sends each command as a **single byte**. On this bridge an 8-clock frame completes only when CS goes high: MR resets the counter, so CLK/16 falls and WRX rises at the same moment the panel's CSX deasserts. That write therefore depends on propagation-delay ordering. `test_lcd.c` shows this in the bridge model: vendor-style command framing produces one CS-release strobe, while `lcd_bridge.c` produces none over the whole init, blit and render sequence.
+
+## GP13 backlight: driven early, never released
+
+- **The hazard (G01 evidence):** module R16 10k runs from VSYS (5 V) to `LCD_BL`, the backlight regulator's EN. With the carrier's R88 100k pull-down, an undriven GP13 settles near 4.5 V. That is above the RP2040 absolute maximum of IOVDD + 0.5 V, and it turns the backlight **on**.
+- **The mitigation:** `lcd_safe_pins.c` registers `PICO_RUNTIME_INIT_FUNC_HW(lcd_safe_pins_apply, "00110")`, which drives GP13 low. It also sets LCD CS, touch CS and SD CS high and holds RST low.
+  - The hook runs just after the SDK's `runtime_init_early_resets` (priority 00100), which releases IO_BANK0/PADS_BANK0 and does not reset them again.
+  - It runs before clock setup (00500) and `main()`.
+  - The pin order is value, then output enable, then function select, so the pin never floats or glitches.
+  - `scope10_acq.elf.map` confirms the order: `.preinit_array.00100`, `.00101`, `.00110`, …, `.00500`.
+  - The hook disassembles to register writes and `gpio_set_function` only, with no library calls, so it does not depend on the later runtime-init steps.
+  - `main()` re-applies it without calling `gpio_init()`, because `gpio_init()` would briefly release the pin.
+- **The window firmware cannot cover:** power-on reset, the boot ROM and boot2 up to the hook. Its duration is not measured. The R88 / R16 decision recorded in `design/evidence/g01-delta.json` remains the hardware answer.
+- **Backlight on/off only.** `scope_display_backlight(p > 0)` drives GP13 high, and only after a successful init. The regulator (CAT1) is unidentified, so PWM dimming on its EN is not assumed.
+- **Driven high is also an estimate.** With GP13 driven high, R16 sources roughly (5 − 3.3) V / 10 kΩ ≈ 0.17 mA into the pin while it is held at IOVDD. This is an estimate, not a measurement.
+
+## Renderer
+
+**Layout.** Portrait 320 × 480, with ten panes of 48 rows and CH1 at the top. Each pane has four parts:
+
+- a 10-px channel colour tag;
+- a 192-column plot, one column per `SCOPE_HISTORY_BINS` bin, right-aligned, with the newest sample at the right;
+- a status block holding three RANGE boxes (±3 / ±5 / ±8 V, left to right, lit by the debounced range), a TIME bar, a LINK box and a HOLD box;
+- a separator row.
+
+**Window.** Each pane's window is `scope_time_seconds(TIME code) × 10 000 samples/s`, mapped through `scope_history_level_for_window`.
+
+**HOLD and LINK.**
+
+- HOLD freezes the plots. The status block keeps updating.
+- LINK makes every pane use CH1's TIME window. This is a **time-link of views, not phase synchronisation**: channels are still sampled sequentially (see `ACQUISITION.md`).
+- Both are press-to-toggle with 20 ms debounce, on the active-low GP0/GP1.
+
+**Transfer size.**
+
+- There is no framebuffer.
+- A plot column is one 1 × 44 rectangle.
+- Fills are split to at most 128 pixels per `scope_display_rect` call.
+- `scope_render_step()` issues up to four items per pass of the `scope10_acq` main loop, between drain batches.
+
+**Nominal transfer time at 15 MHz.** These figures come from bit counts only. They are not measured and exclude GPIO/CS overhead.
+
+| Transfer | Size | Time |
+|---|---|---|
+| Plot column | 110 B | ≈ 59 µs |
+| Status block | ≈ 4 KB | ≈ 2.2 ms |
+| Full pass of ten panes | — | ≈ 0.14 s |
+| Init | 1 + 120 + 120 + 20 ms of waits, plus a 307 200 B clear (≈ 164 ms) | ≈ 0.43 s |
+
+Init runs before acquisition starts. The ring's overrun headroom is 7168 samples, about 60 ms, which is much longer than one render pass step. Overruns stay counted, never hidden.
+
+**A failed rectangle is counted.** Every rectangle whose `scope_display_rect` returns `false` is counted in `rects_failed` and is never reported as drawn. `scope_display_init()` returning `true` means only that the sequence was **transmitted**. The bridge has no read path, so no panel presence or ID can be read back. The boot line says so: `lcd,init_sequence_sent=1 (no panel readback exists; not a display verification)`.
+
+## Host test coverage (`tests/test_lcd.c`)
+
+The tests cover:
+
+- word serialisation (MSB first);
+- exact command and parameter byte framing and D/C per byte;
+- every write strobed with CS low under the bridge model;
+- the CS-release dependency of vendor single-byte commands;
+- init order (SLPOUT first, ≥ 5 ms wait, COLMOD `0x55`, MADCTL portrait, DISPON last, no RAMWR);
+- clipping, including zero area, off-screen, exact fit and uint16 overflow;
+- clipped blits landing at the right GRAM addresses with the source stride preserved;
+- full-screen fill;
+- pane tiling and part disjointness;
+- code-to-row monotonicity;
+- column spans;
+- window levels;
+- a full render pass through blit → bridge model → GRAM, checking trace, tag, range boxes and separator;
+- HOLD (no plot transfers, HOLD box lit);
+- LINK (CH1 window and bar on every pane);
+- counting of backend failures;
+- button debounce.
+
+These are models of this repository's reading of the schematic and datasheet. They are not evidence about the physical module.
+
+## Local G06 procedure (after G01 is physically closed)
+
+**A blank or wrong screen is not by itself a firmware fault.** Work through the G01 items first:
+
+- R11 fitted;
+- the H1–H6 jumpers in the SPI position;
+- CAT1 identity;
+- the module revision.
+
+**Steps:**
+
+1. Measure GP13 (`LCD_BL`) on an oscilloscope from power-on. Record the voltage and duration before the hook drives it low, and confirm that the backlight stays off until the `lcd,init_sequence_sent` line appears.
+2. Flash `firmware/build/lcd-enabled/scope10_acq.uf2`. Record its SHA-256 from `reports/firmware-target-build.json`. Expect a black screen, then panes. CH1 is at the top and its tag is yellow; a blue CH1 tag means the BGR/colour order is wrong. The newest data is at the right.
+3. Check the ten panes against known inputs, and each pane's RANGE box against its switch. Check the TIME bar and window against the knob. Check that HOLD freezes the plots, and that LINK applies CH1's window to every pane.
+4. Watch the USB counters (`overrun_events`, `missed_slots`) with the LCD running and compare them with the LCD-off build.
+5. If the screen stays blank, retry with a lower `SCOPE_LCD_SPI_HZ`, then with `LCD_VENDOR_PANEL_TUNING=0`. Record every result. Do not mark G06 closed from a partial pass.
+
+## Open items
+
+- **All of G06 on hardware:** display output, orientation and colour order, the ten panes, TIME/RANGE, controls, HOLD, LINK, and render/acquisition coexistence.
+- **SPI rate:** the 15 MHz default is a conservative choice, not a measured limit. The vendor wiki reports 60 MHz tested.
+- **GP13 before the hook:** the voltage during the uncovered pre-hook window, and whether R88 should change (G01 delta).
+- **Reviewer decision** on the vendor panel-tuning values (see Licensing).
+- **Documentation:** the generated firmware how-to (`design/narrative-pages.json` → `doc/`) still says that LCD integration remains open. That text is still true, but it does not yet point to this file.

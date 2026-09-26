@@ -19,9 +19,17 @@
       "target": "scope10_acq",
       "uf2_path": "firmware/build/scope10_acq.uf2",
       "uf2_size_bytes": 81920,
-      "uf2_sha256": "8cfcc1a981f17f26772f7b427374f399167539ea8d64c10345806a7e9e54f941",
+      "uf2_sha256": "e910724b3867f739143806d4cb1d40fd4987197c965f99ae2ad48456d287bb8a",
       "warning_count": 0,
-      "notes": "10 kS/s/channel sequential acquisition engine (nominal design, see firmware/ACQUISITION.md); no rate, settle or jitter measured, G05 stays OPEN."
+      "notes": "10 kS/s/channel sequential acquisition engine (nominal design, see firmware/ACQUISITION.md); no rate, settle or jitter measured, G05 stays OPEN. Default build: LCD off."
+    },
+    {
+      "target": "scope10_acq+lcd",
+      "uf2_path": "firmware/build/lcd-enabled/scope10_acq.uf2",
+      "uf2_size_bytes": 93696,
+      "uf2_sha256": "ffacd99e5314d0e419b67c906e163cc6f71e39e851353ead21f5e1ce505e321e",
+      "warning_count": 0,
+      "notes": "scope10_acq configured with -DSCOPE_ENABLE_LCD=1: Waveshare LCD backend + ten-pane renderer (firmware/LCD-BACKEND.md). Not for use before G01 is physically verified; no display output verified, G06 stays OPEN."
     }
   ],
   "warning_count": 0,

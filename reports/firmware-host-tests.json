@@ -4,7 +4,8 @@
   "output": "PASS: calibration, 4096 time points, range/debounce/wrap, multiresolution extremes.\nTen-channel history allocation: 77800 bytes.\n",
   "suites": {
     "test_core": "PASS: calibration, 4096 time points, range/debounce/wrap, multiresolution extremes.\nTen-channel history allocation: 77800 bytes.\n",
-    "test_acq": "PASS: acq uniform slots (1000 cycles, frame 12000 cycles @ 120 MHz nominal), ring wrap/overrun, injected-stall missed-slot accounting, channel-order invariance, scope_core history.\nAcquisition engine RAM (ring + missed tags + state): 49496 bytes; IRQ budget 240 cycles.\n"
+    "test_acq": "PASS: acq uniform slots (1000 cycles, frame 12000 cycles @ 120 MHz nominal), ring wrap/overrun, injected-stall missed-slot accounting, channel-order invariance, scope_core history.\nAcquisition engine RAM (ring + missed tags + state): 49496 bytes; IRQ budget 240 cycles.\n",
+    "test_lcd": "LCD bridge framing, clipping, pane layout and renderer host tests passed (models only; G06 OPEN)\n"
   },
   "target_build": "NOT_RUN",
   "hardware_tests": "NOT_RUN"

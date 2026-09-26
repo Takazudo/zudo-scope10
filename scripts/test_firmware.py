@@ -7,7 +7,8 @@ cc=shutil.which('cc') or shutil.which('gcc')
 if not cc:raise SystemExit('A host C compiler is required')
 src=root/'firmware/src'
 suites={'test_core':[src/'scope_core.c',root/'firmware/tests/test_core.c'],
-        'test_acq':[src/'scope_core.c',src/'acq_engine.c',root/'firmware/tests/test_acq.c']}
+        'test_acq':[src/'scope_core.c',src/'acq_engine.c',root/'firmware/tests/test_acq.c'],
+        'test_lcd':[src/'scope_core.c',src/'lcd_bridge.c',src/'scope_render.c',root/'firmware/tests/test_lcd.c']}
 outputs={}
 with tempfile.TemporaryDirectory() as t:
  for name,files in suites.items():

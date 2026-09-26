@@ -126,6 +126,27 @@ def _power_budget_report(check, ctx):
 EXTRA_CHECKS.append(_power_budget_report)
 
 
+def _lcd_backend_default_off(check, ctx):
+    """#14: the LCD backend is compiled only with SCOPE_ENABLE_LCD=1 (default OFF) and G06 stays OPEN."""
+    import json
+    import re
+
+    R = ctx['R']
+    cmake = (R / 'firmware/CMakeLists.txt').read_text()
+    backend = (R / 'firmware/src/display_waveshare.c').read_text()
+    check(
+        'LCD backend off by default (CMake option OFF, display_waveshare.c refuses to build without SCOPE_ENABLE_LCD=1)',
+        re.search(r'option\(SCOPE_ENABLE_LCD\b[^)]*\bOFF\)', cmake) is not None
+        and '#error' in backend and (R / 'firmware/LCD-BACKEND.md').exists(),
+    )
+    gates = json.loads((R / 'design/release-gates.json').read_text())
+    g06 = next((g for g in gates['gates'] if g['id'] == 'G06'), None)
+    check('G06 stays OPEN after desk LCD backend work', g06 is not None and g06['status'] == 'OPEN')
+
+
+EXTRA_CHECKS.append(_lcd_backend_default_off)
+
+
 def run(check, ctx):
     for extra in EXTRA_CHECKS:
         extra(check, ctx)
