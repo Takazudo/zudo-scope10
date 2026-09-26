@@ -21,11 +21,11 @@ GUARD = R / 'manufacturing/release_guard.py'
 REQUIRED_IDS = [f'G{i:02d}' for i in range(1, 11)]
 
 
-def run_guard(manifest_path):
-    return subprocess.run(
-        [sys.executable, str(GUARD), '--manifest', str(manifest_path)],
-        capture_output=True, text=True,
-    )
+def run_guard(manifest_path, route=None):
+    cmd = [sys.executable, str(GUARD), '--manifest', str(manifest_path)]
+    if route is not None:
+        cmd += ['--route', route]
+    return subprocess.run(cmd, capture_output=True, text=True)
 
 
 def make_workdir():
@@ -56,6 +56,55 @@ def full_gate_set(**overrides_by_id):
         if gate['id'] in overrides_by_id:
             gate.update(overrides_by_id[gate['id']])
     return gates
+
+
+PREREQ_IDS = [
+    'reviewed_power_and_pin_design',
+    'actual_footprint_mapping',
+    'completed_layout_and_native_checks',
+    'assembler_dfm_review',
+    'controlled_bring_up_plan',
+]
+
+
+def make_prereq(pid, met=False, evidence_files=None, **extra):
+    item = {'id': pid, 'description': f'{pid} description', 'met': met}
+    if evidence_files is not None:
+        item['evidence_files'] = evidence_files
+    item.update(extra)
+    return item
+
+
+def full_prototype_prereqs(**overrides_by_id):
+    prereqs = [make_prereq(pid) for pid in PREREQ_IDS]
+    for item in prereqs:
+        if item['id'] in overrides_by_id:
+            item.update(overrides_by_id[item['id']])
+    return prereqs
+
+
+def make_prototype_decision(allowed=False, prereqs=None, approval=None):
+    return {
+        'allowed': allowed,
+        'prerequisites': full_prototype_prereqs() if prereqs is None else prereqs,
+        'approval': {'approved': False, 'approver': None, 'date': None, 'revision': None}
+        if approval is None else approval,
+    }
+
+
+def base_manifest_with_decisions(prototype=None, release_allowed=False, gates=None):
+    """A minimal well-formed manifest carrying both decisions blocks, for
+    exercising --route prototype without disturbing the production-route
+    fixtures above (which intentionally omit 'decisions' to prove the
+    production route stays backward compatible with #39's schema)."""
+    return {
+        'release_allowed': release_allowed,
+        'gates': full_gate_set() if gates is None else gates,
+        'decisions': {
+            'prototype': make_prototype_decision() if prototype is None else prototype,
+            'production': {'required_gates': REQUIRED_IDS},
+        },
+    }
 
 
 def expect(result, code, needle, label):
@@ -226,6 +275,198 @@ def test_real_manifest_refuses_with_exit_2():
     expect(r, 2, 'REFUSED', 'the real checked-in manifest must refuse with exit 2')
 
 
+def test_production_route_matches_default_on_real_manifest():
+    """--route production must behave identically to the default (#39
+    backward compatibility): same exit code and REFUSED framing."""
+    r = run_guard(R / 'design/release-gates.json', route='production')
+    expect(r, 2, 'REFUSED', '--route production must refuse the real manifest, same as the default route')
+
+
+def test_prototype_route_refuses_on_real_manifest():
+    """The checked-in manifest's decisions.prototype is still all-unmet: the
+    prototype route must also refuse the real manifest with exit 2 (#24/#43
+    acceptance: 'the current empty-outline package remains blocked for both
+    routes')."""
+    r = run_guard(R / 'design/release-gates.json', route='prototype')
+    expect(r, 2, 'REFUSED', 'the real checked-in manifest must refuse --route prototype')
+
+
+def test_prototype_route_never_reads_gate_closed_status():
+    """#24's whole point: a prototype decision must not be blocked by G01/
+    G02/G03/G08 (or any other gate) being OPEN -- only by its own
+    prerequisites/approval. A manifest with every gate OPEN but every
+    prototype prerequisite met and approved must pass structurally."""
+    workdir = make_workdir()
+    try:
+        evidence_dir = workdir / 'design/evidence'
+        evidence_dir.mkdir(parents=True)
+        overrides = {}
+        for pid in PREREQ_IDS:
+            evidence_path = evidence_dir / f'{pid}.md'
+            evidence_path.write_text(f'synthetic evidence for {pid}\n')
+            overrides[pid] = {'met': True, 'evidence_files': [f'design/evidence/{pid}.md']}
+        manifest = write_manifest(workdir, base_manifest_with_decisions(
+            gates=full_gate_set(),  # every gate OPEN
+            prototype=make_prototype_decision(
+                allowed=True,
+                prereqs=full_prototype_prereqs(**overrides),
+                approval={'approved': True, 'approver': 'J. Reviewer', 'date': '2026-09-26', 'revision': 'rev-a'},
+            ),
+        ))
+        r = run_guard(manifest, route='prototype')
+        expect(r, 0, 'NOT automated engineering approval', 'a structurally complete synthetic prototype decision must exit 0 even with every gate OPEN')
+    finally:
+        shutil.rmtree(workdir, ignore_errors=True)
+
+
+def test_prototype_route_blocks_on_missing_prerequisite():
+    workdir = make_workdir()
+    try:
+        evidence_dir = workdir / 'design/evidence'
+        evidence_dir.mkdir(parents=True)
+        overrides = {}
+        for pid in PREREQ_IDS:
+            evidence_path = evidence_dir / f'{pid}.md'
+            evidence_path.write_text(f'synthetic evidence for {pid}\n')
+            overrides[pid] = {'met': True, 'evidence_files': [f'design/evidence/{pid}.md']}
+        # Leave one prerequisite unmet.
+        overrides['assembler_dfm_review'] = {'met': False, 'evidence_files': []}
+        manifest = write_manifest(workdir, base_manifest_with_decisions(
+            prototype=make_prototype_decision(
+                allowed=True,
+                prereqs=full_prototype_prereqs(**overrides),
+                approval={'approved': True, 'approver': 'J. Reviewer', 'date': '2026-09-26', 'revision': 'rev-a'},
+            ),
+        ))
+        r = run_guard(manifest, route='prototype')
+        expect(r, 2, 'assembler_dfm_review', 'a single missing prototype prerequisite must block export by name')
+    finally:
+        shutil.rmtree(workdir, ignore_errors=True)
+
+
+def test_prototype_route_blocks_on_missing_approval():
+    workdir = make_workdir()
+    try:
+        evidence_dir = workdir / 'design/evidence'
+        evidence_dir.mkdir(parents=True)
+        overrides = {}
+        for pid in PREREQ_IDS:
+            evidence_path = evidence_dir / f'{pid}.md'
+            evidence_path.write_text(f'synthetic evidence for {pid}\n')
+            overrides[pid] = {'met': True, 'evidence_files': [f'design/evidence/{pid}.md']}
+        manifest = write_manifest(workdir, base_manifest_with_decisions(
+            prototype=make_prototype_decision(
+                allowed=True,
+                prereqs=full_prototype_prereqs(**overrides),
+                approval={'approved': False, 'approver': None, 'date': None, 'revision': None},
+            ),
+        ))
+        r = run_guard(manifest, route='prototype')
+        expect(r, 2, 'never auto-filled', 'a missing approval must block prototype export even with every prerequisite met')
+    finally:
+        shutil.rmtree(workdir, ignore_errors=True)
+
+
+def test_prototype_route_blocks_on_approved_but_incomplete_record():
+    """approved=true with a missing approver/date/revision must still
+    refuse -- approved alone is not the human record the issue requires."""
+    workdir = make_workdir()
+    try:
+        evidence_dir = workdir / 'design/evidence'
+        evidence_dir.mkdir(parents=True)
+        overrides = {}
+        for pid in PREREQ_IDS:
+            evidence_path = evidence_dir / f'{pid}.md'
+            evidence_path.write_text(f'synthetic evidence for {pid}\n')
+            overrides[pid] = {'met': True, 'evidence_files': [f'design/evidence/{pid}.md']}
+        manifest = write_manifest(workdir, base_manifest_with_decisions(
+            prototype=make_prototype_decision(
+                allowed=True,
+                prereqs=full_prototype_prereqs(**overrides),
+                approval={'approved': True, 'approver': '', 'date': None, 'revision': None},
+            ),
+        ))
+        r = run_guard(manifest, route='prototype')
+        expect(r, 2, "'approver'", 'approved=true with missing approver/date/revision fields must still refuse')
+    finally:
+        shutil.rmtree(workdir, ignore_errors=True)
+
+
+def test_prototype_route_blocks_when_allowed_is_false():
+    workdir = make_workdir()
+    try:
+        evidence_dir = workdir / 'design/evidence'
+        evidence_dir.mkdir(parents=True)
+        overrides = {}
+        for pid in PREREQ_IDS:
+            evidence_path = evidence_dir / f'{pid}.md'
+            evidence_path.write_text(f'synthetic evidence for {pid}\n')
+            overrides[pid] = {'met': True, 'evidence_files': [f'design/evidence/{pid}.md']}
+        manifest = write_manifest(workdir, base_manifest_with_decisions(
+            prototype=make_prototype_decision(
+                allowed=False,
+                prereqs=full_prototype_prereqs(**overrides),
+                approval={'approved': True, 'approver': 'J. Reviewer', 'date': '2026-09-26', 'revision': 'rev-a'},
+            ),
+        ))
+        r = run_guard(manifest, route='prototype')
+        expect(r, 2, 'decisions.prototype.allowed is false', 'allowed=false must block prototype export even when every prerequisite and the approval are otherwise complete')
+    finally:
+        shutil.rmtree(workdir, ignore_errors=True)
+
+
+def test_prototype_route_missing_decisions_key_is_malformed():
+    workdir = make_workdir()
+    try:
+        manifest = write_manifest(workdir, {'release_allowed': False, 'gates': full_gate_set()})
+        r = run_guard(manifest, route='prototype')
+        expect(r, 3, 'MALFORMED', "--route prototype on a manifest with no 'decisions' key must be malformed, not silently pass or refuse")
+    finally:
+        shutil.rmtree(workdir, ignore_errors=True)
+
+
+def test_prototype_route_duplicate_prerequisite_ids_is_malformed():
+    workdir = make_workdir()
+    try:
+        prereqs = full_prototype_prereqs()
+        prereqs.append(make_prereq('reviewed_power_and_pin_design'))  # duplicate
+        manifest = write_manifest(workdir, base_manifest_with_decisions(
+            prototype=make_prototype_decision(prereqs=prereqs),
+        ))
+        r = run_guard(manifest, route='prototype')
+        expect(r, 3, 'duplicate prototype prerequisite ids', 'duplicate prototype prerequisite ids must be malformed')
+    finally:
+        shutil.rmtree(workdir, ignore_errors=True)
+
+
+def test_prototype_route_evidence_path_escaping_repo_root():
+    workdir = make_workdir()
+    try:
+        overrides = {'reviewed_power_and_pin_design': {'met': True, 'evidence_files': ['../outside.txt']}}
+        manifest = write_manifest(workdir, base_manifest_with_decisions(
+            prototype=make_prototype_decision(prereqs=full_prototype_prereqs(**overrides)),
+        ))
+        r = run_guard(manifest, route='prototype')
+        expect(r, 2, 'escapes the repository root', 'a prototype prerequisite evidence path escaping the repo root must REFUSE')
+    finally:
+        shutil.rmtree(workdir, ignore_errors=True)
+
+
+def test_invalid_route_is_malformed():
+    workdir = make_workdir()
+    try:
+        manifest = write_manifest(workdir, {'release_allowed': False, 'gates': full_gate_set()})
+        r = subprocess.run(
+            [sys.executable, str(GUARD), '--manifest', str(manifest), '--route', 'bogus'],
+            capture_output=True, text=True,
+        )
+        # argparse itself rejects an unlisted --route choice before run_guard is reached.
+        assert r.returncode == 2, f'expected argparse to reject an unknown --route, got {r.returncode}\n{r.stderr}'
+        print('PASS: an unknown --route value is rejected by argument parsing')
+    finally:
+        shutil.rmtree(workdir, ignore_errors=True)
+
+
 if __name__ == '__main__':
     test_reproduced_case_release_allowed_true_no_gates()
     test_reproduced_case_only_g01_closed_nonexistent_evidence()
@@ -240,4 +481,15 @@ if __name__ == '__main__':
     test_evidence_urls_alone_never_closes_a_gate()
     test_structurally_complete_synthetic_fixture_exits_zero()
     test_real_manifest_refuses_with_exit_2()
-    print('PASS: manufacturing/release_guard.py exit-code contract holds (#28/#39)')
+    test_production_route_matches_default_on_real_manifest()
+    test_prototype_route_refuses_on_real_manifest()
+    test_prototype_route_never_reads_gate_closed_status()
+    test_prototype_route_blocks_on_missing_prerequisite()
+    test_prototype_route_blocks_on_missing_approval()
+    test_prototype_route_blocks_on_approved_but_incomplete_record()
+    test_prototype_route_blocks_when_allowed_is_false()
+    test_prototype_route_missing_decisions_key_is_malformed()
+    test_prototype_route_duplicate_prerequisite_ids_is_malformed()
+    test_prototype_route_evidence_path_escaping_repo_root()
+    test_invalid_route_is_malformed()
+    print('PASS: manufacturing/release_guard.py exit-code contract holds (#28/#39/#24/#43)')

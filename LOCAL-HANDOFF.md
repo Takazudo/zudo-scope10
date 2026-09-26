@@ -165,7 +165,52 @@ generator-owned and are rewritten on every run — do not hand-edit those.
    parts or fabrication before this review returns.
 3. Record the assembler's findings and resolve them before ordering.
 
-## Factory-assembled prototype (START_HERE step 6) — no home soldering
+## Prototype approval (START_HERE step 6)
+
+`manufacturing/release_guard.py` used to offer only one all-gates-closed release decision
+(`--route production`, the default), which cannot pass before the first assembled prototype exists
+because G01/G02/G03/G08's full CLOSED status needs bench work on that very prototype — the circular
+dependency #24 found. `--route prototype` is a second, separate decision
+(`design/release-gates.json`'s `decisions.prototype`) for ordering an **engineering prototype
+only**. It never reads or requires any G01–G10 gate's CLOSED status; instead it checks its own
+fixed prerequisite list plus an explicit human approval record, and refuses (exit 2) until every
+one of those is genuinely met:
+
+1. **`reviewed_power_and_pin_design`** (overlaps G01) — the display power/strap/backlight-interface
+   design has been reviewed on paper against the manufacturer schematic. This is the desk review
+   only; the GP13/gate/`LCD_BL` waveform bench capture still happens on the assembled prototype
+   itself (G01 items 1–2 above) and is never claimed here.
+2. **`actual_footprint_mapping`** (overlaps G02) — the real-part fit checks in the G02 section above
+   (range switch orientation, jack leg map, module drill/standoff, Pico H header height, 1×20 strip
+   orderables) are done.
+3. **`completed_layout_and_native_checks`** (overlaps G03) — placement and routing are complete on
+   the saved KiCad revision, with a final native DRC/ERC and schematic-to-PCB parity check on that
+   placed/routed board (not the outline-board checks already recorded).
+4. **`assembler_dfm_review`** (overlaps G08) — the "Assembler review" section immediately above has
+   returned and its findings are resolved.
+5. **`controlled_bring_up_plan`** (overlaps G07) — a current-limited-first-power, staged-enable
+   bring-up plan exists, following `design/power-contract.json`'s supported power states, for use
+   once the prototype arrives (the bench measurements themselves are G04/G05/G07 below, not a
+   prerequisite here).
+
+Each prerequisite in `design/release-gates.json`'s `decisions.prototype.prerequisites` has its own
+`met` flag and `evidence_files` list, resolved the same way a gate's `evidence_files` is. Set `met`
+to `true` only once you have added a real, on-disk evidence file for that item — never flip it
+without evidence, and never treat a listing or a desk model as evidence.
+
+Once every prerequisite is met, set `decisions.prototype.allowed` to `true` and fill
+`decisions.prototype.approval` — `approved: true` plus a real `approver`, `date` and `revision`.
+**This record is never auto-filled by any script or generator; a human enters it after
+independently reviewing every prerequisite and the final saved KiCad revision**, exactly like the
+production decision's evidence review. `decisions.prototype.record` (prototype revision, the
+manufacturing export's file-hash identity, unresolved risks accepted, assembly scope, test scope)
+is filled in alongside it once the prototype is actually ordered — leave it empty until then.
+
+`python3 manufacturing/release_guard.py --route prototype` must exit 2 (REFUSED) until this is
+done; it never authorizes fabrication by itself, and it never substitutes for the full production
+decision below.
+
+## Factory-assembled prototype (START_HERE step 7) — no home soldering
 
 Per the package `AGENTS.md` and epic invariants: **all electrical soldering, for prototypes too,
 happens at a factory or contracted assembler.** This includes every through-hole control (pots,
@@ -174,7 +219,8 @@ are pre-assembled plug-in modules that a factory (or the end user, unpowered, in
 already-populated board) plugs in — never a soldering task for the user.
 
 1. Use `manufacturing/RFQ.md` as the basis for a real RFQ once G01–G03 and G08 are resolved enough
-   to quote.
+   to quote, and the "Prototype approval" step above has recorded `decisions.prototype.allowed:
+   true` with a completed human approval record.
 2. Order a **completely factory/assembler-soldered** prototype. Reject any assembler proposal that
    defers any soldering, wire link, or header installation to the customer.
 3. Receive the assembled board; do not solder anything to it yourself.
@@ -302,22 +348,32 @@ along with `operator` and `date`.
    every gate `status: "CLOSED"` with real `evidence_files`) only once a human has reviewed the
    real evidence for every gate. `manufacturing/release_guard.py` enforces this refusal until then.
 
-### `manufacturing/release_guard.py` exit-code contract (#28/#39)
+### `manufacturing/release_guard.py` exit-code contract (#28/#39/#24/#43)
 
 The guard is structured as testable functions (`scripts/test_release_guard.py`) with a fixed
-contract that CI and `scripts/validate.py` both assert on:
+contract that CI and `scripts/validate.py` both assert on, for **both** routes below:
 
-- **`0`** — the manifest is structurally complete (exactly gates G01–G10, unique IDs, correctly
+- **`0`** — the selected route's decision is structurally complete and satisfied. For `--route
+  production` (default): the manifest is well-formed (exactly gates G01–G10, unique IDs, correctly
   typed fields) and every gate is `CLOSED` with `evidence_files` that resolve to real files inside
-  the repo. This is never automated engineering approval — the guard's own success message says so,
-  and a human must still independently review every gate's evidence before a quote is approved.
-- **`2`** — intentional REFUSED: the manifest is well-formed but release is not warranted yet
-  (`release_allowed` is `false`, a gate is not `CLOSED`, or a `CLOSED` gate's evidence does not
-  resolve — missing, a directory, or escaping the repo root). CI and `validate.py` assert exactly
-  this exit code for the checked-in manifest, not merely "nonzero".
+  the repo. For `--route prototype`: every entry in `decisions.prototype.prerequisites` is `met`
+  with resolvable `evidence_files`, `decisions.prototype.allowed` is `true`, and
+  `decisions.prototype.approval` carries `approved: true` plus a non-empty `approver`/`date`/
+  `revision`. Neither route's `0` is automated engineering approval — the guard's own success
+  message says so, and a human must still independently review the evidence before a quote or an
+  order is approved.
+- **`2`** — intentional REFUSED: the manifest is well-formed but the selected route's decision is
+  not warranted yet. Production: `release_allowed` is `false`, a gate is not `CLOSED`, or a
+  `CLOSED` gate's evidence does not resolve. Prototype: `decisions.prototype.allowed` is `false`,
+  a prerequisite is not `met` (or its evidence does not resolve), or the approval record is missing
+  or incomplete. CI and `validate.py` assert exactly this exit code for the checked-in manifest on
+  **both** routes, not merely "nonzero".
 - **`3`** — malformed manifest: invalid JSON, wrong top-level shape, a non-boolean
-  `release_allowed`, an invalid `status`, wrongly-typed `evidence_files`/`evidence_urls`, or a gate
-  ID set that is not exactly G01–G10 (duplicates, missing, or unknown IDs).
+  `release_allowed`, an invalid gate `status`, wrongly-typed `evidence_files`/`evidence_urls`, a
+  gate ID set that is not exactly G01–G10 (duplicates, missing, or unknown IDs), an unknown
+  `--route` value, or — for `--route prototype` — a missing/malformed `decisions.prototype` block
+  (no `decisions` key at all, a missing/duplicate prerequisite id, a non-boolean `met`/`allowed`/
+  `approved`, or a missing `approval` object).
 - **`1`** — the guard itself crashed. This must never be confused with `2`: a crash is not a
   considered refusal.
 
@@ -325,7 +381,11 @@ contract that CI and `scripts/validate.py` both assert on:
 on its own to close a gate. `evidence_partial`/`evidence_partial_note` (added by #31) stay
 informational only and are not schema-validated.
 
-Seam for #24 (prototype/production routes): `validate_gates()` currently hardcodes the single
-full-release G01–G10 required-ID set. A route-aware caller should compute its own required ID set
-(and, if the prototype/production schemas define it, bind evidence to a specific design revision)
-and pass it into that function rather than duplicating the validation logic.
+**Routes are independent decisions, never a shortcut between them (#24/#43).** `--route prototype`
+never reads or requires any gate's `CLOSED` status — that would recreate the exact circular
+dependency #24 found, since G01/G02/G03/G08's full closure needs bench work on the assembled
+prototype itself. `--route production` is completely unchanged from #39 and still requires every
+one of G01–G10 `CLOSED` with reviewed evidence; a prototype approval never relaxes it, and ordering
+a prototype never counts toward it. `design/release-gates.json`'s `decisions.production` block
+records the full required-gate list only for readability; the guard validates `release_allowed` and
+`gates` directly and does not re-read it.
