@@ -30,8 +30,10 @@ int main(void) {
     assert(scope_history_recent(&hist,0,b,192)==192); assert(b[191].lo==4095);
     assert(scope_history_recent(&hist,1,b,192)==192); assert(b[191].lo==4094 && b[191].hi==4095);
     assert(scope_history_recent(&hist,9,b,192)==8); assert(b[7].lo==3584 && b[7].hi==4095);
-    assert(scope_history_level_for_window(81920,144)==9);
-    assert(scope_history_level_for_window(20,144)==0);
+    assert(scope_window_level(20)==0 && scope_window_level(192)==0 && scope_window_level(193)==1);
+    assert(scope_window_level(81920)==9 && scope_window_level(49152)==8 && scope_window_level(49153)==9);
+    assert(scope_window_samples(0,10000)==20 && scope_window_samples(4095,10000)==81920);
+    assert(scope_window_samples(4095,1000000000u)==SCOPE_WINDOW_MAX_SAMPLES && scope_window_samples(0,0)==1);
     assert(scope_history_recent(&hist,99,b,192)==0);
     assert(sizeof(scope_history)*10 < 100000);
     printf("PASS: calibration, 4096 time points, range/debounce/wrap, multiresolution extremes.\n");
