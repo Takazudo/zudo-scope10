@@ -10,6 +10,11 @@
     86
   ],
   "active_centring": "UNVERIFIED_VISUAL_STUDY",
+  "active_area_offset_mm": 2.68,
+  "active_area_offset_axis": "long (this print's module-envelope-height axis; the module STEP's local x, edge E at x=0 to edge W at x=-86)",
+  "active_area_offset_toward": "E",
+  "active_area_offset_orientation_assumption": "ASSUMPTION, ORIENTATION NOT CONFIRMED: design/evidence/g02-mechanical-pins.md #4a gives the offset magnitude (2.68 mm) and that it is toward STEP-local edge E, but not which physical panel edge (top or bottom of this sheet) edge E faces once the module is mounted. This print assumes E points toward the TOP of the sheet so the offset has a definite, checkable direction; G02 and G09 stay OPEN until a received module confirms it.",
+  "active_area_offset_evidence": "design/evidence/g02-mechanical-pins.md (section 4a, \"Waveshare module geometry, from the vendor STEP\")",
   "channels": [
     {
       "channel": 1,

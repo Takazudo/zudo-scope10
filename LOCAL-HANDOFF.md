@@ -277,10 +277,22 @@ along with `operator` and `date`.
 ## G09 — physical review
 
 1. Print `mechanical/print/panel-1to1.pdf` at 100% scale (verify your PDF viewer/printer are not
-   auto-scaling).
+   auto-scaling). **This checkout's PDF predates the renderer-capture image below** (no SVG->PDF
+   converter was available when it was added, #44 / #26 part 3) — print `mechanical/print/panel-1to1.svg`
+   from a browser at 1:1 instead, or regenerate the PDF first with `rsvg-convert`/`cairosvg` installed
+   (`python3 scripts/make_panel_print.py`).
 2. Follow `mechanical/print/README.md` for the review procedure: check real screen readability,
-   control spacing, and cable clearance against the print.
-3. Accept or reject the mechanical stack (including the G02 spacer/standoff findings above).
+   control spacing, and cable clearance against the print. The print's active-area rectangle is now
+   `reports/renderer-capture.png`, a deterministic host capture of the actual `scope_render.c` /
+   `scope_core.c` renderer (`scripts/capture_renderer.py`), at the module's physical pixel pitch —
+   read the real channel/RANGE/window-duration/UNCAL/VIEW CLIP/ADC SAT/HOLD/LINK text and waveforms
+   against the print, not a placeholder rectangle. It also carries the 2.68 mm long-axis active-area
+   offset from `design/evidence/g02-mechanical-pins.md` (#4a); the print labels which STEP-local edge
+   (E) the offset is toward but marks the physical mount **orientation (top/bottom of the sheet) as an
+   explicit, unconfirmed ASSUMPTION** — confirm it against the received module and correct the sign in
+   `mechanical/panel-layout-study.json` (`active_area_offset_*`) if it is wrong.
+3. Accept or reject the mechanical stack (including the G02 spacer/standoff findings above). The
+   active-area offset orientation above is part of what G02 leaves open, not a resolved fact.
 
 ## G10 — release approval
 
