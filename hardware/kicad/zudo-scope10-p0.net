@@ -1041,6 +1041,11 @@
       <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
       <libsource lib="ZudoScope10" part="r100k" />
     </comp>
+    <comp ref="Q1">
+      <value>N-MOSFET LL (UNSELECTED)</value>
+      <footprint />
+      <libsource lib="ZudoScope10" part="nmos-ll" />
+    </comp>
     <comp ref="TP30">
       <value>testpoint</value>
       <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
@@ -1906,6 +1911,7 @@
       <node ref="R82" pin="2" />
       <node ref="R83" pin="2" />
       <node ref="R88" pin="2" />
+      <node ref="Q1" pin="2" />
       <node ref="U10" pin="2" />
       <node ref="U11" pin="3" />
       <node ref="C30" pin="2" />
@@ -1923,84 +1929,88 @@
     </net>
     <net code="111" name="LCD_BL">
       <node ref="J30" pin="17" />
+      <node ref="Q1" pin="3" />
+    </net>
+    <net code="112" name="LCD_BL_GATE">
       <node ref="R64" pin="2" />
       <node ref="R88" pin="1" />
+      <node ref="Q1" pin="1" />
     </net>
-    <net code="112" name="LCD_BL_SRC">
+    <net code="113" name="LCD_BL_SRC">
       <node ref="J20" pin="17" />
       <node ref="R64" pin="1" />
     </net>
-    <net code="113" name="LCD_CLK">
+    <net code="114" name="LCD_CLK">
       <node ref="J30" pin="14" />
       <node ref="R62" pin="2" />
     </net>
-    <net code="114" name="LCD_CLK_SRC">
+    <net code="115" name="LCD_CLK_SRC">
       <node ref="J20" pin="14" />
       <node ref="R62" pin="1" />
     </net>
-    <net code="115" name="LCD_CS">
+    <net code="116" name="LCD_CS">
       <node ref="J30" pin="12" />
       <node ref="R61" pin="2" />
       <node ref="R84" pin="2" />
     </net>
-    <net code="116" name="LCD_CS_SRC">
+    <net code="117" name="LCD_CS_SRC">
       <node ref="J20" pin="12" />
       <node ref="R61" pin="1" />
     </net>
-    <net code="117" name="LCD_DC">
+    <net code="118" name="LCD_DC">
       <node ref="J30" pin="11" />
       <node ref="R60" pin="2" />
     </net>
-    <net code="118" name="LCD_DC_SRC">
+    <net code="119" name="LCD_DC_SRC">
       <node ref="J20" pin="11" />
       <node ref="R60" pin="1" />
     </net>
-    <net code="119" name="LCD_MISO">
+    <net code="120" name="LCD_MISO">
       <node ref="J20" pin="16" />
       <node ref="J30" pin="16" />
     </net>
-    <net code="120" name="LCD_MOSI">
+    <net code="121" name="LCD_MOSI">
       <node ref="J30" pin="15" />
       <node ref="R63" pin="2" />
     </net>
-    <net code="121" name="LCD_MOSI_SRC">
+    <net code="122" name="LCD_MOSI_SRC">
       <node ref="J20" pin="15" />
       <node ref="R63" pin="1" />
     </net>
-    <net code="122" name="LCD_RST">
+    <net code="123" name="LCD_RST">
       <node ref="J30" pin="20" />
       <node ref="R65" pin="2" />
     </net>
-    <net code="123" name="LCD_RST_SRC">
+    <net code="124" name="LCD_RST_SRC">
       <node ref="J20" pin="20" />
       <node ref="R65" pin="1" />
     </net>
-    <net code="124" name="LINK_N">
+    <net code="125" name="LINK_N">
       <node ref="SW12" pin="1" />
       <node ref="R52" pin="2" />
       <node ref="C52" pin="1" />
       <node ref="J20" pin="2" />
     </net>
-    <net code="125" name="MUX_DISABLE">
+    <net code="126" name="MUX_DISABLE">
       <node ref="U7" pin="15" />
       <node ref="U8" pin="15" />
       <node ref="U9" pin="15" />
       <node ref="J20" pin="10" />
       <node ref="R87" pin="2" />
     </net>
-    <net code="126" name="MUX_OUT">
+    <net code="127" name="MUX_OUT">
       <node ref="U7" pin="1" />
       <node ref="U6" pin="3" />
     </net>
-    <net code="127" name="MUX_RANGE">
+    <net code="128" name="MUX_RANGE">
       <node ref="U9" pin="1" />
       <node ref="U6" pin="10" />
     </net>
-    <net code="128" name="MUX_TIME">
+    <net code="129" name="MUX_TIME">
       <node ref="U8" pin="1" />
       <node ref="U6" pin="5" />
     </net>
-    <net code="129" name="RANGE_MID">
+    <net code="130" name="RANGE_MID">
       <node ref="SW1" pin="2" />
       <node ref="SW2" pin="2" />
       <node ref="SW3" pin="2" />
@@ -2014,27 +2024,27 @@
       <node ref="R40" pin="2" />
       <node ref="R41" pin="1" />
     </net>
-    <net code="130" name="REF_RAW">
+    <net code="131" name="REF_RAW">
       <node ref="U6" pin="12" />
       <node ref="U11" pin="2" />
       <node ref="C32" pin="1" />
       <node ref="TP44" pin="1" />
     </net>
-    <net code="131" name="SD_CS_N">
+    <net code="132" name="SD_CS_N">
       <node ref="J21" pin="12" />
       <node ref="J31" pin="12" />
       <node ref="R86" pin="2" />
     </net>
-    <net code="132" name="TIMING_TP">
+    <net code="133" name="TIMING_TP">
       <node ref="J20" pin="19" />
       <node ref="TP30" pin="1" />
     </net>
-    <net code="133" name="TP_CS_N">
+    <net code="134" name="TP_CS_N">
       <node ref="J21" pin="20" />
       <node ref="J31" pin="20" />
       <node ref="R85" pin="2" />
     </net>
-    <net code="134" name="VBUS_USB">
+    <net code="135" name="VBUS_USB">
       <node ref="J21" pin="1" />
       <node ref="F1" pin="1" />
       <node ref="TP41" pin="1" />

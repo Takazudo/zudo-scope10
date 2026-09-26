@@ -2,7 +2,7 @@
 
 **Status: a clean-room backend, host-tested models, and target builds only. Gate G06 ("Firmware/display integration") stays OPEN.** Nothing here has been run on a module. The backend is **not compiled unless `scope10_acq` is configured with `-DSCOPE_ENABLE_LCD=1`**, and the default is off until G01 (the module's power path and straps) is physically verified. `scope10_diagnostic` and `pico_diagnostic.c` are unchanged.
 
-The module is the Waveshare Pico-ResTouch-LCD-3.5 (SKU 19907): an ILI9488 panel (vendor wiki) behind a write-only SPI to 16-bit parallel bridge on SPI1. Pins: SCK GP10, MOSI GP11, DC GP8, CS GP9, backlight GP13, reset GP15. Touch CS GP16 and SD CS GP22 stay deselected. MISO GP12 is not used.
+The module is the Waveshare Pico-ResTouch-LCD-3.5 (SKU 19907): an ILI9488 panel (vendor wiki) behind a write-only SPI to 16-bit parallel bridge on SPI1. Pins: SCK GP10, MOSI GP11, DC GP8, CS GP9, backlight GP13 (active-low through the carrier's Q1 open-drain stage, #41), reset GP15. Touch CS GP16 and SD CS GP22 stay deselected. MISO GP12 is not used.
 
 ## Files
 
@@ -12,7 +12,7 @@ The module is the Waveshare Pico-ResTouch-LCD-3.5 (SKU 19907): an ILI9488 panel 
 | `src/lcd_bridge.[ch]` | Portable bridge framing, the init table, the address window, clipping, and blit/fill. No RP2040 headers. |
 | `src/display_waveshare.c` | RP2040 SPI1/GPIO bus for `lcd_bridge` and the `display_port.h` implementation. It fails with `#error` unless `SCOPE_ENABLE_LCD=1`. |
 | `src/scope_render.[ch]` | The ten-pane portrait renderer, which draws `scope_core` history in small rectangles. It also holds the debounced HOLD/LINK toggle. |
-| `src/lcd_safe_pins.[ch]` | The "LCD dark, all SPI1 slaves deselected" pin state. It is applied from an SDK runtime-init hook before `main()`, in **both** flag states. |
+| `src/lcd_safe_pins.[ch]` | The "LCD dark, all SPI1 slaves deselected" pin state, including the inverted GP13 backlight levels (`LCD_BL_LEVEL_OFF`/`_ON`, #41). It is applied from an SDK runtime-init hook before `main()`, in **both** flag states. |
 | `tests/test_lcd.c` | Host tests, run by `scripts/test_firmware.py`. They include a bit-level model of the bridge and a minimal ILI9488 memory model. |
 
 ## Build
@@ -89,19 +89,21 @@ The source is `https://files.waveshare.com/upload/f/fc/Pico-ResTouch-LCD-X_X_Cod
 
 **Deviation from the vendor C driver.** The vendor driver sends each command as a **single byte**. On this bridge an 8-clock frame completes only when CS goes high: MR resets the counter, so CLK/16 falls and WRX rises at the same moment the panel's CSX deasserts. That write therefore depends on propagation-delay ordering. `test_lcd.c` shows this in the bridge model: vendor-style command framing produces one CS-release strobe, while `lcd_bridge.c` produces none over the whole init, blit and render sequence.
 
-## GP13 backlight: driven early, never released
+## GP13 backlight: inverted polarity through the Q1 open-drain stage (#41)
 
-- **The hazard (G01 evidence):** module R16 10k runs from VSYS (5 V) to `LCD_BL`, the backlight regulator's EN. With the carrier's R88 100k pull-down, an undriven GP13 settles near 4.5 V. That is above the RP2040 absolute maximum of IOVDD + 0.5 V, and it turns the backlight **on**.
-- **The mitigation:** `lcd_safe_pins.c` registers `PICO_RUNTIME_INIT_FUNC_HW(lcd_safe_pins_apply, "00110")`, which drives GP13 low. It also sets LCD CS, touch CS and SD CS high and holds RST low.
+- **The hardware (source #19, `design/evidence/backlight-interface.md`):** module R16 10k runs from VSYS (5 V) to `LCD_BL`, the backlight regulator's EN. The carrier no longer connects GP13 to that node. GP13 → R64 33 Ω → gate of Q1 (generic logic-level N-channel MOSFET), with R88 100 kΩ as the gate pull-down; Q1's drain is `LCD_BL` and its source is GND. The pad only ever sees its own drive or 0 V through R88, in every state, so the IOVDD + 0.5 V limit is met without any protection clamp. The old 4.5 V node and the 0.17 mA "driven high" estimate no longer exist.
+- **Polarity is inverted.** GP13 **high** = Q1 on = `LCD_BL` ≈ 0 V = backlight **OFF**. GP13 **low** or undriven = Q1 off = R16 pulls `LCD_BL` to VSYS = backlight **ON**. `lcd_safe_pins.h` names the two levels `LCD_BL_LEVEL_OFF` (true) and `LCD_BL_LEVEL_ON` (false); nothing writes a raw level to GP13.
+- **Default state is ON.** Power-on reset, the boot ROM, BOOTSEL, boot2 and the window before the hook all leave the gate at 0 V, so the backlight is lit until firmware drives GP13 high. This is a brightness/appearance matter, not a pin-stress matter.
+- **The early hook darkens the panel:** `lcd_safe_pins.c` registers `PICO_RUNTIME_INIT_FUNC_HW(lcd_safe_pins_apply, "00110")`, which drives GP13 high (`LCD_BL_LEVEL_OFF`). It also sets LCD CS, touch CS and SD CS high and holds RST low.
   - The hook runs just after the SDK's `runtime_init_early_resets` (priority 00100), which releases IO_BANK0/PADS_BANK0 and does not reset them again.
   - It runs before clock setup (00500) and `main()`.
   - The pin order is value, then output enable, then function select, so the pin never floats or glitches.
   - `scope10_acq.elf.map` confirms the order: `.preinit_array.00100`, `.00101`, `.00110`, …, `.00500`.
   - The hook disassembles to register writes and `gpio_set_function` only, with no library calls, so it does not depend on the later runtime-init steps.
-  - `main()` re-applies it without calling `gpio_init()`, because `gpio_init()` would briefly release the pin.
-- **The window firmware cannot cover:** power-on reset, the boot ROM and boot2 up to the hook. Its duration is not measured. The R88 / R16 decision recorded in `design/evidence/g01-delta.json` remains the hardware answer.
-- **Backlight on/off only.** `scope_display_backlight(p > 0)` drives GP13 high, and only after a successful init. The regulator (CAT1) is unidentified, so PWM dimming on its EN is not assumed.
-- **Driven high is also an estimate.** With GP13 driven high, R16 sources roughly (5 − 3.3) V / 10 kΩ ≈ 0.17 mA into the pin while it is held at IOVDD. This is an estimate, not a measurement.
+  - `main()` re-applies it without calling `gpio_init()`, because `gpio_init()` would briefly release the pin (which would flash the backlight on, not stress it).
+  - It runs in **both** `SCOPE_ENABLE_LCD` states of `scope10_acq`, so the default LCD-off build turns the backlight off shortly after boot and leaves it off. `SCOPE_ENABLE_LCD` stays default OFF. `scope10_diagnostic` does not link `lcd_safe_pins.c` and never drives GP13, so under the diagnostic firmware the backlight simply stays **ON**; that is harmless to the pad (gate at 0 V through R88) and is expected at the bench.
+- **Backlight on/off only.** `scope_display_backlight(p > 0)` drives GP13 low (`LCD_BL_LEVEL_ON`), and only after a successful init; `scope_display_backlight(0)` drives it high. The regulator (CAT1) is unidentified and its EN thresholds are unknown, so PWM dimming on its EN is not assumed; if it is added later the duty is inverted too.
+- **What is not measured:** the LCD_BL and gate waveforms from power-on, the pre-hook lit interval, and the CAT1 EN thresholds. These are G01/G06 bench items for the assembler/bench provider on a factory-assembled prototype.
 
 ## Renderer
 
@@ -202,7 +204,7 @@ These are models of this repository's reading of the schematic and datasheet. Th
 
 **Steps:**
 
-1. Measure GP13 (`LCD_BL`) on an oscilloscope from power-on. Record the voltage and duration before the hook drives it low, and confirm that the backlight stays off until the `lcd,init_sequence_sent` line appears.
+1. Measure GP13 (carrier net `LCD_BL_SRC`), the Q1 gate (`LCD_BL_GATE`) and module `LCD_BL` (J30 position 17) on an oscilloscope from power-on, at the lowest and highest USB voltage the source can be set to within 4.75–5.25 V. Expect GP13 and the gate never above IOVDD and never below 0 V; `LCD_BL` at VSYS (backlight lit) until the hook drives GP13 high, then a few millivolts (backlight dark). Record the lit interval. Confirm the backlight comes back on only after the `lcd,init_sequence_sent` line appears, and that GP13 high really turns it off (module revision/population check: R16 fitted, CAT1 present).
 2. Flash `firmware/build/lcd-enabled/scope10_acq.uf2`. Record its SHA-256 from `reports/firmware-target-build.json`. Expect a black screen, then panes. CH1 is at the top and its tag is yellow; a blue CH1 tag means the BGR/colour order is wrong. The newest data is at the right.
 3. Check the ten panes against known inputs, and each pane's RANGE label and vertical scale against its switch (all panes show `UNCAL` until a calibration mechanism exists). Check the TIME bar and window against the knob. Check that HOLD freezes the plots, and that LINK applies CH1's window to every pane.
 4. Watch the USB counters (`overrun_events`, `missed_slots`) with the LCD running and compare them with the LCD-off build.
@@ -212,6 +214,6 @@ These are models of this repository's reading of the schematic and datasheet. Th
 
 - **All of G06 on hardware:** display output, orientation and colour order, the ten panes, TIME/RANGE, controls, HOLD, LINK, and render/acquisition coexistence.
 - **SPI rate:** the 15 MHz default is a conservative choice, not a measured limit. The vendor wiki reports 60 MHz tested.
-- **GP13 before the hook:** the voltage during the uncovered pre-hook window, and whether R88 should change (G01 delta).
+- **Backlight bench check:** the LCD_BL/gate waveforms, the pre-hook lit interval and the actual module population (R16, CAT1) on the factory-assembled prototype (`design/evidence/backlight-interface.md`; G01/G06).
 - **Reviewer decision** on the vendor panel-tuning values (see Licensing).
 - **Documentation:** the generated firmware how-to (`design/narrative-pages.json` → `doc/`) still says that LCD integration remains open. That text is still true, but it does not yet point to this file.

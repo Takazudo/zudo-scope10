@@ -39,6 +39,8 @@ Per the G01 header-net rule, no J30/J31 net assignment was changed in `scripts/m
 
 Extra finding recorded per manager instruction: module R16 (10k, VSYS→LCD_BL) overrides the carrier's R88 (100k, LCD_BL→GND) — the backlight defaults **on**, not off, and the node (~4.5 V) exceeds the RP2040 GPIO absolute maximum (IOVDD+0.5 V) by a small, unmeasured margin. No component value was changed; this is a decision for G01/G06 after the physical module check (see `LOCAL-HANDOFF.md`, #16).
 
+*Update (#41, source #19):* that decision was taken as a design change, not a measurement: GP13 now drives a carrier-side open-drain N-MOSFET (Q1) whose drain is `LCD_BL`, with R88 repurposed as the gate pull-down; the J30/J31 header nets are still unchanged. See `design/evidence/backlight-interface.md`.
+
 `validate.py`'s hard-coded pin-39/GP3/GP5/GP14 checks keep passing unchanged (unaffected by this topic).
 
 ## G02 — pin maps and facts added to the catalog

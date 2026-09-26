@@ -13,10 +13,11 @@
         "design/evidence/g01-display-power.md",
         "design/evidence/g01-delta.json",
         "design/circuit.json (pending_g01_changes[id=g01-r88-backlight-default], parts[ref=J30/J31].notes)",
-        "design/narrative-pages.json (architecture/power-and-module-interface.mdx, \"G01/G06 pending decision\" section)",
-        "design/evidence/INTEGRATION.md (\"G01 — pending proposal only, header nets unchanged\")"
+        "design/narrative-pages.json (architecture/power-and-module-interface.mdx, \"Backlight interface (GP13)\" section)",
+        "design/evidence/INTEGRATION.md (\"G01 — pending proposal only, header nets unchanged\")",
+        "design/evidence/backlight-interface.md (#41: GP13 open-drain stage, per-state voltage table, alternatives)"
       ],
-      "evidence_partial_note": "Desk-only: module R16 (10k VSYS->LCD_BL) vs carrier R88 (100k LCD_BL->GND) backlight-default-on conflict recorded as a pending proposal, not applied. No net changed. Physical module revision/strap check and the pending R88 decision remain local (LOCAL-HANDOFF.md)."
+      "evidence_partial_note": "Desk-only. #41 replaced the direct GP13->LCD_BL tie with a carrier-side open-drain stage (Q1 nmos-ll, R88 as gate pull-down; J30/J31 header nets unchanged): the pad stays within 0 V..IOVDD in every state without a clamp assumption; backlight default ON, GP13 high = OFF. Physical module revision/strap/population check (R11, R16, CAT1) and the LCD_BL/gate waveform capture remain local (LOCAL-HANDOFF.md G01 items 1-3)."
     },
     {
       "id": "G02",
@@ -78,7 +79,7 @@
         "reports/firmware-target-build.json (scope10_acq+lcd target)",
         "reports/firmware-host-tests.json (LCD bridge framing/clipping/pane-layout/renderer host tests)"
       ],
-      "evidence_partial_note": "Clean-room Waveshare LCD backend; scope10_acq+lcd builds with SCOPE_ENABLE_LCD=1 against the real Pico SDK (0 warnings). A few vendor panel-tuning numbers (gamma/VCOM/frame-rate/scan/inversion) are used; LCD_VENDOR_PANEL_TUNING=0 excludes them (user decision, LOCAL-HANDOFF.md). SPI clocked conservatively at 15 MHz. No display was flashed or observed; G01's backlight-default decision must be resolved before enabling SCOPE_ENABLE_LCD locally."
+      "evidence_partial_note": "Clean-room Waveshare LCD backend; scope10_acq+lcd builds with SCOPE_ENABLE_LCD=1 against the real Pico SDK (0 warnings). A few vendor panel-tuning numbers (gamma/VCOM/frame-rate/scan/inversion) are used; LCD_VENDOR_PANEL_TUNING=0 excludes them (user decision, LOCAL-HANDOFF.md). SPI clocked conservatively at 15 MHz. No display was flashed or observed. Backlight polarity is inverted by #41 (GP13 high = OFF, default ON; lcd_safe_pins drives it high early); the LCD_BL/gate waveforms and the pre-hook lit interval must be captured on a factory-assembled prototype (LCD-BACKEND.md G06 step 1) before enabling SCOPE_ENABLE_LCD is treated as verified."
     },
     {
       "id": "G07",

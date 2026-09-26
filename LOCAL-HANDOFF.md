@@ -53,26 +53,30 @@ Header nets to the display (J30/J31) are committed only after this gate is resol
 1. Physically inspect the received Waveshare Pico-ResTouch-LCD-3.5 (SKU 19907): read its silked
    revision marking and check which of its own strap resistors/jumpers (H1–H6, R11–R16 per the
    manufacturer schematic) are actually fitted on your unit.
-2. Confirm the desk finding in `design/circuit.json`'s `pending_g01_changes[id=
-   g01-r88-backlight-default]` and `design/evidence/g01-display-power.md`: module R16 (10k,
-   VSYS→LCD_BL) pulls the backlight-enable node toward the module's ~5 V VSYS rail, overriding
-   carrier R88 (100k, LCD_BL→GND). With GP13 left high-impedance, the node sits near an estimated
-   4.5 V — above the RP2040 GPIO absolute maximum (IOVDD+0.5 V) — and the backlight defaults ON,
-   not off. Firmware (`firmware/src/lcd_safe_pins.c` / the SDK init hook) now drives GP13 low
-   early, but the power-on / boot-ROM window before that init hook runs is unmeasured. **Bench
-   measure the actual GP13 node voltage and the backlight state during that window** on a real
-   unit before trusting the firmware mitigation.
-3. Decide, and apply exactly one of:
-   - **Keep R88** and accept the documented default-on/clamp behaviour (update
-     `design/evidence/g01-display-power.md` and this gate with the measured clamp current and the
-     accepted risk);
-   - **Remove R88** (requires a generator change in `scripts/make_design.py` +
-     `catalog/components.json`, regenerate, and re-run the full check suite — this is the only
-     kind of change the epic's file-ownership rule restricts to the generator owner, so if you are
-     not that person, hand this specific edit back rather than hand-editing outputs); or
-   - **Accept and document** as-is with no component change, recording the measured margin.
-   Whichever you choose, update `pending_g01_changes[id=g01-r88-backlight-default].status` from
-   `OPEN_PENDING_PHYSICAL_CHECK` to a resolved status and cite the actual measurement.
+2. **Backlight interface (#41, source #19) — bench check the applied design, do not re-decide it.**
+   Module R16 (10k, VSYS→LCD_BL) pulls the backlight-enable/CAT1-EN node to the module's ~5 V
+   VSYS rail. The carrier therefore no longer ties GP13 to that node: GP13 → R64 (33 Ω) → gate
+   of Q1 (generic logic-level N-channel MOSFET, record `nmos-ll`, exact part at G08), R88 (100k)
+   is the gate pull-down, Q1's drain is `LCD_BL` (J30 position 17, header net unchanged) and its
+   source is GND. The GPIO pad sits within 0 V…IOVDD in every state without any clamp assumption
+   (`design/evidence/backlight-interface.md`, voltage table). **Default is backlight ON; GP13
+   high = OFF** (`firmware/src/lcd_safe_pins.c` drives it high from the early SDK init hook in
+   both `SCOPE_ENABLE_LCD` states). Have the assembler/bench provider, on the factory-assembled
+   prototype: (a) confirm the module revision and that R16 and CAT1 are populated as drawn, and
+   read CAT1's marking / EN thresholds if legible (`design/evidence/module-power.json`,
+   `backlight-regulator-en-thresholds`); (b) capture GP13 (`LCD_BL_SRC`), `LCD_BL_GATE` and
+   `LCD_BL` from power-on through a RUN-button reset, BOOTSEL and a normal boot at the lowest and
+   highest USB voltage available within 4.75–5.25 V — GP13 and the gate must stay within
+   0 V…IOVDD, `LCD_BL` at VSYS while lit and below 50 mV while dark; (c) record the lit interval
+   before the hook. Fill `manufacturing/acceptance-results.csv` row `BACKLIGHT_GP13_INTERFACE`.
+3. If (b) passes, update `pending_g01_changes[id=g01-r88-backlight-default].status` from
+   `DESIGN_APPLIED_BENCH_CHECK_PENDING` to a closed status citing the captures. If CAT1 does not
+   turn off with `LCD_BL` held near 0 V, or the module population differs from the schematic, stop:
+   the fallback options (a documented **factory** modification of the module pull-up, or a
+   level-translating stage) are weighed in `design/evidence/backlight-interface.md` and require a
+   generator change in `scripts/make_design.py` + `catalog/components.json` by the generator
+   owner, never a hand edit of outputs and never home soldering. Do not fall back to "remove R88"
+   or "accept a clamp current": both were rejected in #19.
 4. Confirm GP2 stays on the on-module PSRAM CS/CE (module position 4) and is left open on the
    carrier — this is already correct in `design/circuit.json` (J30 notes) and must **not** be
    repurposed for the mux address line on the real header.
@@ -239,8 +243,15 @@ along with `operator` and `date`.
 ## G06 — firmware/display integration
 
 1. Confirm G01 is resolved first — do not enable `SCOPE_ENABLE_LCD` on real hardware before that.
+   In particular the backlight bench check (G01 item 2 above) must have passed: the backlight is
+   **active-low on GP13 and default ON** through the carrier's Q1 open-drain stage (#41), so a
+   lit panel before firmware runs is expected, and a panel that stays lit after the
+   `lcd,init_sequence_sent` line with `scope_display_backlight(0)` requested — or that never goes
+   dark in the LCD-off build — is a hardware finding, not a firmware polarity bug to "fix" by
+   flipping `LCD_BL_LEVEL_OFF`.
 2. Flash `firmware/build/lcd-enabled/scope10_acq.uf2` (built this session, 0 warnings) to a real
-   Pico H wired to a real Waveshare module.
+   Pico H wired to a real Waveshare module. Follow `firmware/LCD-BACKEND.md`'s local G06 procedure;
+   its step 1 repeats the GP13/gate/`LCD_BL` capture with this build.
 3. Verify all ten panes render, TIME/RANGE controls respond, and HOLD/LINK behave as specified in
    `design/narrative-pages.json`'s controls-and-UI narrative.
 4. `firmware/LCD-BACKEND.md` and `firmware/ACQUISITION.md` are the generated firmware how-tos for

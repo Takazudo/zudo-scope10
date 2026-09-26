@@ -632,8 +632,8 @@ R62,33,1,P1,LCD_CLK_SRC,module-interfaces,
 R62,33,2,P2,LCD_CLK,module-interfaces,
 R63,33,1,P1,LCD_MOSI_SRC,module-interfaces,
 R63,33,2,P2,LCD_MOSI,module-interfaces,
-R64,33,1,P1,LCD_BL_SRC,module-interfaces,
-R64,33,2,P2,LCD_BL,module-interfaces,
+R64,33,1,P1,LCD_BL_SRC,module-interfaces,"GP13 reaches only the Q1 gate network, never LCD_BL (#41)"
+R64,33,2,P2,LCD_BL_GATE,module-interfaces,"GP13 reaches only the Q1 gate network, never LCD_BL (#41)"
 R65,33,1,P1,LCD_RST_SRC,module-interfaces,
 R65,33,2,P2,LCD_RST,module-interfaces,
 R66,33,1,P1,ADDR0_SRC,module-interfaces,
@@ -660,8 +660,11 @@ R86,100k,1,P1,+3V3D,module-interfaces,
 R86,100k,2,P2,SD_CS_N,module-interfaces,
 R87,100k,1,P1,+3V3A,module-interfaces,
 R87,100k,2,P2,MUX_DISABLE,module-interfaces,
-R88,100k,1,P1,LCD_BL,module-interfaces,
-R88,100k,2,P2,GND,module-interfaces,
+R88,100k,1,P1,LCD_BL_GATE,module-interfaces,"Q1 gate pull-down (was LCD_BL pull-down before #41): holds Q1 off, backlight ON, while GP13 is undriven"
+R88,100k,2,P2,GND,module-interfaces,"Q1 gate pull-down (was LCD_BL pull-down before #41): holds Q1 off, backlight ON, while GP13 is undriven"
+Q1,N-MOSFET LL (UNSELECTED),1,GATE,LCD_BL_GATE,module-interfaces,"Open-drain backlight stage (#41): drain on module LCD_BL/CAT1 EN (R16 10k to VSYS is the only pull-up), source GND. Generic logic-level N-MOSFET, exact part at G08. Backlight default ON; GP13 high = OFF."
+Q1,N-MOSFET LL (UNSELECTED),2,SOURCE,GND,module-interfaces,"Open-drain backlight stage (#41): drain on module LCD_BL/CAT1 EN (R16 10k to VSYS is the only pull-up), source GND. Generic logic-level N-MOSFET, exact part at G08. Backlight default ON; GP13 high = OFF."
+Q1,N-MOSFET LL (UNSELECTED),3,DRAIN,LCD_BL,module-interfaces,"Open-drain backlight stage (#41): drain on module LCD_BL/CAT1 EN (R16 10k to VSYS is the only pull-up), source GND. Generic logic-level N-MOSFET, exact part at G08. Backlight default ON; GP13 high = OFF."
 TP30,testpoint,1,PAD,TIMING_TP,module-interfaces,
 F1,1206L050YR,1,IN,VBUS_USB,power,Protection component identity pending; not an inrush/load-switch substitute
 F1,1206L050YR,2,OUT,+5V_FUSED,power,Protection component identity pending; not an inrush/load-switch substitute

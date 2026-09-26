@@ -52,7 +52,9 @@
       "load_behavior": "Unconditional: the +5V_FUSED display/analog branch draws current immediately once 5 V is present, regardless of configuration state (honesty.unconditional_load).",
       "compliant_with_ordinary_host_port": false,
       "requires_source_contract": true,
-      "bench_procedure": "LOCAL-HANDOFF.md G07 bench item 1 (pre-configuration current)."
+      "backlight_default": "ON until firmware runs, then OFF: the Q1 gate is held at 0 V by R88 while GP13 is undriven, so module R16 pulls LCD_BL to VSYS and the backlight is lit from the moment VSYS rises; the firmware early hook (lcd_safe_pins.c, both SCOPE_ENABLE_LCD states) then drives GP13 high and darkens it. The pre-hook lit interval is unmeasured.",
+      "gp13_pad_voltage": "0 V (R88 and the RP2040 reset pull-down, both to GND) then V_OH <= IOVDD once driven; never above IOVDD + 0.5 V (design/evidence/backlight-interface.md).",
+      "bench_procedure": "LOCAL-HANDOFF.md G07 bench item 1 (pre-configuration current); G01 item 2 / G06 step 1 (LCD_BL and gate waveforms)."
     },
     "configured": {
       "description": "Host has completed enumeration and accepted the configuration descriptor.",
@@ -60,6 +62,8 @@
       "compliant_with_ordinary_host_port": "unknown_pending_declared_value",
       "compliant_with_ordinary_host_port_note": "declared_max_power_ma (250, see override_investigation) is currently below the 420 mA allowance, so scripts/power_budget.py's usb_budget.vs_declared_limit reports 'fail'. This is the honest state of an unmodified SDK descriptor; only a source meeting source_contract, not an ordinary host's configured grant, is supported today.",
       "requires_source_contract": true,
+      "backlight_default": "Firmware-controlled, active-low on GP13: scope10_acq drives GP13 high (OFF) from the early hook onward in both SCOPE_ENABLE_LCD states; the LCD-enabled build drives GP13 low (ON) only after scope_display_init() reports the init sequence sent. scope10_diagnostic does not link lcd_safe_pins.c and never drives GP13, so under it the backlight stays ON (gate 0 V via R88); the pad is unaffected.",
+      "gp13_pad_voltage": "Driven: V_OL or V_OH, within 0 V .. IOVDD.",
       "bench_procedure": "LOCAL-HANDOFF.md G07 bench item 2 (configured current, no display / dark display / bright display)."
     },
     "suspend_or_deconfigured": {
@@ -68,6 +72,8 @@
       "compliant_with_ordinary_host_port": false,
       "compliant_with_ordinary_host_port_note": "USB 2.0 suspend current limit (2.5 mA) is far below this module's unconditional load.",
       "requires_source_contract": true,
+      "backlight_default": "Unchanged from the configured state: firmware does not react to suspend/deconfiguration, so GP13 keeps whatever level it was driven to (backlight stays on or off as it was).",
+      "gp13_pad_voltage": "Driven: within 0 V .. IOVDD.",
       "bench_procedure": "LOCAL-HANDOFF.md G07 bench item 3 (suspend/deconfigured current)."
     },
     "reset": {
@@ -75,7 +81,9 @@
       "load_behavior": "Unconditional: the +5V_FUSED display/analog load is not tied to firmware or USB state at all, so it persists across a bus or device reset as long as 5 V is present.",
       "compliant_with_ordinary_host_port": false,
       "requires_source_contract": true,
-      "bench_procedure": "LOCAL-HANDOFF.md G07 bench item 4 (current across a bus/device reset)."
+      "backlight_default": "ON during a device reset / power-on reset: GP13 returns to its reset state (input, pull-down), R88 holds the Q1 gate at 0 V, module R16 pulls LCD_BL to VSYS. A USB bus reset alone does not touch GP13, so the backlight keeps its firmware-set state.",
+      "gp13_pad_voltage": "0 V while in reset (reset pull-down 50-80 kOhm plus R88 to GND); never above IOVDD + 0.5 V.",
+      "bench_procedure": "LOCAL-HANDOFF.md G07 bench item 4 (current across a bus/device reset); G01 item 2 (LCD_BL waveform through a RUN-button reset)."
     },
     "bootsel_rom": {
       "description": "RP2040 bootrom BOOTSEL mode (mass-storage UF2 bootloader), before this project's firmware runs.",
@@ -83,16 +91,29 @@
       "compliant_with_ordinary_host_port": "unknown",
       "compliant_with_ordinary_host_port_note": "No citation for the bootrom's declared max-power value is available in this pass; not stated rather than guessed.",
       "requires_source_contract": true,
-      "bench_procedure": "LOCAL-HANDOFF.md G07 bench item 5 (BOOTSEL descriptor inspection and current)."
+      "backlight_default": "Expected ON for the whole BOOTSEL session: this project's firmware does not run, GP13 is expected to stay in its reset state (gate 0 V via R88, LCD_BL at VSYS via R16). Even if the bootrom drove GP13, the pad could only reach its own V_OH. Confirm on the bench; the bootrom's GPIO handling is not cited here.",
+      "gp13_pad_voltage": "Expected 0 V (reset pull-down plus R88); bounded to 0 V .. IOVDD in any case.",
+      "bench_procedure": "LOCAL-HANDOFF.md G07 bench item 5 (BOOTSEL descriptor inspection and current); G01 item 2 (LCD_BL state in BOOTSEL)."
     },
     "unpowered": {
       "description": "No 5 V present at VBUS_USB.",
       "load_behavior": "No load; the module draws nothing.",
       "compliant_with_ordinary_host_port": true,
       "requires_source_contract": false,
+      "backlight_default": "OFF (no VSYS, so no backlight supply). During the power-up ramp, before the Pico's IOVDD is up but with VSYS already present, the backlight is ON and the GP13 pad still sits at 0 V through R88: the IOVDD + 0.5 V limit holds even at IOVDD = 0.",
+      "gp13_pad_voltage": "0 V.",
       "bench_procedure": "LOCAL-HANDOFF.md G07 bench item 6 (leakage/back-power check with the module unpowered, already covered by the G04 no-back-power procedure)."
     }
   },
 
-  "extension_note_for_sub_19": "The backlight sub-issue (#19) comes after this one and adds backlight default-state behaviour. It should extend the relevant entries above (e.g. add a 'backlight_default' field to pre_configuration/configured/reset) rather than create a second per-state power table."
+  "backlight_interface": {
+    "source": "#41 (source #19); design/evidence/backlight-interface.md",
+    "circuit": "GP13 -> R64 33R -> LCD_BL_GATE -> gate of Q1 (generic logic-level N-channel MOSFET, catalog record nmos-ll, exact part at G08); R88 100k gate pull-down; Q1 drain = LCD_BL (J30 pos 17, header net unchanged), source = GND. Module R16 10k to VSYS is the only pull-up on LCD_BL.",
+    "default_state": "ON whenever GP13 is low or undriven (reset, BOOTSEL/ROM, before the firmware hook, both power-up orders).",
+    "enable_polarity": "Active-low on GP13: high = backlight OFF, low = ON. Firmware: firmware/src/lcd_safe_pins.h LCD_BL_LEVEL_OFF/LCD_BL_LEVEL_ON.",
+    "pad_limit_argument": "The GP13 pad connects only to the gate network, so it lies within 0 V .. V_OH (<= IOVDD) in every state listed in power_states; no GPIO protection clamp and no fault-tolerant-IO assumption is used. scripts/validate_extra.py asserts no resistive DC path below 1 MOhm from GP13's net to +5V_FUSED, VBUS_USB or LCD_BL.",
+    "unknowns": "CAT1 EN thresholds and EN input current (design/evidence/module-power.json backlight-regulator-en-thresholds); pre-hook lit interval; actual module population. Bench check on the factory-assembled prototype before G01/G06 closure."
+  },
+
+  "extension_note_for_sub_19": "Applied by #41: the backlight_default and gp13_pad_voltage fields above extend each power_states entry; backlight_interface summarises the circuit. No second per-state table exists."
 }

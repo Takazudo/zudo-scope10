@@ -46,6 +46,14 @@
       "uncertainty": "Not printed on the schematic; backlight current cannot be derived without it. Requires the physical module or a higher-resolution schematic render."
     },
     {
+      "id": "backlight-regulator-en-thresholds",
+      "claim": "CAT1 EN (pin 3, the LCD_BL node) logic thresholds V_IH / V_IL and EN input current",
+      "value": null,
+      "status": "unknown",
+      "citation": "design/evidence/backlight-interface.md, \"What the table does not establish\"; Waveshare schematic p1 LCD BACKLIGHT (3A) shows CAT1 pins VIN/GND/EN/BYP/VOUT and R16 10K VSYS->LCD_BL/EN only, no part number (PDF text extraction and 300 dpi render, 2026-09-26)",
+      "uncertainty": "Without the regulator identity the thresholds cannot be cited. The #41 open-drain interface does not depend on them: off relies on LCD_BL being held within a few millivolts of GND by Q1, on relies on the module's own R16 pull-up to VSYS (the vendor's stacked arrangement). Read CAT1's marking on the received module and record the datasheet thresholds at G01."
+    },
+    {
       "id": "module-max-current-180ma",
       "claim": "\"5V 180mA\" as a manufacturer-stated module maximum current",
       "value_ma": 180,
