@@ -1,0 +1,47 @@
+{
+  "gate": "G01",
+  "evidence_doc": "design/evidence/g01-display-power.md",
+  "status": "evidence_partial",
+  "gate_status_change": null,
+  "source": {
+    "id": "display-sch",
+    "url": "https://files.waveshare.com/upload/8/85/Pico-ResTouch-LCD-3.5_Sch.pdf",
+    "sha256": "0547c5fd3dc4fce9e20941b756aa8e348ea47e4d24851e745a04a0c24a5f3b41"
+  },
+  "verdict": "keep",
+  "net_changes": [],
+  "changes": [
+    {
+      "op": "set_notes",
+      "target": "parts[ref=J30].notes",
+      "value": "Display left header: pin 1 = Pico position 1. Keep pos 4 (module SRAM_CS, PSRAM CE w/ 10k pull-up), pos 7 (module SDIO_CLK via H6 jumper) and pos 19 (module GPIO14 -> R14 NC -> 3V3 LDO EN) unconnected: carrier uses GP2/GP5/GP14 for mux address/timing. LCD_BL (pos 17) has module 10k pull-up to VSYS. G01 OPEN pending physical strap check.",
+      "applies_net_change": false,
+      "reason": "Record why the spare display positions must stay open; the existing null pins already implement this.",
+      "citation": "Waveshare Pico-ResTouch-LCD-3.5 schematic p1: U5 header (2B-3C), PSRAM U8/R20 (3D), jumpers H1-H6 (2D-3D), Power R11-R15 (4D), LCD BACKLIGHT R16 (3A)"
+    },
+    {
+      "op": "set_notes",
+      "target": "parts[ref=J31].notes",
+      "value": "Display right header: pin 1 = Pico position 40. Pin 2 (pos 39 VSYS) is the module's only 5 V entry (no diode; feeds RT9193-33 3V3 LDO and backlight regulator). Pos 40 VBUS, 36 Pico3V3 (R15 NC), 37 3V3_EN (R12 NC), 35 ADC_VREF unused by module; keep isolated so no strap variant can cause regulator contention. G01 OPEN pending physical strap check.",
+      "applies_net_change": false,
+      "reason": "Schematic confirms VSYS entry and that isolating 35/36/37/40 is contention-free for every strap variant.",
+      "citation": "Waveshare schematic p1: Power block U7 RT9193-33, R11 0R / R12 NC / R14 NC / R13 100K / R15 NC (4D); U5 pos 35-40 (3B)"
+    },
+    {
+      "op": "review_decision",
+      "target": "parts[ref=R88]",
+      "value": null,
+      "applies_net_change": false,
+      "reason": "Module R16 10k pulls LCD_BL to VSYS (+5V_FUSED on carrier). Against R88 100k to GND, the node sits near 4.5 V while GP13 is high-impedance: the backlight defaults ON (the pull-down does not give an off default) and the voltage exceeds the RP2040 VPIN abs max of IOVDD+0.5 V (small clamp current, estimated below 0.1 mA, unmeasured). This is the vendor's stacked behaviour too. Decide at G01/G06 whether to keep R88, remove it, or accept and document; no value is proposed here.",
+      "citation": "Waveshare schematic p1 LCD BACKLIGHT (3A) R16 10K VSYS->LCD_BL/CAT1 EN; RP2040 datasheet §5.5.3.1 Table 622 (PDF p615)"
+    }
+  ],
+  "unresolved": [
+    "Module revision marking vs schematic dated 2021-05-14 (physical)",
+    "Fitted straps R11 (0R expected), R12/R14/R15 (NC expected), R13 100K (physical)",
+    "Solder jumpers H1-H6 in SPI position (physical)",
+    "U8 PSRAM fitted? R20 value (physical)",
+    "CAT1 backlight regulator identity/output voltage and backlight current (physical/bench)",
+    "LCD panel internal capacitance and measured VSYS inrush/steady current (bench, G07)"
+  ]
+}
