@@ -296,6 +296,9 @@ int main(void) {
             for (unsigned ch = 0; ch < ACQ_CHANNELS; ch++) {
                 in.time_code[ch] = eng.time_code[ch];
                 in.range[ch] = (int8_t)eng.range[ch].stable;
+                /* No calibration persistence exists (firmware/tools/calibrate.py only writes a
+                 * host JSON file), so every channel uses the nominal fallback: shown as UNCAL. */
+                in.cal[ch] = scope_calibration_nominal();
             }
             scope_render_step(&rs, &in, RENDER_ITEMS_PER_PASS);
         }

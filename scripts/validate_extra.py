@@ -423,6 +423,38 @@ def _module_power_evidence_consistency(check, ctx):
 EXTRA_CHECKS.append(_module_power_evidence_consistency)
 
 
+def _nominal_calibration_parity(check, ctx):
+    """#42: the firmware's nominal-fallback calibration equals reports/analog-analysis.json within rounding."""
+    import json
+    import re
+
+    R = ctx['R']
+    header = (R / 'firmware/src/scope_core.h').read_text()
+    report = json.loads((R / 'reports/analog-analysis.json').read_text())
+
+    def define(name):
+        m = re.search(r'#define\s+' + name + r'\s+([0-9.eE+-]+)f?\b', header)
+        return float(m.group(1)) if m else None
+
+    zero = define('SCOPE_NOMINAL_ZERO_CODE')
+    vpc = define('SCOPE_NOMINAL_VOLTS_PER_CODE')
+    want_zero = report['adc_zero_code_ideal']
+    want_vpc = report['input_referred_ideal_adc_lsb_mV'] / 1000.0
+    check(
+        'Firmware nominal zero code matches analog-analysis.json adc_zero_code_ideal (within 0.0005 code)',
+        zero is not None and abs(zero - want_zero) <= 5e-4,
+        f'firmware={zero} report={want_zero}',
+    )
+    check(
+        'Firmware nominal volts/code matches analog-analysis.json input-referred LSB (within 1 ppm)',
+        vpc is not None and abs(vpc - want_vpc) <= 1e-6 * want_vpc,
+        f'firmware={vpc} report={want_vpc}',
+    )
+
+
+EXTRA_CHECKS.append(_nominal_calibration_parity)
+
+
 def run(check, ctx):
     for extra in EXTRA_CHECKS:
         extra(check, ctx)

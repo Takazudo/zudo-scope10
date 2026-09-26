@@ -8,9 +8,9 @@
  * screen matches the physical control banks: pane i (CH i+1) sits in column i / 5, row
  * i % 5. CH1..CH5 fill the left column top to bottom, CH6..CH10 the right; CH6 is top right.
  * Inside a pane (offsets from the pane origin):
- *   y  1..10   label row, x 8..151: channel ID (channel colour), range, window duration
+ *   y  1..10   label row, x 8..151: channel ID (channel colour), range, UNCAL, window duration
  *   y 14..79   x 0..3 channel colour tag | x 8..151 plot, 144 x 66 (SCOPE_PLOT_W x SCOPE_PLOT_H)
- *   y 83..92   status row, x 8..151: status token slot (UNCAL/CLIP/SAT), LINK, HOLD
+ *   y 83..92   status row, x 8..151: signal token (VIEW CLIP / ADC SAT), LINK, HOLD
  *   y 95       separator line across the pane
  * Text rows are a grid of 24 cells of SCOPE_CELL_W x SCOPE_CELL_H; each glyph is 5 x 7 from
  * the in-repo font. A text field is redrawn only when its string or colour changes.
@@ -19,6 +19,17 @@
  * partial history right-aligned with blank columns on the left), newest at the right.
  * The duration label and the plot both derive from scope_window_samples() of the same
  * effective TIME code, so the label names the interval the plot represents.
+ * Vertical: each bin's raw lo/hi is converted to volts through the channel's calibration
+ * (scope_calibration_effective: the nominal fallback when missing or invalid, shown as
+ * UNCAL), then [-range, +range] (the RANGE switch's +-3/5/8 V software view scale) maps to
+ * rows 0 .. 2 x ((SCOPE_PLOT_H - 1) / 2); the grid row is electrical zero (0 V) through the
+ * same mapping. Beyond +-range the trace is pinned at the edge row in SCOPE_COLOUR_CLIP with
+ * a background gap beside it. The RANGE label names the scale the plot is drawn at: it is
+ * latched with the plot (so it freezes under HOLD), a deadband keeps the last valid range,
+ * and before the switch ever decodes the startup scale +-8 V shows in the warning colour.
+ * Signal token, per pane over the drawn window: ADC SAT when a raw lo or hi is at 0 or 4095
+ * (ADC/input limit), else VIEW CLIP when converted volts exceed +-range (only the view
+ * clips), else nothing. UNCAL has its own slot, so neither hides the other.
  * LINK makes every pane use CH1's TIME window: a time-link of views, not phase sync. The
  * channels are still sampled sequentially. HOLD freezes the plots; text keeps updating. */
 #include "scope_core.h"
@@ -45,7 +56,9 @@
 #define SCOPE_CELL_H 10u
 #define SCOPE_GLYPH_Y 1u                     /* glyph top inside its cell */
 #define SCOPE_TEXT_CELLS (SCOPE_PLOT_W / SCOPE_CELL_W)
-#define SCOPE_FIELD_MAX 6u                   /* widest text field, in cells */
+#define SCOPE_FIELD_MAX 9u                   /* widest text field, in cells ("VIEW CLIP") */
+#define SCOPE_WINDOW_LABEL_MAX 6u            /* window-duration field, in cells */
+#define SCOPE_RANGE_STARTUP 2                /* +-8 V until the RANGE switch first decodes */
 #define SCOPE_CHAR_PM '\xb1'                /* plus-minus sign (Latin-1 code) */
 #define SCOPE_RENDER_FILL_MAX 128u
 #define SCOPE_BUTTON_DEBOUNCE_MS 20u
@@ -58,18 +71,25 @@
 #define SCOPE_COLOUR_LINK SCOPE_RGB565(0, 200, 255)
 #define SCOPE_COLOUR_TEXT SCOPE_RGB565(200, 200, 200)
 #define SCOPE_COLOUR_WARN SCOPE_RGB565(255, 64, 64)
+#define SCOPE_COLOUR_CLIP SCOPE_COLOUR_WARN   /* edge pixel of a trace pinned by VIEW CLIP */
 
 typedef struct { uint16_t x, y, w, h; } scope_rect;
 
-/* Per-channel status token shown in the status row slot. The RANGE sub decides when to set it. */
-typedef enum { SCOPE_STATUS_NONE = 0, SCOPE_STATUS_UNCAL, SCOPE_STATUS_CLIP, SCOPE_STATUS_SAT } scope_status_token;
+/* Per-channel status tokens, computed by the renderer (not by the caller). */
+typedef enum {
+    SCOPE_STATUS_NONE = 0,
+    SCOPE_STATUS_UNCAL,      /* calibration missing/invalid: nominal fallback in use */
+    SCOPE_STATUS_VIEW_CLIP,  /* converted volts beyond +-range: the view clips */
+    SCOPE_STATUS_ADC_SAT     /* raw code 0 or 4095: ADC/input limit */
+} scope_status_token;
 
 /* Text fields of a pane; the render step draws one field per item. */
 typedef enum {
     SCOPE_FIELD_ID,      /* label row: "01".."10", channel colour */
-    SCOPE_FIELD_RANGE,   /* label row: "+-3V" / "+-5V" / "+-8V", "+-?V" when range is unknown */
+    SCOPE_FIELD_RANGE,   /* label row: "+-3V" / "+-5V" / "+-8V", the scale the plot is drawn at */
     SCOPE_FIELD_WINDOW,  /* label row, right-aligned: scope_render_window_label() */
-    SCOPE_FIELD_TOKEN,   /* status row: UNCAL / CLIP / SAT slot */
+    SCOPE_FIELD_CAL,     /* label row: "UNCAL" while the nominal fallback is in use */
+    SCOPE_FIELD_TOKEN,   /* status row: "VIEW CLIP" / "ADC SAT" */
     SCOPE_FIELD_LINK,    /* status row: "LINK" while latched */
     SCOPE_FIELD_HOLD,    /* status row: "HOLD" while latched */
     SCOPE_FIELD_COUNT
@@ -79,8 +99,8 @@ typedef struct {
     const scope_history *hist;              /* SCOPE_CHANNELS entries */
     uint16_t time_code[SCOPE_CHANNELS];     /* raw TIME knob codes */
     int8_t range[SCOPE_CHANNELS];           /* scope_range_update result: -1, 0, 1, 2 */
+    scope_calibration cal[SCOPE_CHANNELS];  /* invalid (e.g. zeroed) = nominal fallback, UNCAL */
     uint32_t samples_per_s;                 /* per channel, nominal */
-    uint8_t status_token[SCOPE_CHANNELS];   /* scope_status_token; zero = none */
     bool hold, link;
 } scope_render_input;
 
@@ -90,6 +110,10 @@ typedef struct {
     bool static_done[SCOPE_CHANNELS];
     scope_window window;                    /* current pane's mapping; columns before first_col blank */
     scope_bin cols[SCOPE_PLOT_W];
+    scope_calibration cal;                  /* current pane's effective calibration */
+    int8_t view_range[SCOPE_CHANNELS];      /* range index each plot is drawn at, latched per pane */
+    bool range_known[SCOPE_CHANNELS];       /* a valid range has decoded at least once */
+    uint8_t signal[SCOPE_CHANNELS];         /* NONE / VIEW_CLIP / ADC_SAT of the drawn window */
     struct {                                /* last drawn text per field; redraw on change only */
         char text[SCOPE_FIELD_MAX + 1u];
         uint16_t colour;
@@ -112,18 +136,27 @@ scope_rect scope_pane_status_rect(unsigned pane);
 scope_rect scope_pane_field_rect(unsigned pane, scope_text_field f);
 scope_rect scope_pane_separator_rect(unsigned pane);
 uint16_t scope_channel_colour(unsigned ch);
-/* Row inside a plot of height h for a 12-bit code: 4095 -> 0 (top), 0 -> h - 1. */
-uint16_t scope_code_to_row(uint16_t code, uint16_t h);
-/* One plot column: background, mid-scale grid row, and the bin's lo..hi span. NULL = empty. */
-void scope_render_column(const scope_bin *bin, uint16_t h, uint16_t colour, uint16_t *out);
+/* View half-scale in volts for a range index: 3 / 5 / 8; any other index gives the startup +-8 V. */
+float scope_range_volts(int range);
+/* Row inside a plot of height h: +range_v -> 0 (top), 0 V -> (h - 1) / 2, -range_v ->
+ * 2 x ((h - 1) / 2); rounded symmetrically, so -v maps to the mirror row of +v; clamped. */
+uint16_t scope_volts_to_row(float volts, float range_v, uint16_t h);
+/* One plot column: background, the 0 V grid row, and the bin's lo..hi span converted
+ * through cal and range_v; a span beyond +-range_v is pinned at the edge in
+ * SCOPE_COLOUR_CLIP with a background gap. NULL = empty. */
+void scope_render_column(const scope_bin *bin, scope_calibration cal, float range_v, uint16_t h, uint16_t colour,
+                         uint16_t *out);
+/* Signal token of n bins: ADC_SAT if any raw lo/hi is 0 or >= 4095, else VIEW_CLIP if any
+ * converted lo/hi is beyond +-range_v, else NONE. */
+scope_status_token scope_bins_status(const scope_bin *bins, unsigned n, scope_calibration cal, float range_v);
 /* TIME code a pane uses: CH1's under LINK, its own otherwise. */
 uint16_t scope_render_time_code(const scope_render_input *in, unsigned pane);
 /* The one source of window-duration text: "2.0ms" .. "8.19s". It shows the window of
  * scope_window_samples(time_code, samples_per_s), the interval the plot represents (within
  * the scope_core.h coarse-bin tolerance); samples_per_s == 0 falls back to the raw TIME
- * duration. Writes at most SCOPE_FIELD_MAX characters plus NUL to out and returns the length. */
-unsigned scope_render_window_label(uint16_t time_code, uint32_t samples_per_s, char out[SCOPE_FIELD_MAX + 1u]);
-/* "UNCAL" / "CLIP" / "SAT", or "" for SCOPE_STATUS_NONE and unknown values. */
+ * duration. Writes at most SCOPE_WINDOW_LABEL_MAX characters plus NUL to out and returns the length. */
+unsigned scope_render_window_label(uint16_t time_code, uint32_t samples_per_s, char out[SCOPE_WINDOW_LABEL_MAX + 1u]);
+/* "UNCAL" / "VIEW CLIP" / "ADC SAT", or "" for SCOPE_STATUS_NONE and unknown values. */
 const char *scope_status_token_text(unsigned token);
 /* 5 x 7 glyph rows for c, bit 4 = leftmost column; NULL if the font has no such glyph. */
 const uint8_t *scope_font_glyph(unsigned char c);

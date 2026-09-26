@@ -46,6 +46,7 @@ static const struct { unsigned char c; uint8_t rows[SCOPE_GLYPH_H]; } font[] = {
     {'A', {0x0E, 0x11, 0x11, 0x1F, 0x11, 0x11, 0x11}},
     {'C', {0x0E, 0x11, 0x10, 0x10, 0x10, 0x11, 0x0E}},
     {'D', {0x1C, 0x12, 0x11, 0x11, 0x11, 0x12, 0x1C}},
+    {'E', {0x1F, 0x10, 0x10, 0x1E, 0x10, 0x10, 0x1F}},
     {'H', {0x11, 0x11, 0x11, 0x1F, 0x11, 0x11, 0x11}},
     {'I', {0x0E, 0x04, 0x04, 0x04, 0x04, 0x04, 0x0E}},
     {'K', {0x11, 0x12, 0x14, 0x18, 0x14, 0x12, 0x11}},
@@ -56,14 +57,16 @@ static const struct { unsigned char c; uint8_t rows[SCOPE_GLYPH_H]; } font[] = {
     {'S', {0x0F, 0x10, 0x10, 0x0E, 0x01, 0x01, 0x1E}},
     {'T', {0x1F, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04}},
     {'U', {0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x0E}},
+    {'W', {0x11, 0x11, 0x11, 0x15, 0x15, 0x15, 0x0A}},
 };
 
 /* Text field placement in cells: row 0 = label row, 1 = status row. */
 static const struct { uint8_t row, col, width; bool right; } fields[SCOPE_FIELD_COUNT] = {
     [SCOPE_FIELD_ID] = {0, 0, 2, false},
     [SCOPE_FIELD_RANGE] = {0, 4, 3, false},
-    [SCOPE_FIELD_WINDOW] = {0, SCOPE_TEXT_CELLS - SCOPE_FIELD_MAX, SCOPE_FIELD_MAX, true},
-    [SCOPE_FIELD_TOKEN] = {1, 0, 5, false},
+    [SCOPE_FIELD_WINDOW] = {0, SCOPE_TEXT_CELLS - SCOPE_WINDOW_LABEL_MAX, SCOPE_WINDOW_LABEL_MAX, true},
+    [SCOPE_FIELD_CAL] = {0, 8, 5, false},
+    [SCOPE_FIELD_TOKEN] = {1, 0, SCOPE_FIELD_MAX, false},
     [SCOPE_FIELD_LINK] = {1, 15, 4, false},
     [SCOPE_FIELD_HOLD] = {1, SCOPE_TEXT_CELLS - 4u, 4, false},
 };
@@ -107,26 +110,56 @@ scope_rect scope_pane_separator_rect(unsigned pane) {
 
 uint16_t scope_channel_colour(unsigned ch) { return palette[ch % SCOPE_CHANNELS]; }
 
-uint16_t scope_code_to_row(uint16_t code, uint16_t h) {
-    if (h < 2u) return 0;
-    uint32_t c = code > 4095u ? 4095u : code;
-    return (uint16_t)(((4095u - c) * (h - 1u) + 2047u) / 4095u);
+float scope_range_volts(int range) {
+    static const float volts[3] = {3.0f, 5.0f, 8.0f};
+    return volts[range >= 0 && range < 3 ? range : SCOPE_RANGE_STARTUP];
 }
 
-void scope_render_column(const scope_bin *bin, uint16_t h, uint16_t colour, uint16_t *out) {
+uint16_t scope_volts_to_row(float volts, float range_v, uint16_t h) {
+    int half = h ? (h - 1) / 2 : 0;
+    float off = volts / range_v * (float)half;
+    if (!half || !(range_v > 0.0f) || off != off) return (uint16_t)half;
+    if (off >= (float)half) return 0;
+    if (off <= -(float)half) return (uint16_t)(2 * half);
+    int k = (int)(off + (off < 0.0f ? -0.5f : 0.5f)); /* symmetric: -v mirrors +v */
+    return (uint16_t)(half - k);
+}
+
+void scope_render_column(const scope_bin *bin, scope_calibration cal, float range_v, uint16_t h, uint16_t colour,
+                         uint16_t *out) {
     for (uint16_t r = 0; r < h; r++) out[r] = SCOPE_COLOUR_BG;
-    if (h) out[scope_code_to_row(2048u, h)] = SCOPE_COLOUR_GRID;
+    if (h) out[scope_volts_to_row(0.0f, range_v, h)] = SCOPE_COLOUR_GRID;
     if (!bin) return;
-    uint16_t a = scope_code_to_row(bin->hi, h), b = scope_code_to_row(bin->lo, h);
+    float vhi = scope_code_to_volts(bin->hi, cal), vlo = scope_code_to_volts(bin->lo, cal);
+    uint16_t a = scope_volts_to_row(vhi, range_v, h), b = scope_volts_to_row(vlo, range_v, h);
     if (a > b) { uint16_t t = a; a = b; b = t; }
     for (uint16_t r = a; r <= b && r < h; r++) out[r] = colour;
+    uint16_t bottom = scope_volts_to_row(-range_v, range_v, h);
+    if (vhi > range_v) {
+        if (b > 0u) out[1] = SCOPE_COLOUR_BG;
+        out[0] = SCOPE_COLOUR_CLIP;
+    }
+    if (vlo < -range_v && bottom < h) {
+        if (a < bottom) out[bottom - 1u] = SCOPE_COLOUR_BG;
+        out[bottom] = SCOPE_COLOUR_CLIP;
+    }
+}
+
+scope_status_token scope_bins_status(const scope_bin *bins, unsigned n, scope_calibration cal, float range_v) {
+    scope_status_token t = SCOPE_STATUS_NONE;
+    for (unsigned i = 0; bins && i < n; i++) {
+        if (bins[i].lo == 0u || bins[i].hi >= 4095u) return SCOPE_STATUS_ADC_SAT;
+        float vlo = scope_code_to_volts(bins[i].lo, cal), vhi = scope_code_to_volts(bins[i].hi, cal);
+        if (vhi > range_v || vlo < -range_v) t = SCOPE_STATUS_VIEW_CLIP;
+    }
+    return t;
 }
 
 uint16_t scope_render_time_code(const scope_render_input *in, unsigned pane) {
     return in->link ? in->time_code[0] : in->time_code[pane % SCOPE_CHANNELS];
 }
 
-unsigned scope_render_window_label(uint16_t time_code, uint32_t samples_per_s, char out[SCOPE_FIELD_MAX + 1u]) {
+unsigned scope_render_window_label(uint16_t time_code, uint32_t samples_per_s, char out[SCOPE_WINDOW_LABEL_MAX + 1u]) {
     uint32_t us = samples_per_s
         ? (uint32_t)(((uint64_t)scope_window_samples(time_code, samples_per_s) * 1000000u + samples_per_s / 2u)
                      / samples_per_s)
@@ -139,11 +172,11 @@ unsigned scope_render_window_label(uint16_t time_code, uint32_t samples_per_s, c
     else if (us < 999500u) { value = (us + 500u) / 1000u; point = 0; unit = "ms"; }  /* 100ms .. 999ms */
     else { value = (us + 5000u) / 10000u; point = 2; unit = "s"; }                     /* 1.00s .. 8.19s */
     do { d[nd++] = (char)('0' + value % 10u); value /= 10u; } while (value || nd <= point);
-    while (nd && n < SCOPE_FIELD_MAX) {
+    while (nd && n < SCOPE_WINDOW_LABEL_MAX) {
         out[n++] = d[--nd];
-        if (nd == point && point && n < SCOPE_FIELD_MAX) out[n++] = '.';
+        if (nd == point && point && n < SCOPE_WINDOW_LABEL_MAX) out[n++] = '.';
     }
-    for (; *unit && n < SCOPE_FIELD_MAX; unit++) out[n++] = *unit;
+    for (; *unit && n < SCOPE_WINDOW_LABEL_MAX; unit++) out[n++] = *unit;
     out[n] = '\0';
     return n;
 }
@@ -151,8 +184,8 @@ unsigned scope_render_window_label(uint16_t time_code, uint32_t samples_per_s, c
 const char *scope_status_token_text(unsigned token) {
     switch (token) {
     case SCOPE_STATUS_UNCAL: return "UNCAL";
-    case SCOPE_STATUS_CLIP: return "CLIP";
-    case SCOPE_STATUS_SAT: return "SAT";
+    case SCOPE_STATUS_VIEW_CLIP: return "VIEW CLIP";
+    case SCOPE_STATUS_ADC_SAT: return "ADC SAT";
     default: return "";
     }
 }
@@ -165,6 +198,7 @@ const uint8_t *scope_font_glyph(unsigned char c) {
 
 void scope_render_init(scope_render_state *s) {
     *s = (scope_render_state){0};
+    for (unsigned ch = 0; ch < SCOPE_CHANNELS; ch++) s->view_range[ch] = SCOPE_RANGE_STARTUP;
 }
 
 static void count(scope_render_state *s, bool ok) {
@@ -213,8 +247,14 @@ static unsigned draw_text(scope_render_state *s, uint16_t x, uint16_t y, const c
     return calls;
 }
 
-static void field_content(const scope_render_input *in, unsigned pane, scope_text_field f, char *raw,
-                          uint16_t *colour) {
+static void copy_text(char *raw, const char *t) {
+    unsigned i = 0;
+    for (; t[i] && i < SCOPE_FIELD_MAX; i++) raw[i] = t[i];
+    raw[i] = '\0';
+}
+
+static void field_content(const scope_render_state *s, const scope_render_input *in, unsigned pane,
+                          scope_text_field f, char *raw, uint16_t *colour) {
     static const char range_digit[3] = {'3', '5', '8'};
     *colour = SCOPE_COLOUR_TEXT;
     raw[0] = '\0';
@@ -226,25 +266,26 @@ static void field_content(const scope_render_input *in, unsigned pane, scope_tex
         *colour = scope_channel_colour(pane);
         break;
     case SCOPE_FIELD_RANGE: {
-        int r = in->range[pane];
+        int r = s->view_range[pane];
         raw[0] = SCOPE_CHAR_PM;
         raw[1] = r >= 0 && r < 3 ? range_digit[r] : '?';
         raw[2] = 'V';
         raw[3] = '\0';
+        if (!s->range_known[pane]) *colour = SCOPE_COLOUR_WARN; /* startup scale, switch not yet read */
         break;
     }
     case SCOPE_FIELD_WINDOW:
         scope_render_window_label(scope_render_time_code(in, pane), in->samples_per_s, raw);
         if (in->link) *colour = SCOPE_COLOUR_LINK; /* the window comes from CH1's TIME */
         break;
-    case SCOPE_FIELD_TOKEN: {
-        const char *t = scope_status_token_text(in->status_token[pane]);
-        unsigned i = 0;
-        for (; t[i] && i < SCOPE_FIELD_MAX; i++) raw[i] = t[i];
-        raw[i] = '\0';
+    case SCOPE_FIELD_CAL:
+        if (!scope_calibration_valid(in->cal[pane])) copy_text(raw, scope_status_token_text(SCOPE_STATUS_UNCAL));
         *colour = SCOPE_COLOUR_WARN;
         break;
-    }
+    case SCOPE_FIELD_TOKEN:
+        copy_text(raw, scope_status_token_text(s->signal[pane]));
+        *colour = SCOPE_COLOUR_WARN;
+        break;
     case SCOPE_FIELD_LINK:
         if (in->link) { raw[0] = 'L'; raw[1] = 'I'; raw[2] = 'N'; raw[3] = 'K'; raw[4] = '\0'; }
         *colour = SCOPE_COLOUR_LINK;
@@ -262,7 +303,7 @@ static void field_content(const scope_render_input *in, unsigned pane, scope_tex
 static unsigned draw_field(scope_render_state *s, const scope_render_input *in, unsigned pane, scope_text_field f) {
     char raw[SCOPE_FIELD_MAX + 1u], text[SCOPE_FIELD_MAX + 1u];
     uint16_t colour;
-    field_content(in, pane, f, raw, &colour);
+    field_content(s, in, pane, f, raw, &colour);
     unsigned width = fields[f].width, len = 0;
     while (raw[len] && len < width) len++;
     unsigned lead = fields[f].right ? width - len : 0;
@@ -284,7 +325,8 @@ static unsigned draw_column(scope_render_state *s, unsigned pane, unsigned col) 
     uint16_t px[SCOPE_PLOT_H];
     const scope_bin *bin = col >= s->window.first_col ? &s->cols[col] : NULL;
     scope_rect p = scope_pane_plot_rect(pane);
-    scope_render_column(bin, SCOPE_PLOT_H, scope_channel_colour(pane), px);
+    scope_render_column(bin, s->cal, scope_range_volts(s->view_range[pane]), SCOPE_PLOT_H,
+                        scope_channel_colour(pane), px);
     count(s, scope_display_rect((uint16_t)(p.x + col), p.y, 1, SCOPE_PLOT_H, px));
     return 1;
 }
@@ -306,6 +348,15 @@ unsigned scope_render_step(scope_render_state *s, const scope_render_input *in, 
             }
             uint32_t window = scope_window_samples(scope_render_time_code(in, pane), in->samples_per_s);
             s->window = scope_window_map(&in->hist[pane], window, SCOPE_PLOT_W, s->cols);
+            int r = in->range[pane];
+            if (r >= 0 && r < 3) { /* -1 (deadband / not yet decoded) keeps the last valid scale */
+                s->view_range[pane] = (int8_t)r;
+                s->range_known[pane] = true;
+            }
+            s->cal = scope_calibration_effective(in->cal[pane]);
+            s->signal[pane] = (uint8_t)scope_bins_status(&s->cols[s->window.first_col],
+                                                         SCOPE_PLOT_W - s->window.first_col, s->cal,
+                                                         scope_range_volts(s->view_range[pane]));
             s->item = ITEM_COL0;
         } else if (s->item < ITEM_TEXT0) {
             if (in->hold) { /* HOLD mid-pane: freeze now, leave the rest of the plot as drawn */

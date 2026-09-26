@@ -107,13 +107,13 @@ The source is `https://files.waveshare.com/upload/f/fc/Pico-ResTouch-LCD-X_X_Cod
 
 **Layout.** Portrait 320 × 480, with ten 160 × 96 panes in two columns of five. Numbering is column-major, to match the physical control banks: CH1–CH5 fill the left column top to bottom and CH6–CH10 the right, so CH6 is top right. `scripts/validate_extra.py` checks this numbering against the simulator (`doc/public/prototype/scope-ui.js`) and the panel study (`mechanical/panel-layout-study.json`). Each pane has five parts:
 
-- a label row above the plot (`scope_pane_label_rect`, 144 × 10): the two-digit channel ID `01`…`10` in the channel colour, the debounced range `±3V` / `±5V` / `±8V` (`±?V` while the range is unknown, `range == -1`), and the window duration, right-aligned;
+- a label row above the plot (`scope_pane_label_rect`, 144 × 10): the two-digit channel ID `01`…`10` in the channel colour, the range the plot is drawn at (`±3V` / `±5V` / `±8V`, see **Vertical**), `UNCAL` while the channel uses the nominal fallback calibration, and the window duration, right-aligned;
 - a 4-px channel colour tag to the left of the plot;
 - a 144 × 66 plot (`SCOPE_PLOT_W` × `SCOPE_PLOT_H`), independent of the 192-bin `SCOPE_HISTORY_BINS`. It spans the requested TIME window (see **Window**), with the newest sample at the right;
-- a status row below the plot (`scope_pane_status_rect`, 144 × 10): a status-token slot for `UNCAL` / `CLIP` / `SAT` (set through `scope_render_input.status_token`; nothing sets it yet), then `LINK` and `HOLD`, each shown only while that mode is latched;
+- a status row below the plot (`scope_pane_status_rect`, 144 × 10): the 9-cell signal token `VIEW CLIP` / `ADC SAT` (see **Vertical**), then `LINK` and `HOLD`, each shown only while that mode is latched;
 - a separator row.
 
-**Text.** Both text rows are a grid of 24 cells, each 6 × 10 px. Glyphs are 5 × 7 from a clean-room font defined in `scope_render.c` as a `const` table: digits, `. + - ± ? V m s k` and the capitals needed for `HOLD LINK UNCAL CLIP SAT`. `scope_pane_field_rect()` gives each field's rect. Each field is one render item, drawn two cells (120 px) per `scope_display_rect` call. The last drawn string and colour of each field are cached per pane, and a field is redrawn only when either changes. A field whose transfer fails is retried on the next pass.
+**Text.** Both text rows are a grid of 24 cells, each 6 × 10 px. Glyphs are 5 × 7 from a clean-room font defined in `scope_render.c` as a `const` table: digits, `. + - ± ? V m s k` and the capitals needed for `HOLD LINK UNCAL VIEW CLIP ADC SAT`. `scope_pane_field_rect()` gives each field's rect. Each field is one render item, drawn two cells (120 px) per `scope_display_rect` call. The last drawn string and colour of each field are cached per pane, and a field is redrawn only when either changes. A field whose transfer fails is retried on the next pass.
 
 **Window.** Each pane spans the whole requested TIME window, independent of the storage level. `scope_window_map()` in `scope_core.c` does the mapping as a pure function, without pixels:
 
@@ -125,9 +125,18 @@ The source is `https://files.waveshare.com/upload/f/fc/Pico-ResTouch-LCD-X_X_Cod
 
 All duration text comes from `scope_render_window_label()` (`2.0ms` … `99.9ms`, `100ms` … `999ms`, `1.00s` … `8.19s`). It formats W / `samples_per_s`, the same W the plot maps, so the label names the represented interval within the tolerance above.
 
+**Vertical.** The ±3/±5/±8 V ranges are software view scales; the RANGE switch does not change the analog path.
+
+- **Calibration.** `scope_render_input.cal[ch]` carries each channel's `scope_calibration`. A missing or invalid one (not `calibrated`, non-finite, or gain outside 0 < V/code < 1; a zeroed entry counts as missing) is replaced by `scope_calibration_nominal()`: zero code 1858.378 and 8.069583 mV/code, the ideal front-end figures in `reports/analog-analysis.json`, with `calibrated = false`. The pane then shows `UNCAL`. `scripts/validate_extra.py` checks these constants against the report. `scope10_acq` passes the nominal fallback for every channel, because no calibration persistence exists (`firmware/tools/calibrate.py` only writes a host JSON file). Nothing auto-zeroes at startup.
+- **Mapping.** Each column's raw lo/hi codes are converted to volts through the channel's calibration (`scope_code_to_volts()`). Then [−range, +range] maps to plot rows 0 … 64 (`scope_volts_to_row()`): +range is row 0, 0 V is row 32 and −range is row 64. Rounding is symmetric, so −v lands on the mirror row of +v. The bottom row, 65, is unused. The grid row is electrical zero, 0 V through the same mapping, not a fixed code. With the nominal transfer, +3 V (code 2230) sits at row 0 at ±3 V, row 13 at ±5 V and row 20 at ±8 V.
+- **Range.** The plot uses the pane's debounced range, latched when the pane's plot is mapped. The RANGE label names that latched scale, so under HOLD it stays with the frozen plot. `range == −1` (deadband) keeps the last valid scale. Before the switch has ever decoded, the plot uses the startup scale ±8 V and the label shows `±8V` in the warning colour.
+- **VIEW CLIP.** Converted volts beyond ±range pin the trace at the edge row. The edge pixel is drawn in `SCOPE_COLOUR_CLIP`, with a background gap beside it. The signal token reads `VIEW CLIP`.
+- **ADC SAT.** A raw lo or hi of 0 or 4095 anywhere in the drawn window is an ADC/input limit. The signal token reads `ADC SAT`, which outranks `VIEW CLIP`. It comes from raw codes, and VIEW CLIP from converted volts, so a ±3 V view clipping a +6 V signal never reads as an ADC limit.
+- **One source.** The renderer computes both tokens itself, UNCAL from `cal[ch]` and the signal token from the columns it maps; the caller does not set them. `UNCAL` has its own slot in the label row, so it never hides a signal token, nor the other way round.
+
 **HOLD and LINK.**
 
-- HOLD freezes the plots, including a pass already part-way through a pane. The text keeps updating.
+- HOLD freezes the plots, including a pass already part-way through a pane. The text keeps updating, except the RANGE label and signal token, which describe the frozen plot.
 - LINK makes every pane use CH1's TIME window, and the duration text turns the LINK colour. This is a **time-link of views, not phase synchronisation**: channels are still sampled sequentially (see `ACQUISITION.md`).
 - Both are press-to-toggle with 20 ms debounce, on the active-low GP0/GP1.
 
@@ -143,9 +152,9 @@ All duration text comes from `scope_render_window_label()` (`2.0ms` … `99.9ms`
 | Transfer | Size | Time |
 |---|---|---|
 | Plot column | 154 B | ≈ 82 µs |
-| Text, one pane, every field changed (13 calls, 25 cells) | ≈ 3.3 KB | ≈ 1.8 ms |
+| Text, one pane, every field changed (18 calls, 33 cells) | ≈ 4.4 KB | ≈ 2.3 ms |
 | Text, unchanged | 0 | 0 |
-| Full pass of ten panes | — | ≈ 0.13 s |
+| Full pass of ten panes | — | ≈ 0.14 s |
 | Init | 1 + 120 + 120 + 20 ms of waits, plus a 307 200 B clear (≈ 164 ms) | ≈ 0.43 s |
 
 Init runs before acquisition starts. The ring's overrun headroom is 7168 samples, about 60 ms, which is much longer than one render pass step. Overruns stay counted, never hidden.
@@ -165,13 +174,15 @@ The tests cover:
 - clipped blits landing at the right GRAM addresses with the source stride preserved;
 - full-screen fill;
 - explicit 2 × 5 column-major rectangles for CH1, CH5, CH6 and CH10 (pane, plot, label and status), plus in-bounds, pane and part disjointness;
-- code-to-row monotonicity;
-- column spans;
+- volts-to-row mapping: range edges, 0 V centre, mirror symmetry and monotonicity for all three ranges;
+- column spans, the 0 V grid row and edge-pinned clip markers;
+- the signal token: VIEW CLIP from volts, ADC SAT from raw 0/4095, ADC SAT outranking VIEW CLIP;
 - window levels;
 - a full render pass through blit → bridge model → GRAM, checking trace, tag and separator;
 - the font (every glyph distinct and five columns wide) and `scope_render_window_label()` at both TIME endpoints and every code in between;
-- text decoded back from GRAM against the font table: channel ID and channel colour on every pane, and range, duration and status token checked for CH1, CH6 and CH10, including range changes, `±?V` and both TIME endpoints;
-- text call counts: 130 per pass when every field is new (13 per pane), 0 when nothing changed, and only the changed field redrawn otherwise;
+- text decoded back from GRAM against the font table: channel ID and channel colour on every pane, and range, duration, `UNCAL` and signal token, including range changes, the startup `±8V` and both TIME endpoints;
+- text call counts: 180 per pass when every field is new (18 per pane), 0 when nothing changed, and only the changed field redrawn otherwise;
+- whole-plot pixel comparisons (every column and row of a pane) for the calibrated mapping: nominal +3 V at the positive edge at ±3 V, row 13 at ±5 V and row 20 (3/8 of the positive half-height) at ±8 V; the same samples giving different plots across ranges; −3 V on the mirror row; electrical zero on the grid row; ten distinct per-channel calibration fixtures each giving the right row; four kinds of missing/invalid calibration giving `UNCAL` and exactly the nominal mapping; +6 V at ±3 V giving `VIEW CLIP` only, raw 4095 and 0 giving `ADC SAT`; the deadband keeping the last scale;
 - more history bins than plot columns: only the newest 144 bins are drawn, right-aligned;
 - HOLD (no plot transfers, even when pressed mid-pane; `HOLD` shown);
 - LINK (CH1 window and duration text on every pane, `LINK` shown, own window restored when LINK is released);
@@ -193,7 +204,7 @@ These are models of this repository's reading of the schematic and datasheet. Th
 
 1. Measure GP13 (`LCD_BL`) on an oscilloscope from power-on. Record the voltage and duration before the hook drives it low, and confirm that the backlight stays off until the `lcd,init_sequence_sent` line appears.
 2. Flash `firmware/build/lcd-enabled/scope10_acq.uf2`. Record its SHA-256 from `reports/firmware-target-build.json`. Expect a black screen, then panes. CH1 is at the top and its tag is yellow; a blue CH1 tag means the BGR/colour order is wrong. The newest data is at the right.
-3. Check the ten panes against known inputs, and each pane's RANGE box against its switch. Check the TIME bar and window against the knob. Check that HOLD freezes the plots, and that LINK applies CH1's window to every pane.
+3. Check the ten panes against known inputs, and each pane's RANGE label and vertical scale against its switch (all panes show `UNCAL` until a calibration mechanism exists). Check the TIME bar and window against the knob. Check that HOLD freezes the plots, and that LINK applies CH1's window to every pane.
 4. Watch the USB counters (`overrun_events`, `missed_slots`) with the LCD running and compare them with the LCD-off build.
 5. If the screen stays blank, retry with a lower `SCOPE_LCD_SPI_HZ`, then with `LCD_VENDOR_PANEL_TUNING=0`. Record every result. Do not mark G06 closed from a partial pass.
 

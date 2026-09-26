@@ -16,6 +16,16 @@ typedef struct {
 } scope_history_level;
 typedef struct { scope_history_level level[SCOPE_HISTORY_LEVELS]; } scope_history;
 typedef struct { float volts_per_code, zero_code; bool calibrated; } scope_calibration;
+/* Nominal transfer of the ideal analog front end (reports/analog-analysis.json:
+ * adc_zero_code_ideal and input_referred_ideal_adc_lsb_mV). A design figure, not a
+ * measurement: a calibration built from it is always calibrated=false (UNCAL). */
+#define SCOPE_NOMINAL_ZERO_CODE 1858.378f
+#define SCOPE_NOMINAL_VOLTS_PER_CODE 0.008069583f
+scope_calibration scope_calibration_nominal(void);
+/* True for a measured calibration the renderer may use: calibrated, finite, 0 < slope < 1. */
+bool scope_calibration_valid(scope_calibration cal);
+/* cal itself when valid, otherwise the nominal fallback (calibrated=false). */
+scope_calibration scope_calibration_effective(scope_calibration cal);
 typedef struct { int stable, candidate; uint32_t since_ms; } scope_range_state;
 float scope_code_to_volts(uint16_t code, scope_calibration cal);
 bool scope_calibrate(float code_lo, float volts_lo, float code_hi, float volts_hi, scope_calibration *out);
