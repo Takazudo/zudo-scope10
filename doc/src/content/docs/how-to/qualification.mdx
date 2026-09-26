@@ -6,7 +6,7 @@ sidebar_position: 4
 
 ## Before the populated board is powered
 
-Ask the assembler or bench-service provider to check component identity, numeric pin mapping, solder joints, shorts, module orientation, power/header continuity and the exact approved module revision. Confirm F1 and USB source current path. Use a current-limited 5 V source and keep the display backlight disabled initially. Rework belongs to that provider, not the home workstation.
+Ask the assembler or bench-service provider to check component identity, numeric pin mapping, solder joints, shorts, module orientation, power/header continuity and the exact approved module revision. Confirm F1 and USB source current path. Use a current-limited 5 V source. Note that the display backlight is default ON at power-up (it is active-low on GP13 through the carrier's Q1 open-drain stage, #41) and goes dark only once firmware drives GP13 high; the LCD-off build does that from its early init hook. Capture the GP13/gate/`LCD_BL` waveforms per `design/evidence/backlight-interface.md` before G01/G06 closure. Rework belongs to that provider, not the home workstation.
 
 Power tests first establish analog/digital rails, 3.0 V reference, startup/off decay, USB current and absence of back-power. Measure current separately with no display, dark display and bright display. Obtain board/module thermal images or measured hot-spot temperatures under worst intended load.
 

@@ -544,3 +544,114 @@ EXTRA_CHECKS.append(_usb_power_contract_parity)
 def run(check, ctx):
     for extra in EXTRA_CHECKS:
         extra(check, ctx)
+
+
+def _gp13_backlight_interface(check, ctx):
+    """#41 (source #19): GP13 never sees the module's 5 V-pulled LCD_BL node.
+
+    The RP2040 pad must connect only to the Q1 gate network (R64 series,
+    R88 pull-down, Q1 gate). A resistive DC path of less than
+    GP13_ISOLATION_MIN_OHM from GP13's net to any >3.3 V source net fails the
+    check; MOSFET and header pins are not conductive paths for this walk.
+    The J30/J31 display header map must stay as G01 froze it, and firmware
+    must drive the (inverted) backlight pin high from its early hook.
+    """
+    import json
+
+    R = ctx['R']
+    parts = ctx['parts']
+    pby = ctx['pby']
+    byid = ctx['byid']
+    GP13_ISOLATION_MIN_OHM = 1_000_000.0
+    HIGH_VOLTAGE_NETS = {'+5V_FUSED', 'VBUS_USB', 'LCD_BL'}
+
+    gpio_nets = json.loads((R / 'design/gpio.json').read_text())['gpio_nets']
+    gp13_net = gpio_nets.get('13')
+    check('GP13 is assigned a carrier net in design/gpio.json', bool(gp13_net), str(gp13_net))
+    if not gp13_net:
+        return
+
+    # Resistive adjacency: every two-pin Resistor record is an edge weighted by its nominal value.
+    edges = {}
+    for p in parts:
+        rec = byid[p['record']]
+        if rec.get('kind') != 'Resistor' or rec.get('nominal') is None:
+            continue
+        a, b = (p['pins'].get('1'), p['pins'].get('2'))
+        if a and b:
+            edges.setdefault(a, []).append((b, float(rec['nominal'])))
+            edges.setdefault(b, []).append((a, float(rec['nominal'])))
+    best = {gp13_net: 0.0}
+    frontier = [gp13_net]
+    while frontier:
+        net = frontier.pop()
+        for nxt, ohm in edges.get(net, []):
+            total = best[net] + ohm
+            if total < GP13_ISOLATION_MIN_OHM and total < best.get(nxt, float('inf')):
+                best[nxt] = total
+                frontier.append(nxt)
+    reachable_hv = {n: best[n] for n in HIGH_VOLTAGE_NETS if n in best}
+    check(
+        f'GP13 net has no resistive DC path below {GP13_ISOLATION_MIN_OHM:.0f} ohm to a >3.3 V source (+5V_FUSED, VBUS_USB, LCD_BL) (#41)',
+        not reachable_hv,
+        f'gp13_net={gp13_net} reachable={reachable_hv} walked={sorted(best)}',
+    )
+
+    members = {net: sorted((p['ref'], pin) for p in parts for pin, n in p['pins'].items() if n == net)
+               for net in (gp13_net, 'LCD_BL_GATE', 'LCD_BL')}
+    check(
+        'GP13 net connects only the Pico socket contact and R64 (#41)',
+        members[gp13_net] == [('J20', '17'), ('R64', '1')],
+        str(members[gp13_net]),
+    )
+    check(
+        'LCD_BL_GATE connects only R64, R88 (gate pull-down) and the Q1 gate (#41)',
+        members['LCD_BL_GATE'] == [('Q1', '1'), ('R64', '2'), ('R88', '1')],
+        str(members['LCD_BL_GATE']),
+    )
+    check(
+        'LCD_BL (J30 pos 17) connects only the display header and the Q1 drain; module R16 is its only pull-up (#41)',
+        members['LCD_BL'] == [('J30', '17'), ('Q1', '3')],
+        str(members['LCD_BL']),
+    )
+    q1 = pby.get('Q1')
+    check(
+        'Q1 is the generic logic-level N-MOSFET record with source on GND (#41)',
+        q1 is not None and q1['record'] == 'nmos-ll' and q1['pins'].get('2') == 'GND',
+        json.dumps(q1['pins'] if q1 else None),
+    )
+    nmos = byid.get('nmos-ll', {})
+    check(
+        'nmos-ll stays a generic record until G08: no MPN, no LCSC code, footprint unqualified',
+        nmos.get('mpn') is None and nmos.get('jlc_code') is None and not nmos.get('footprint_qualified'),
+    )
+
+    # G01 header-net rule (#13): the display map J30/J31 is frozen; #41 changed only carrier-side nets.
+    displaymap = {3: 'GND', 8: 'GND', 13: 'GND', 18: 'GND', 23: 'GND', 28: 'GND', 33: 'GND', 38: 'GND',
+                  39: '+5V_FUSED', 11: 'LCD_DC', 12: 'LCD_CS', 14: 'LCD_CLK', 15: 'LCD_MOSI', 16: 'LCD_MISO',
+                  17: 'LCD_BL', 20: 'LCD_RST', 21: 'TP_CS_N', 29: 'SD_CS_N'}
+    j30 = {str(k): displaymap.get(k) for k in range(1, 21)}
+    j31 = {str(k): displaymap.get(41 - k) for k in range(1, 21)}
+    check('J30/J31 display header nets unchanged by the backlight interface change (#41)',
+          pby['J30']['pins'] == j30 and pby['J31']['pins'] == j31)
+
+    safe = (R / 'firmware/src/lcd_safe_pins.c').read_text()
+    header = (R / 'firmware/src/lcd_safe_pins.h').read_text()
+    check(
+        'Firmware early hook drives GP13 to the inverted OFF level (high) and the levels are named in lcd_safe_pins.h (#41)',
+        'drive(LCD_PIN_BL, LCD_BL_LEVEL_OFF)' in safe
+        and '#define LCD_BL_LEVEL_OFF true' in header and '#define LCD_BL_LEVEL_ON false' in header,
+    )
+    pending = {e['id']: e for e in ctx['circuit'].get('pending_g01_changes', [])}
+    check(
+        'pending_g01_changes[g01-r88-backlight-default] records the applied design, not an open keep/remove choice',
+        pending.get('g01-r88-backlight-default', {}).get('status') == 'DESIGN_APPLIED_BENCH_CHECK_PENDING',
+        str(pending.get('g01-r88-backlight-default', {}).get('status')),
+    )
+    gates = json.loads((R / 'design/release-gates.json').read_text())
+    still_open = {g['id']: g['status'] for g in gates['gates'] if g['id'] in ('G01', 'G06')}
+    check('G01 and G06 stay OPEN after the desk backlight-interface change (#41)',
+          still_open == {'G01': 'OPEN', 'G06': 'OPEN'}, str(still_open))
+
+
+EXTRA_CHECKS.append(_gp13_backlight_interface)
