@@ -105,11 +105,12 @@ The source is `https://files.waveshare.com/upload/f/fc/Pico-ResTouch-LCD-X_X_Cod
 
 ## Renderer
 
-**Layout.** Portrait 320 × 480, with ten panes of 48 rows and CH1 at the top. Each pane has four parts:
+**Layout.** Portrait 320 × 480, with ten 160 × 96 panes in two columns of five. Numbering is column-major, to match the physical control banks: CH1–CH5 fill the left column top to bottom and CH6–CH10 the right, so CH6 is top right. `scripts/validate_extra.py` checks this numbering against the simulator (`doc/public/prototype/scope-ui.js`) and the panel study (`mechanical/panel-layout-study.json`). Each pane has five parts:
 
-- a 10-px channel colour tag;
-- a 192-column plot, one column per `SCOPE_HISTORY_BINS` bin, right-aligned, with the newest sample at the right;
-- a status block holding three RANGE boxes (±3 / ±5 / ±8 V, left to right, lit by the debounced range), a TIME bar, a LINK box and a HOLD box;
+- a label row above the plot (`scope_pane_label_rect`, 144 × 10) for the channel ID, range and window duration. It is reserved and not drawn yet;
+- a 4-px channel colour tag to the left of the plot;
+- a 144 × 66 plot (`SCOPE_PLOT_W` × `SCOPE_PLOT_H`), independent of the 192-bin `SCOPE_HISTORY_BINS`. For now it shows the newest 144 bins of the chosen level, right-aligned, with the newest sample at the right;
+- a status row below the plot (`scope_pane_status_rect`, 144 × 10). For now it holds three RANGE boxes (±3 / ±5 / ±8 V, left to right, lit by the debounced range), a TIME bar, a LINK box and a HOLD box. The HOLD/LINK/status text will go here;
 - a separator row.
 
 **Window.** Each pane's window is `scope_time_seconds(TIME code) × 10 000 samples/s`, mapped through `scope_history_level_for_window`.
@@ -123,7 +124,7 @@ The source is `https://files.waveshare.com/upload/f/fc/Pico-ResTouch-LCD-X_X_Cod
 **Transfer size.**
 
 - There is no framebuffer.
-- A plot column is one 1 × 44 rectangle.
+- A plot column is one 1 × 66 rectangle.
 - Fills are split to at most 128 pixels per `scope_display_rect` call.
 - `scope_render_step()` issues up to four items per pass of the `scope10_acq` main loop, between drain batches.
 
@@ -131,9 +132,9 @@ The source is `https://files.waveshare.com/upload/f/fc/Pico-ResTouch-LCD-X_X_Cod
 
 | Transfer | Size | Time |
 |---|---|---|
-| Plot column | 110 B | ≈ 59 µs |
-| Status block | ≈ 4 KB | ≈ 2.2 ms |
-| Full pass of ten panes | — | ≈ 0.14 s |
+| Plot column | 154 B | ≈ 82 µs |
+| Status row | ≈ 1.6 KB | ≈ 0.9 ms |
+| Full pass of ten panes | — | ≈ 0.13 s |
 | Init | 1 + 120 + 120 + 20 ms of waits, plus a 307 200 B clear (≈ 164 ms) | ≈ 0.43 s |
 
 Init runs before acquisition starts. The ring's overrun headroom is 7168 samples, about 60 ms, which is much longer than one render pass step. Overruns stay counted, never hidden.
@@ -152,11 +153,12 @@ The tests cover:
 - clipping, including zero area, off-screen, exact fit and uint16 overflow;
 - clipped blits landing at the right GRAM addresses with the source stride preserved;
 - full-screen fill;
-- pane tiling and part disjointness;
+- explicit 2 × 5 column-major rectangles for CH1, CH5, CH6 and CH10 (pane, plot, label and status), plus in-bounds, pane and part disjointness;
 - code-to-row monotonicity;
 - column spans;
 - window levels;
-- a full render pass through blit → bridge model → GRAM, checking trace, tag, range boxes and separator;
+- a full render pass through blit → bridge model → GRAM, checking trace, tag, range boxes, the still-empty label row and separator;
+- more history bins than plot columns: only the newest 144 bins are drawn, right-aligned;
 - HOLD (no plot transfers, HOLD box lit);
 - LINK (CH1 window and bar on every pane);
 - counting of backend failures;
