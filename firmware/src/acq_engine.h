@@ -48,6 +48,10 @@
  * the PWM slices being enabled at most ORIGIN_SLACK cycles after that tick. The caller
  * passes (elapsed - slack) as a lower bound; the true time is below that + UNCERTAINTY. */
 #define ACQ_ORIGIN_SLACK_CYCLES 40u
+/* Worst-case cycles from the TIMER tick edge to the PWM enable in acq_epoch_start(),
+ * derived from the source with Cortex-M0+ instruction timings (firmware/ACQUISITION.md,
+ * "Tick-to-enable bound"). A count from the compiled target's disassembly is NOT_RUN. */
+#define ACQ_TICK_TO_ENABLE_BOUND_CYCLES 27u
 #define ACQ_TIME_UNCERTAINTY_CYCLES (ACQ_CYCLES_PER_US + ACQ_ORIGIN_SLACK_CYCLES)
 #define ACQ_SETTLE_CYCLES 300u
 #define ACQ_ISR_BUDGET_CYCLES (ACQ_SLOT_CYCLES - ACQ_STEP_OFFSET_CYCLES \
@@ -68,6 +72,8 @@ _Static_assert(ACQ_ADC_CONV_CYCLES < ACQ_STEP_OFFSET_CYCLES, "mux must not move 
 _Static_assert(ACQ_STEP_OFFSET_CYCLES + ACQ_TIME_UNCERTAINTY_CYCLES + ACQ_SETTLE_CYCLES
                < ACQ_SLOT_CYCLES, "slot has no IRQ latency budget left");
 _Static_assert(ACQ_RING_GUARD < ACQ_RING_LEN / 2, "guard too large");
+_Static_assert(ACQ_TICK_TO_ENABLE_BOUND_CYCLES <= ACQ_ORIGIN_SLACK_CYCLES,
+               "startup path exceeds the origin slack the time bounds assume");
 
 typedef enum { ACQ_KIND_SIGNAL = 0, ACQ_KIND_TIME = 1, ACQ_KIND_RANGE = 2 } acq_kind;
 

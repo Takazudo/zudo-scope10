@@ -8,6 +8,29 @@
 #include <stdio.h>
 #include <string.h>
 
+/* Hooks for acq_epoch.h: a simulated core0 clock with injectable preemption (see the
+ * startup model below). Each hook is an instruction boundary where a pending core0
+ * interrupt is taken unless interrupts are masked. */
+static uint32_t sim_irq_save(void);
+static void sim_irq_restore(uint32_t s);
+static uint32_t sim_tick(void);
+static void sim_dmb(void);
+static void sim_pwm_enable(void);
+static void sim_pwm_disable(void);
+static void sim_sev(void);
+static void sim_wait(void);
+static void sim_step_irq_set(bool on);
+#define ACQ_EPOCH_IRQ_SAVE() sim_irq_save()
+#define ACQ_EPOCH_IRQ_RESTORE(s) sim_irq_restore(s)
+#define ACQ_EPOCH_TICK() sim_tick()
+#define ACQ_EPOCH_DMB() sim_dmb()
+#define ACQ_EPOCH_PWM_ENABLE() sim_pwm_enable()
+#define ACQ_EPOCH_PWM_DISABLE() sim_pwm_disable()
+#define ACQ_EPOCH_SEV() sim_sev()
+#define ACQ_EPOCH_WAIT() sim_wait()
+#define ACQ_EPOCH_STEP_IRQ_SET(on) sim_step_irq_set(on)
+#include "acq_epoch.h"
+
 #define GARBAGE_BASE 4032u
 
 typedef struct {
@@ -268,11 +291,324 @@ static void test_channel_order_invariance(void) {
     assert(eng2.cnt.resyncs == 1 && eng2.read == 0 && eng2.step.next == 0 && eng2.pushed[3] == pushed);
 }
 
+
+/* ---- Startup / resync model -------------------------------------------------------
+ * Distinguishes the PHYSICAL origin (the instant the PWM slices are enabled) from the
+ * SOFTWARE origin (the TIMER tick captured into the epoch), as in the #18 reproduction.
+ * core0 runs acq_epoch_start()/acq_epoch_stop() against a cycle clock; each hook is an
+ * instruction boundary where an injected core0 interrupt (USB servicing, say) is taken
+ * if interrupts are enabled. core1 is an event model: PWM step-slice wraps raise the IRQ
+ * flag, the handler enters `latency` cycles later (acq_epoch_enter, plan) and writes the
+ * pins / commits `handler` cycles after that; core1 thread mode runs
+ * acq_epoch_core1_service() whenever no handler is executing. Every mux input carries a
+ * distinct constant (100 + 100 * address), so a wrong-address sample is recognisable. */
+#define NONE UINT64_MAX
+#define MODEL_CONV 2400u /* 200 frames, below ACQ_RING_LEN: no ring wrap inside a run */
+#define TICK_COST 9u     /* spin iteration: APB load + compare + taken branch */
+#define STORE_COST 2u
+#define DMB_COST 3u
+#define APB_STORE_COST 6u
+
+/* Where an injected core0 interrupt becomes pending, named by what has happened so far. */
+typedef enum {
+    P_NONE = 0,
+    P_BEFORE_MASK,     /* before interrupts are disabled */
+    P_IN_SPIN,         /* while waiting for the origin tick */
+    P_AFTER_CAPTURE,   /* tick captured, epoch not yet armed */
+    P_BEFORE_ENABLE,   /* armed (atomic) / captured (pre-fix), PWM not yet enabled */
+    P_AFTER_ENABLE,    /* PWM running; the pre-fix code publishes only after this */
+    P_AFTER_START,     /* start sequence complete */
+    P_COUNT
+} preempt_point;
+
+typedef struct {
+    uint64_t t;             /* core0 time, absolute cycles */
+    uint32_t tick_phase;    /* TIMER edges at t = k * CYCLES_PER_US - phase */
+    bool masked;
+    preempt_point preempt_at;
+    uint64_t preempt_len;
+    bool preempt_pending;
+    uint32_t last_tick, captured_raw;
+    /* physical PWM */
+    bool pwm_on;
+    uint64_t t_pwm, k_next, intr_at, j_next;
+    /* core1 */
+    uint32_t latency, jitter, handler, lat_cur;
+    bool irq_on, busy, legacy, first_step, on_core1;
+    uint64_t c1_t, commit_t;
+    int pend_addr;
+    unsigned pins;
+    uint64_t pins_at;
+    /* results */
+    uint64_t gated, stale, steps, waits;
+    int64_t origin_delta_max;
+    bool wrong[MODEL_CONV];
+} world;
+
+static world w;
+static acq_epoch ep;
+
+static uint32_t raw_at(uint64_t t) { return (uint32_t)((t + w.tick_phase) / ACQ_CYCLES_PER_US); }
+static uint64_t edge_of(uint32_t raw) { return (uint64_t)raw * ACQ_CYCLES_PER_US - w.tick_phase; }
+
+static void c1_run_until(uint64_t t) {
+    for (;;) {
+        uint64_t t_wrap = w.pwm_on ? w.t_pwm + ACQ_STEP_OFFSET_CYCLES + w.k_next * ACQ_SLOT_CYCLES : NONE;
+        uint64_t t_entry = NONE;
+        if (w.intr_at != NONE && w.irq_on && !w.busy) {
+            t_entry = w.intr_at + w.lat_cur;
+            if (t_entry < w.c1_t) t_entry = w.c1_t;
+        }
+        uint64_t t_commit = w.busy ? w.commit_t : NONE;
+        uint64_t t_conv = w.pwm_on && w.j_next < MODEL_CONV ? w.t_pwm + acq_slot_start_cycles(w.j_next) : NONE;
+        uint64_t tn = t_wrap < t_entry ? t_wrap : t_entry;
+        if (t_commit < tn) tn = t_commit;
+        if (t_conv < tn) tn = t_conv;
+        if (tn == NONE || tn > t) break;
+        w.c1_t = tn;
+        if (tn == t_conv) { /* ADC conversion: samples whatever the mux passes right now */
+            uint64_t j = w.j_next++;
+            acq_slot sl = acq_slot_at(&eng.sched, j);
+            w.wrong[j] = w.pins != sl.mux_addr || w.pins_at + ACQ_SETTLE_CYCLES > tn;
+            eng.ring[(uint32_t)j & ACQ_RING_MASK] = (uint16_t)(100u + 100u * w.pins);
+        } else if (tn == t_commit) {
+            if (w.pend_addr >= 0) { w.pins = (unsigned)w.pend_addr; w.pins_at = tn; }
+            acq_step_commit(&eng, acq_epoch_lower_bound(&ep, raw_at(tn)));
+            w.busy = false;
+        } else if (tn == t_wrap) {
+            if (w.intr_at == NONE) { w.intr_at = t_wrap; w.lat_cur = w.latency + rnd(w.jitter); }
+            w.k_next++;
+        } else {
+            w.intr_at = NONE; /* pwm_clear_irq at handler entry */
+            w.on_core1 = true;
+            bool armed = w.legacy || acq_epoch_enter(&ep);
+            w.on_core1 = false;
+            if (!armed) { w.gated++; continue; }
+            if (w.first_step) {
+                if (ep.now_cycles != 0u || ep.last_raw != w.captured_raw) w.stale++;
+                w.first_step = false;
+            }
+            w.steps++;
+            w.pend_addr = acq_step_plan(&eng, acq_epoch_lower_bound(&ep, raw_at(tn))).addr;
+            w.busy = true;
+            w.commit_t = tn + w.handler;
+        }
+    }
+    if (!w.busy) {
+        w.on_core1 = true;
+        acq_epoch_core1_service(&ep);
+        w.on_core1 = false;
+    }
+}
+
+/* Barrier/event hooks executed by core1 code cost core0 nothing. */
+static void boundary(uint64_t cost, preempt_point here) {
+    if (w.on_core1) return;
+    if (here != P_NONE && here == w.preempt_at) { w.preempt_pending = true; w.preempt_at = P_NONE; }
+    if (w.preempt_pending && !w.masked) {
+        w.preempt_pending = false;
+        w.t += w.preempt_len;
+        c1_run_until(w.t);
+    }
+    w.t += cost;
+    c1_run_until(w.t);
+}
+
+static uint32_t sim_irq_save(void) { boundary(1, P_BEFORE_MASK); uint32_t s = w.masked; w.masked = true; return s; }
+static void sim_irq_restore(uint32_t s) { boundary(1, P_AFTER_ENABLE); w.masked = s != 0u; boundary(0, P_NONE); }
+static uint32_t sim_tick(void) {
+    boundary(0, P_IN_SPIN);
+    w.last_tick = raw_at(w.t + TICK_COST);
+    w.t += TICK_COST;
+    return w.last_tick;
+}
+static void sim_dmb(void) { boundary(STORE_COST + DMB_COST, P_AFTER_CAPTURE); }
+static void sim_sev(void) { boundary(1, P_NONE); }
+static void sim_wait(void) { w.waits++; boundary(4, P_NONE); }
+static void sim_pwm_enable(void) {
+    boundary(STORE_COST, P_BEFORE_ENABLE); /* the store to `armed` just before */
+    w.t += APB_STORE_COST;
+    w.pwm_on = true;
+    w.t_pwm = w.t;
+    w.k_next = 0;
+    w.j_next = 0;
+    w.first_step = true;
+    w.captured_raw = w.last_tick;
+    int64_t d = (int64_t)(w.t_pwm - edge_of(w.captured_raw));
+    if (d > w.origin_delta_max) w.origin_delta_max = d;
+    c1_run_until(w.t);
+}
+static void sim_pwm_disable(void) { boundary(APB_STORE_COST, P_NONE); w.pwm_on = false; }
+static void sim_step_irq_set(bool on) { w.irq_on = on; }
+
+/* The pre-fix start_timers(): interrupts enabled, PWM enabled before publication. */
+static void legacy_start(void) {
+    uint32_t r0 = ACQ_EPOCH_TICK(), r;
+    while ((r = ACQ_EPOCH_TICK()) == r0) {
+    }
+    ACQ_EPOCH_PWM_ENABLE();
+    boundary(STORE_COST, P_AFTER_ENABLE);
+    ep.last_raw = r;
+    ep.now_cycles = 0u;
+    ACQ_EPOCH_DMB();
+}
+
+typedef struct { uint64_t wrong, accepted_wrong; } model_out;
+
+/* Adapter bring-up for one run (acq_hw_start order): clear the step IRQ flag, drive slot
+ * 0's address and let it settle, have core1 enable its IRQ, then the atomic start. */
+static void model_start(bool legacy, preempt_point preempt_at, uint64_t preempt_len) {
+    w.intr_at = NONE;
+    w.pins = eng.step.driven_addr;
+    w.pins_at = w.t;
+    w.t += 10u * ACQ_CYCLES_PER_US;
+    w.legacy = legacy;
+    if (!legacy) acq_epoch_core1_request(&ep, true);
+    else w.irq_on = true;
+    w.preempt_at = preempt_at;
+    w.preempt_len = preempt_len;
+    w.preempt_pending = false;
+    if (legacy) legacy_start(); else acq_epoch_start(&ep);
+    boundary(0, P_AFTER_START);
+    assert(w.preempt_at == P_NONE && !w.preempt_pending); /* the injection really happened */
+}
+
+static void model_acquire(model_out *o) {
+    memset(o, 0, sizeof *o);
+    while (w.j_next < MODEL_CONV || eng.step.next < MODEL_CONV) {
+        w.t += 97u * ACQ_SLOT_CYCLES;
+        c1_run_until(w.t);
+        acq_drain(&eng, w.j_next, SIZE_MAX);
+    }
+    acq_drain(&eng, MODEL_CONV, SIZE_MAX);
+    for (uint64_t j = 0; j < MODEL_CONV; j++) {
+        if (!w.wrong[j]) continue;
+        o->wrong++;
+        if (eng.missed_tag[j] != (uint32_t)(j >> ACQ_RING_BITS) + 1u) o->accepted_wrong++;
+    }
+}
+
+/* Every history bin of every channel holds that channel's own constant. */
+static bool model_history_clean(void) {
+    scope_bin b[SCOPE_HISTORY_BINS];
+    for (unsigned c = 0; c < ACQ_CHANNELS; c++)
+        for (unsigned lvl = 0; lvl < SCOPE_HISTORY_LEVELS; lvl++) {
+            size_t n = scope_history_recent(&hist[c], lvl, b, SCOPE_HISTORY_BINS);
+            for (size_t i = 0; i < n; i++)
+                if (b[i].lo != 100u + 100u * c || b[i].hi != 100u + 100u * c) return false;
+        }
+    return true;
+}
+
+static void model_boot(uint32_t latency, uint32_t handler, uint32_t tick_phase) {
+    acq_schedule s;
+    acq_schedule_default(&s);
+    assert(acq_engine_init(&eng, &s, hist));
+    memset(&w, 0, sizeof w);
+    memset(&ep, 0, sizeof ep);
+    w.t = 1000000u + tick_phase * 7u; /* arbitrary non-zero TIMER value and phase */
+    w.tick_phase = tick_phase;
+    w.latency = latency;
+    w.handler = handler;
+    w.intr_at = NONE;
+    w.preempt_at = P_NONE;
+}
+
+/* Preemption injected at every point of the start sequence (before masking, in the tick
+ * spin, between capture and arming, between arming and enable, between enable and the
+ * pre-fix publication point, after the start), of one slot, 1.2 slots and 25 slots, with
+ * 0..160 cycles of core1 IRQ-entry latency and varied TIMER phase. */
+static void test_startup_preemption(void) {
+    static const uint64_t lens[] = {ACQ_SLOT_CYCLES, 1200u, 25u * ACQ_SLOT_CYCLES};
+    static const uint32_t lats[] = {0u, 40u, 100u, 160u};
+    unsigned scenarios = 0;
+    int64_t delta_max = 0;
+    for (unsigned li = 0; li < 4u; li++)
+        for (unsigned pi = 0; pi < 3u; pi++)
+            for (unsigned at = P_BEFORE_MASK; at < P_COUNT; at++) {
+                model_boot(lats[li], 60u, (at * 37u + li * 11u + pi * 5u) % ACQ_CYCLES_PER_US);
+                model_start(false, (preempt_point)at, lens[pi]);
+                model_out o;
+                model_acquire(&o);
+                assert(o.wrong == 0 && o.accepted_wrong == 0 && w.stale == 0);
+                assert(eng.cnt.missed_slots == 0 && eng.cnt.held_samples == 0);
+                assert(w.origin_delta_max >= 0 && w.origin_delta_max <= (int64_t)ACQ_TICK_TO_ENABLE_BOUND_CYCLES);
+                assert(model_history_clean());
+                if (w.origin_delta_max > delta_max) delta_max = w.origin_delta_max;
+                scenarios++;
+            }
+    /* Negative controls on the pre-fix sequence, proving the model sees both races.
+     * Preempted between capture and enable: software origin 1200 cycles early,
+     * wrong-address samples accepted with no missed flag. */
+    model_boot(0u, 60u, 0u);
+    model_start(true, P_BEFORE_ENABLE, 1200u);
+    model_out before;
+    model_acquire(&before);
+    assert(before.accepted_wrong > 0 && eng.cnt.missed_slots == 0 && !model_history_clean());
+    /* Preempted between enable and publication: core1 steps on an unpublished epoch. */
+    model_boot(0u, 60u, 0u);
+    model_start(true, P_AFTER_ENABLE, 1200u);
+    model_out between;
+    model_acquire(&between);
+    assert(w.stale > 0);
+    printf("startup: %u preempted atomic starts, 0 wrong/0 accepted-wrong/0 stale, tick-to-enable <= %lld"
+           " cycles (model; bound %u, slack %u). Pre-fix negative controls: preempt-before-enable"
+           " accepted-wrong=%llu/%u missed=0; preempt-after-enable stale-epoch steps=%llu.\n",
+           scenarios, (long long)delta_max, ACQ_TICK_TO_ENABLE_BOUND_CYCLES, ACQ_ORIGIN_SLACK_CYCLES,
+           (unsigned long long)before.accepted_wrong, MODEL_CONV, (unsigned long long)w.stale);
+}
+
+/* Repeated stop / resync / restart, each stop issued while a core1 step handler is
+ * mid-flight (entered, pins not yet written), each restart preempted at a different
+ * boundary. The stop must not return until core1 confirms quiescence. */
+static void test_resync_cycles(void) {
+    model_boot(40u, 150u, 13u);
+    model_start(false, P_NONE, 0u);
+    unsigned cycles = 0;
+    for (unsigned n = 0; n < 24u; n++) {
+        model_out o;
+        model_acquire(&o);
+        assert(o.accepted_wrong == 0 && o.wrong == 0 && w.stale == 0);
+        while (!w.busy) { w.t++; c1_run_until(w.t); } /* core1 is inside the handler now */
+        uint64_t waits = w.waits;
+        acq_epoch_stop(&ep);
+        /* core0 had to wait: the handler finished (pins written, commit done) before the
+         * acknowledgement, and the step IRQ is off, so the reset below cannot race it. */
+        assert(w.waits > waits && !w.busy && !w.irq_on && ep.armed == 0u);
+        /* Anything the stopped slices still raise can no longer reach the stepper. */
+        uint64_t steps = w.steps;
+        w.intr_at = w.t;
+        c1_run_until(w.t + 5u * ACQ_SLOT_CYCLES);
+        assert(w.steps == steps);
+        w.t += 5u * ACQ_SLOT_CYCLES;
+        acq_engine_resync(&eng);
+        model_start(false, (preempt_point)(n % P_COUNT), n % 2u ? 1200u : 25u * ACQ_SLOT_CYCLES);
+        cycles++;
+    }
+    model_out o;
+    model_acquire(&o);
+    assert(o.accepted_wrong == 0 && o.wrong == 0 && w.stale == 0);
+    assert(eng.cnt.resyncs == cycles && eng.cnt.missed_slots == 0 && model_history_clean());
+    assert(w.origin_delta_max <= (int64_t)ACQ_TICK_TO_ENABLE_BOUND_CYCLES);
+    /* A disarmed epoch gates a handler that does get in (e.g. a flag raised just before
+     * the stop): it returns without touching the engine. */
+    uint64_t gated = w.gated;
+    acq_epoch_stop(&ep);
+    w.irq_on = true;
+    w.intr_at = w.t;
+    c1_run_until(w.t + ACQ_SLOT_CYCLES);
+    assert(w.gated == gated + 1u);
+    printf("resync: %u stop/resync/restart cycles, each stop with core1 mid-handler; 0 accepted"
+           " wrong-address samples, disarmed handler gated.\n", cycles);
+}
+
 int main(void) {
     test_uniform_timing();
     test_wraparound_and_overrun();
     test_injected_stall();
     test_channel_order_invariance();
+    test_startup_preemption();
+    test_resync_cycles();
     printf("PASS: acq uniform slots (%u cycles, frame %u cycles @ %u MHz nominal), ring wrap/overrun,"
            " injected-stall missed-slot accounting, channel-order invariance, scope_core history.\n",
            ACQ_SLOT_CYCLES, ACQ_FRAME_CYCLES, ACQ_SYS_CLK_HZ / 1000000u);
