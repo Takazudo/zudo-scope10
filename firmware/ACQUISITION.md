@@ -9,6 +9,7 @@ The engine is built for CV, LFO and low-audio monitoring. The target is 10 000 s
 | File | Role |
 |---|---|
 | `src/acq_engine.[ch]` | Portable C for the schedule, the settle judgement for each slot ("missed slots"), the ring consumer and the counters. It feeds `scope_core` histories and has no RP2040 headers. |
+| `src/acq_epoch.h` | Portable startup and resync protocol: the shared time origin, the atomic origin-capture/publication/PWM-enable sequence and the core1 quiescence handshake. The target and the host model run the same code through hook macros. |
 | `src/acq_rp2040.c` | RP2040 register code (PWM, DMA, ADC FIFO, the core1 IRQ, USB serial counters) and `main` for `scope10_acq`. |
 | `tests/test_acq.c` | Cycle-level host model that drives the real `acq_engine.c` and `scope_core.c`. It runs via `scripts/test_firmware.py`. |
 
@@ -34,7 +35,7 @@ These values come from `design/gpio.json` and `design/circuit.json`.
 | Aggregate ADC rate | 120 kS/s | The RP2040 ADC limit is 500 kS/s. |
 | Conversion | 2 µs (96 `clk_adc` cycles at 48 MHz) | RP2040 datasheet. |
 | Mux-step IRQ | 300 cycles (2.5 µs) after each conversion start | After the conversion ends, so the address never moves mid-conversion. |
-| Time uncertainty | 160 cycles | 1 µs TIMER resolution plus 40 cycles of allowance for when the PWM is enabled relative to the origin tick. |
+| Time uncertainty | 160 cycles | 1 µs TIMER resolution plus 40 cycles of allowance for when the PWM is enabled relative to the origin tick. The startup path is bounded at 27 cycles (see "Tick-to-enable bound"). |
 | Settle allocation | 300 cycles (2.5 µs) | See the next section. |
 | IRQ latency + handler budget | 240 cycles (2.0 µs) | 1000 − 300 − 160 − 300. |
 | Channel skew | CH1 → CH10 = 9 slots = 75 µs | Sequential sampling. The generated architecture page quotes 72 µs from the earlier 8 µs-slot sketch; this engine's figure is 75 µs. |
@@ -78,10 +79,51 @@ The earlier architecture note sketched a throw-away conversion before each kept 
   - It pushes signal codes into the `scope_core` histories and runs the TIME and RANGE debounce.
   - A missed slot, an ADC `ERR` word or an overrun-lost signal sample is replaced by that channel's last valid code. This keeps the time axis uniform, and each replacement is counted in `held_samples`. Raw garbage never enters history.
 
+## Startup and resync
+
+The core1 stepper judges every slot against a software time origin: a 1 µs TIMER tick captured by core0. The ADC and the mux run from the physical origin: the instant the PWM slices are enabled. The two must be at most `ACQ_ORIGIN_SLACK_CYCLES` (40 cycles) apart. If the software origin were earlier than that, the stepper would move the mux early and judge the samples against its own wrong timeline. Wrong-channel samples would then reach history with no missed-slot flag. A host model of the earlier start sequence, preempted for 1200 cycles between capture and enable, accepted 2160 of 2400 samples from the wrong address with `missed_slots` = 0 (issue #18).
+
+**Atomic start (`acq_epoch_start`).** Origin capture, publication of the whole epoch and PWM enable form one operation that core0 interrupts cannot split. The code is RAM-resident (`__not_in_flash_func(start_timers)`, everything inlined), so it never waits on XIP.
+
+1. Disable core0 interrupts (`save_and_disable_interrupts`).
+2. Write the fields that do not depend on the tick: `now_cycles` = 0 and the new generation number.
+3. Spin to a TIMER tick edge and store it in `last_raw`. This is the software origin.
+4. `__dmb()`, then store the generation in `armed`. A step handler that reads a non-zero `armed` also sees every field written before it. A handler that ran earlier saw `armed` = 0 and touched nothing.
+5. Enable both PWM slices with one register write. This is the physical origin. Then restore interrupts.
+
+The first step IRQ follows 300 cycles after step 5. Any core0 interrupt that becomes pending during the sequence is taken after step 5. It then delays only core0, never the origin.
+
+**Stop and resync (`acq_epoch_stop`).** A resync no longer relies on a fixed delay.
+
+1. Stop both PWM slices, then set `armed` = 0 and issue a barrier.
+2. Ask core1 to disable its step IRQ and wait for its acknowledgement. Core1 handles the request in thread mode (its `__wfe` idle loop, woken by core0's `SEV`), where by construction no step handler is executing on that core. Core1 disables the IRQ and clears its pending bit, then acknowledges. After this, no handler is running and none can start.
+3. Only then does core0 clear the PWM flag, abort DMA and reset the stepper and consumer state (`acq_engine_resync`).
+4. Restart: clear the PWM IRQ flag, pre-drive slot 0's address and let it settle for 10 µs, ask core1 to enable its step IRQ (it clears the pending bit first), then run the same atomic start.
+
+The step handler returns at once while `armed` = 0. This is a second guard for a handler that enters after the disarm.
+
+### Tick-to-enable bound
+
+`ACQ_TICK_TO_ENABLE_BOUND_CYCLES` = 27 cycles, and a `_Static_assert` keeps it within the 40-cycle slack. **Method:** a count from the source, using Cortex-M0+ instruction timings (ARM Cortex-M0+ TRM) and conservative RP2040 bus assumptions. Interrupts are off and the code is in RAM. No DMA channel is moving data at that point, because PWM is stopped and the ADC is idle.
+
+| Step | Cycles |
+|---|---|
+| The tick edge falls anywhere in the spin iteration that observes it. That iteration is an APB load (≤ 6 assumed), a compare (1) and a taken branch (2). | ≤ 9 |
+| Loop exit (branch not taken) | 1 |
+| `STR last_raw` (SRAM) | 2 |
+| `DMB` | 3 |
+| `STR armed` (the generation is already in a register) | 2 |
+| `STR` to `PWM EN` (APB write, ≤ 6 assumed) | ≤ 6 |
+| Subtotal | ≤ 23 |
+| Allowance: two literal-pool base reloads if the compiler rematerialises addresses (2 × 2) | 4 |
+| **Bound** | **27** |
+
+**Target verification: NOT_RUN.** No ARM toolchain was available where this was written. To verify, find `start_timers` in `firmware/build/scope10_acq.dis` (written by `pico_add_extra_outputs`) and count the instructions from the `ldr` that reads `TIMERAWL` and exits the spin loop up to the `str` to `PWM_EN`. If the count is above 27 cycles, raise the constant. If it is above 40, also raise `ACQ_ORIGIN_SLACK_CYCLES` and re-run the host tests. G05 must still measure the real value on the bench.
+
 ## Counters (USB serial, once per second)
 
 ```
-acq,uptime_ms=…,frames=…,missed_slots=…,overrun_events=…,overrun_samples=…,fifo_errors=…,conversion_errors=…,held_samples=…,resyncs=…,hold=…,link=…
+acq,uptime_ms=…,frames=…,missed_slots=…,overrun_events=…,overrun_samples=…,fifo_errors=…,conversion_errors=…,held_samples=…,resyncs=…,hold_pressed=…,link_pressed=…
 ch,<1..10>,last_code=…,time_code=…,range_code=…,range=…,pushed=…
 ```
 
@@ -89,6 +131,7 @@ ch,<1..10>,last_code=…,time_code=…,range_code=…,range=…,pushed=…
 - `overrun_events` and `overrun_samples`: the consumer fell more than 7168 samples (about 60 ms) behind the DMA writer.
 - `fifo_errors`: ADC FIFO overflow or underflow. Slot alignment is lost, so the engine stops, clears, restarts at a new origin and counts a `resync`. It does not fill the gap.
 - `conversion_errors`: an ADC `ERR` bit in a FIFO word.
+- `hold_pressed` and `link_pressed`: the raw HOLD and LINK button pins (1 = held down right now). These are not the HOLD and LINK modes. The renderer latches those modes from debounced presses, and the display shows the latched modes.
 
 Every report line is printed on its own drain pass. The USB stdout timeout is limited to 2 ms, so a stalled host produces counted overruns instead of silent loss.
 
@@ -109,6 +152,8 @@ GP14 goes high once per frame, at the step that addresses slot 0. It stays high 
   - One ADC `ERR` word is counted and held.
   - A steadily late IRQ gives engine count = true count.
 - **Channel-order invariance.** A permuted signal-slot order yields byte-identical histories and control state. An invalid order is rejected.
+- **Startup preemption.** The model separates the physical origin (PWM enable) from the software origin (captured tick). It feeds each mux input a distinct constant, so a wrong-address sample is recognisable. It runs `acq_epoch_start` with a core0 interrupt injected at each point: before masking, in the tick spin, between capture and arming, between arming and enable, between enable and the old publication point, and after the start. Interrupt lengths are 1, 1.2 and 25 slots, and core1 entry latency runs from 0 to 160 cycles. That gives 72 scenarios. Each one has zero wrong or accepted wrong-address samples, zero steps on an incomplete epoch, zero missed slots, and a tick-to-enable time within the 27-cycle bound. Negative controls run the old sequence in the same model. Preempted before enable, it accepts 2160 of 2400 wrong-address samples with `missed_slots` = 0. Preempted after enable, core1 steps on an unpublished epoch.
+- **Repeated stop, resync and restart.** There are 24 cycles. Each stop is issued while a core1 step handler is mid-flight. The stop must wait until that handler has finished, and core1 must confirm that the step IRQ is off, before the reset. Later IRQ flags must not reach the stepper. Each restart is preempted at a different point. There are zero accepted wrong-address samples, and a disarmed handler returns without touching the engine.
 - **`scope_core` integration.** The last 192 level-0 bins of every channel equal the expected per-frame codes. No garbage code reaches any history level.
 
 These tests prove the scheduling and bookkeeping logic on a host. They do not prove RP2040 timing.
