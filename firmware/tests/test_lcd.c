@@ -220,37 +220,60 @@ static void test_blit_through_bridge(void) {
 
 /* ---- display_port.h test double for the renderer: routes through lcd_blit and the models ---- */
 static uint32_t rect_calls, rect_max_pixels, plot_calls;
+static bool rect_inside(scope_rect in, scope_rect out) {
+    return in.x >= out.x && in.y >= out.y && in.x + in.w <= out.x + out.w && in.y + in.h <= out.y + out.h;
+}
 static bool fake_ready = true;
 bool scope_display_rect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint16_t *px) {
     rect_calls++;
     if ((uint32_t)w * h > rect_max_pixels) rect_max_pixels = (uint32_t)w * h;
     assert((uint32_t)x + w <= SCOPE_DISPLAY_WIDTH && (uint32_t)y + h <= SCOPE_DISPLAY_HEIGHT);
-    if (x >= SCOPE_PLOT_X && x < SCOPE_PLOT_X + SCOPE_PLOT_W) plot_calls++;
+    for (unsigned p = 0; p < SCOPE_CHANNELS; p++)
+        if (rect_inside((scope_rect){x, y, w, h}, scope_pane_plot_rect(p))) plot_calls++;
     return fake_ready && lcd_blit(&bus, x, y, w, h, px);
-}
-
-static bool rect_inside(scope_rect in, scope_rect out) {
-    return in.x >= out.x && in.y >= out.y && in.x + in.w <= out.x + out.w && in.y + in.h <= out.y + out.h;
 }
 static bool rect_disjoint(scope_rect a, scope_rect b) {
     return a.x + a.w <= b.x || b.x + b.w <= a.x || a.y + a.h <= b.y || b.y + b.h <= a.y;
 }
 
+static bool rect_is(scope_rect r, uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
+    return r.x == x && r.y == y && r.w == w && r.h == h;
+}
+
 static void test_layout(void) {
-    unsigned covered = 0;
+    /* 2 x 5 column-major: CH1..CH5 left column top to bottom, CH6..CH10 right column. */
+    assert(rect_is(scope_pane_rect(0), 0, 0, 160, 96));      /* CH1: top left */
+    assert(rect_is(scope_pane_rect(4), 0, 384, 160, 96));    /* CH5: bottom left */
+    assert(rect_is(scope_pane_rect(5), 160, 0, 160, 96));    /* CH6: top of the right column */
+    assert(rect_is(scope_pane_rect(9), 160, 384, 160, 96));  /* CH10: bottom right */
+    assert(rect_is(scope_pane_plot_rect(0), 8, 14, 144, 66));
+    assert(rect_is(scope_pane_plot_rect(4), 8, 398, 144, 66));
+    assert(rect_is(scope_pane_plot_rect(5), 168, 14, 144, 66));
+    assert(rect_is(scope_pane_plot_rect(9), 168, 398, 144, 66));
+    assert(rect_is(scope_pane_label_rect(0), 8, 1, 144, 10));
+    assert(rect_is(scope_pane_label_rect(5), 168, 1, 144, 10));
+    assert(rect_is(scope_pane_status_rect(4), 8, 467, 144, 10));
+    assert(rect_is(scope_pane_status_rect(9), 168, 467, 144, 10));
+    assert(rect_is(scope_pane_tag_rect(5), 160, 14, 4, 66));
+    assert(rect_is(scope_pane_separator_rect(9), 160, 479, 160, 1));
+    assert(SCOPE_PLOT_W < SCOPE_HISTORY_BINS); /* plot width no longer tied to the history length */
+
+    uint32_t area = 0;
     for (unsigned p = 0; p < SCOPE_CHANNELS; p++) {
         scope_rect pane = scope_pane_rect(p);
-        assert(pane.y == covered && pane.w == SCOPE_DISPLAY_WIDTH);
-        covered += pane.h;
-        scope_rect parts[4] = {scope_pane_tag_rect(p), scope_pane_plot_rect(p), scope_pane_status_rect(p),
-                               scope_pane_separator_rect(p)};
-        for (unsigned i = 0; i < 4; i++) {
+        assert(pane.x == (p / 5u) * 160u && pane.y == (p % 5u) * 96u);
+        assert((uint32_t)pane.x + pane.w <= SCOPE_DISPLAY_WIDTH && (uint32_t)pane.y + pane.h <= SCOPE_DISPLAY_HEIGHT);
+        area += (uint32_t)pane.w * pane.h;
+        for (unsigned q = p + 1; q < SCOPE_CHANNELS; q++) assert(rect_disjoint(pane, scope_pane_rect(q)));
+        scope_rect parts[5] = {scope_pane_tag_rect(p), scope_pane_plot_rect(p), scope_pane_label_rect(p),
+                               scope_pane_status_rect(p), scope_pane_separator_rect(p)};
+        for (unsigned i = 0; i < 5; i++) {
             assert(rect_inside(parts[i], pane));
-            for (unsigned j = i + 1; j < 4; j++) assert(rect_disjoint(parts[i], parts[j]));
+            for (unsigned j = i + 1; j < 5; j++) assert(rect_disjoint(parts[i], parts[j]));
         }
-        assert(parts[1].w == SCOPE_HISTORY_BINS);
+        assert(parts[1].w == SCOPE_PLOT_W && parts[1].h == SCOPE_PLOT_H);
     }
-    assert(covered == SCOPE_DISPLAY_HEIGHT);
+    assert(area == (uint32_t)SCOPE_DISPLAY_WIDTH * SCOPE_DISPLAY_HEIGHT);
     assert(scope_code_to_row(4095, SCOPE_PLOT_H) == 0 && scope_code_to_row(0, SCOPE_PLOT_H) == SCOPE_PLOT_H - 1);
     assert(scope_code_to_row(65535, SCOPE_PLOT_H) == 0);
     for (unsigned c = 1; c < 4096; c++)
@@ -263,8 +286,8 @@ static void test_layout(void) {
     assert(lit == (unsigned)(scope_code_to_row(1000, SCOPE_PLOT_H) - scope_code_to_row(3000, SCOPE_PLOT_H) + 1));
     scope_render_column(NULL, SCOPE_PLOT_H, 0xFFFF, col);
     for (unsigned r = 0; r < SCOPE_PLOT_H; r++) assert(col[r] != 0xFFFF);
-    assert(scope_render_level(0, 10000) == 0);    /* 2 ms = 20 samples over 192 columns */
-    assert(scope_render_level(4095, 10000) == 8); /* 8.192 s = 81920 samples: 256/column */
+    assert(scope_render_level(0, 10000) == 0);    /* 2 ms = 20 samples over 144 columns */
+    assert(scope_render_level(4095, 10000) == 9); /* 8.192 s = 81920 samples: 568/column -> level 9, 512/bin */
 }
 
 static scope_history H[SCOPE_CHANNELS];
@@ -291,19 +314,25 @@ static void test_renderer(void) {
         scope_rect p = scope_pane_plot_rect(ch);
         uint16_t colour = scope_channel_colour(ch);
         uint16_t row = scope_code_to_row((uint16_t)(400u * ch + 10u), SCOPE_PLOT_H);
-        /* level 0 holds 100 bins, right-aligned: columns 92..191 carry the trace */
+        /* level 0 holds 100 bins, right-aligned: columns 44..143 carry the trace */
         assert(gram[p.y + row][p.x + SCOPE_PLOT_W - 1u] == colour);
         assert(gram[p.y + row][p.x + SCOPE_PLOT_W - 100u] == colour);
         assert(gram[p.y + row][p.x + SCOPE_PLOT_W - 101u] != colour);
         scope_rect tag = scope_pane_tag_rect(ch);
         assert(gram[tag.y][tag.x] == colour);
         scope_rect st = scope_pane_status_rect(ch);
+        unsigned by = st.y + SCOPE_STATUS_BOX_Y;
         for (unsigned i = 0; i < 3; i++) {
-            uint16_t box = gram[st.y + 4u][st.x + 4u + i * 24u];
+            uint16_t box = gram[by][st.x + i * SCOPE_STATUS_RANGE_PITCH];
             assert(box == (in.range[ch] == (int8_t)i ? colour : SCOPE_COLOUR_DIM));
         }
-        assert(gram[st.y + 34u][st.x + 4u] == SCOPE_COLOUR_DIM && gram[st.y + 34u][st.x + 16u] == SCOPE_COLOUR_DIM);
-        assert(gram[scope_pane_separator_rect(ch).y][0] == SCOPE_COLOUR_SEPARATOR);
+        assert(gram[by][st.x + SCOPE_STATUS_LINK_X] == SCOPE_COLOUR_DIM);
+        assert(gram[by][st.x + SCOPE_STATUS_HOLD_X] == SCOPE_COLOUR_DIM);
+        scope_rect lb = scope_pane_label_rect(ch); /* reserved for the label sub: nothing drawn yet */
+        for (unsigned y = lb.y; y < lb.y + lb.h; y++)
+            for (unsigned x = lb.x; x < lb.x + lb.w; x++) assert(gram[y][x] == 0);
+        scope_rect sep = scope_pane_separator_rect(ch);
+        assert(gram[sep.y][sep.x] == SCOPE_COLOUR_SEPARATOR && gram[sep.y][sep.x + sep.w - 1u] == SCOPE_COLOUR_SEPARATOR);
     }
 
     /* HOLD: plots frozen (no plot-area transfers), status still updates and shows HOLD. */
@@ -313,7 +342,7 @@ static void test_renderer(void) {
     while (s.passes == start) scope_render_step(&s, &in, 4);
     assert(plot_calls == 0);
     scope_rect st0 = scope_pane_status_rect(0);
-    assert(gram[st0.y + 34u][st0.x + 16u] == SCOPE_COLOUR_HOLD);
+    assert(gram[st0.y + SCOPE_STATUS_BOX_Y][st0.x + SCOPE_STATUS_HOLD_X] == SCOPE_COLOUR_HOLD);
 
     /* LINK: every pane takes CH1's TIME window (and TIME bar). */
     in.hold = false;
@@ -323,8 +352,29 @@ static void test_renderer(void) {
     start = s.passes;
     while (s.passes == start) scope_render_step(&s, &in, 4);
     scope_rect st5 = scope_pane_status_rect(5);
-    assert(gram[st5.y + 22u][st5.x + 4u + 99u] == scope_channel_colour(5)); /* full bar from CH1 */
-    assert(gram[st5.y + 34u][st5.x + 4u] == SCOPE_COLOUR_LINK);
+    unsigned y5 = st5.y + SCOPE_STATUS_BOX_Y;
+    assert(gram[y5][st5.x + SCOPE_STATUS_BAR_X + SCOPE_STATUS_BAR_W - 1u] == scope_channel_colour(5)); /* full bar from CH1 */
+    assert(gram[y5][st5.x + SCOPE_STATUS_LINK_X] == SCOPE_COLOUR_LINK);
+
+    /* More history than plot columns (192 bins > 144): only the newest SCOPE_PLOT_W bins are
+     * drawn, right-aligned, filling every column; the older samples fall off the left edge. */
+    in.link = false;
+    in.time_code[0] = 0;
+    for (unsigned ch = 0; ch < SCOPE_CHANNELS; ch++) {
+        scope_history_init(&H[ch]);
+        for (unsigned i = 0; i < 300; i++) scope_history_push(&H[ch], i < 300u - SCOPE_PLOT_W ? 100u : 4000u);
+    }
+    start = s.passes;
+    while (s.passes == start) scope_render_step(&s, &in, 4);
+    uint16_t old_row = scope_code_to_row(100, SCOPE_PLOT_H), new_row = scope_code_to_row(4000, SCOPE_PLOT_H);
+    assert(old_row != new_row);
+    for (unsigned ch = 0; ch < SCOPE_CHANNELS; ch++) {
+        scope_rect p = scope_pane_plot_rect(ch);
+        for (unsigned col = 0; col < SCOPE_PLOT_W; col++) {
+            assert(gram[p.y + new_row][p.x + col] == scope_channel_colour(ch));
+            assert(gram[p.y + old_row][p.x + col] != scope_channel_colour(ch));
+        }
+    }
 
     /* A failing backend is counted, never reported as drawn. */
     fake_ready = false;

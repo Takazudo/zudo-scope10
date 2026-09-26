@@ -221,6 +221,103 @@ def _acceptance_csv(check, ctx):
 EXTRA_CHECKS.append(_acceptance_csv)
 
 
+def _firmware_pane_rects(R):
+    """Pane rects from the real scope_render.c, compiled for the host with a stub display port."""
+    import shutil
+    import subprocess
+    import tempfile
+    from pathlib import Path
+
+    cc = shutil.which('cc') or shutil.which('gcc')
+    if not cc:
+        return None, 'a host C compiler is required to read the firmware pane rects'
+    src = R / 'firmware/src'
+    probe = (
+        '#include "scope_render.h"\n#include "display_port.h"\n#include <stdio.h>\n'
+        'bool scope_display_rect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint16_t *px)'
+        '{(void)x;(void)y;(void)w;(void)h;(void)px;return true;}\n'
+        'int main(void){for(unsigned p=0;p<SCOPE_CHANNELS;p++){scope_rect r=scope_pane_rect(p);'
+        'printf("%u %u %u %u\\n",r.x,r.y,r.w,r.h);}return 0;}\n'
+    )
+    with tempfile.TemporaryDirectory() as t:
+        c = Path(t) / 'probe.c'
+        exe = Path(t) / 'probe'
+        c.write_text(probe)
+        build = subprocess.run([cc, '-std=c11', '-I' + str(src), str(c), str(src / 'scope_render.c'),
+                                str(src / 'scope_core.c'), '-lm', '-o', str(exe)], capture_output=True, text=True)
+        if build.returncode:
+            return None, build.stderr.strip()
+        out = subprocess.run([str(exe)], capture_output=True, text=True, check=True).stdout
+    return [tuple(int(v) for v in line.split()) for line in out.splitlines()], ''
+
+
+def _rows_by_bank(xy):
+    """{channel: (bank, row)}: bank 0 = left, 1 = right; row = top-to-bottom rank within the bank."""
+    xs = sorted({x for x, _ in xy.values()})
+    if len(xs) != 2:
+        return None
+    out = {}
+    for bank, bx in enumerate(xs):
+        members = sorted((y, ch) for ch, (x, y) in xy.items() if x == bx)
+        if len({y for y, _ in members}) != len(members):
+            return None  # two channels share a row: no top-to-bottom order to compare
+        for row, (_, ch) in enumerate(members):
+            out[ch] = (bank, row)
+    return out
+
+
+def _pane_numbering_parity(check, ctx):
+    """#26/#34: firmware panes, simulator panes and physical control banks share one numbering.
+
+    Column-major: CH1..CH5 are the left bank / left pane column top to bottom, CH6..CH10 the
+    right. A contradiction in any source fails the check; the firmware is never adapted to it.
+    """
+    import json
+    import re
+
+    R = ctx['R']
+    want = {ch: ((ch - 1) // 5, (ch - 1) % 5) for ch in range(1, 11)}
+    details = []
+
+    rects, err = _firmware_pane_rects(R)
+    fw = _rows_by_bank({i + 1: (r[0], r[1]) for i, r in enumerate(rects)}) if rects else None
+    details.append(f'firmware={fw if fw else err}')
+
+    js = (R / 'doc/public/prototype/scope-ui.js').read_text()
+    m = re.search(r'x=\(i<(\d+)\?(\d+):(\d+)\),y=\(i%(\d+)\)\*(\d+)', js)
+    bank_dom = re.search(r"querySelector\(i<(\d+)\?'#left':'#right'\)", js)
+    sim = None
+    if m and bank_dom:
+        split, x0, x1, mod, h = map(int, m.groups())
+        sim = _rows_by_bank({i + 1: (x0 if i < split else x1, (i % mod) * h) for i in range(10)})
+        dom = {i + 1: 0 if i < int(bank_dom.group(1)) else 1 for i in range(10)}
+        if sim and any(sim[ch][0] != dom[ch] for ch in dom):
+            sim = None
+            details.append('simulator pane column disagrees with its control-bank DOM placement')
+    details.append(f'simulator={sim}')
+
+    panel = json.loads((R / 'mechanical/panel-layout-study.json').read_text())
+    keys = ('jack_envelope_centre_mm', 'pot_axis_mm', 'range_envelope_centre_mm')
+    by_ch = {c['channel']: c for c in panel['channels']}
+    phys = None
+    if sorted(by_ch) == list(range(1, 11)):
+        mid = sum(by_ch[ch]['pot_axis_mm'][0] for ch in by_ch) / 10.0
+        sides = {ch: {c[k][0] < mid for k in keys} for ch, c in by_ch.items()}
+        if all(len(v) == 1 for v in sides.values()):
+            # SVG / panel-study y grows downward, so ascending y is top to bottom.
+            phys = _rows_by_bank({ch: (0 if sides[ch] == {True} else 1, c['pot_axis_mm'][1]) for ch, c in by_ch.items()})
+        else:
+            details.append('a channel has jack/pot/RANGE envelopes on both sides of the panel')
+    details.append(f'panel={phys}')
+
+    check('Pane numbering parity: firmware panes, simulator and panel control banks are column-major '
+          '(CH1-5 left, CH6-10 right, same top-to-bottom order)',
+          fw == want and sim == want and phys == want, '; '.join(details))
+
+
+EXTRA_CHECKS.append(_pane_numbering_parity)
+
+
 def run(check, ctx):
     for extra in EXTRA_CHECKS:
         extra(check, ctx)

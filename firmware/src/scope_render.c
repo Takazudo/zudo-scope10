@@ -5,11 +5,21 @@
 #define ITEM_COL0 1u
 #define ITEM_STATUS (ITEM_COL0 + SCOPE_PLOT_W)
 
-_Static_assert(SCOPE_PANE_H * SCOPE_CHANNELS == SCOPE_DISPLAY_HEIGHT, "ten panes fill the height");
+_Static_assert(SCOPE_PANE_COLS * SCOPE_PANE_ROWS == SCOPE_CHANNELS, "one pane per channel");
+_Static_assert(SCOPE_PANE_COLS * SCOPE_PANE_W == SCOPE_DISPLAY_WIDTH, "two pane columns fill the width");
+_Static_assert(SCOPE_PANE_ROWS * SCOPE_PANE_H == SCOPE_DISPLAY_HEIGHT, "five pane rows fill the height");
 _Static_assert(SCOPE_TAG_X + SCOPE_TAG_W < SCOPE_PLOT_X, "tag and plot overlap");
-_Static_assert(SCOPE_PLOT_X + SCOPE_PLOT_W < SCOPE_STATUS_X, "plot and status overlap");
-_Static_assert(SCOPE_STATUS_X + SCOPE_STATUS_W <= SCOPE_DISPLAY_WIDTH, "status off-screen");
-_Static_assert(SCOPE_PANE_MARGIN_TOP + SCOPE_PLOT_H < SCOPE_PANE_H - 1u, "plot hits separator");
+_Static_assert(SCOPE_PLOT_X + SCOPE_PLOT_W <= SCOPE_PANE_W, "plot leaves its pane");
+_Static_assert(SCOPE_LABEL_Y + SCOPE_LABEL_H < SCOPE_PLOT_Y, "label row and plot overlap");
+_Static_assert(SCOPE_PLOT_Y + SCOPE_PLOT_H < SCOPE_STATUS_Y, "plot and status row overlap");
+_Static_assert(SCOPE_STATUS_Y + SCOPE_STATUS_H < SCOPE_PANE_H - 1u, "status row hits separator");
+_Static_assert(SCOPE_PLOT_W <= SCOPE_HISTORY_BINS, "history shorter than the plot");
+_Static_assert(SCOPE_PLOT_H <= SCOPE_RENDER_FILL_MAX, "plot column exceeds one transfer");
+_Static_assert(2u * SCOPE_STATUS_RANGE_PITCH + SCOPE_STATUS_RANGE_W < SCOPE_STATUS_BAR_X, "RANGE boxes hit TIME bar");
+_Static_assert(SCOPE_STATUS_BAR_X + SCOPE_STATUS_BAR_W < SCOPE_STATUS_LINK_X, "TIME bar hits LINK box");
+_Static_assert(SCOPE_STATUS_LINK_X + SCOPE_STATUS_FLAG_W < SCOPE_STATUS_HOLD_X, "LINK and HOLD boxes overlap");
+_Static_assert(SCOPE_STATUS_HOLD_X + SCOPE_STATUS_FLAG_W <= SCOPE_PLOT_W, "HOLD box leaves the status row");
+_Static_assert(SCOPE_STATUS_BOX_Y + SCOPE_STATUS_BOX_H <= SCOPE_STATUS_H, "indicators leave the status row");
 
 static const uint16_t palette[SCOPE_CHANNELS] = {
     SCOPE_RGB565(255, 220, 0),   SCOPE_RGB565(0, 220, 255),  SCOPE_RGB565(255, 80, 200),
@@ -18,22 +28,27 @@ static const uint16_t palette[SCOPE_CHANNELS] = {
     SCOPE_RGB565(160, 200, 255),
 };
 
-static uint16_t pane_top(unsigned pane) { return (uint16_t)(pane * SCOPE_PANE_H); }
-
-scope_rect scope_pane_rect(unsigned pane) {
-    return (scope_rect){0, pane_top(pane), SCOPE_DISPLAY_WIDTH, SCOPE_PANE_H};
+static uint16_t pane_left(unsigned pane) { return (uint16_t)((pane / SCOPE_PANE_ROWS) * SCOPE_PANE_W); }
+static uint16_t pane_top(unsigned pane) { return (uint16_t)((pane % SCOPE_PANE_ROWS) * SCOPE_PANE_H); }
+static scope_rect in_pane(unsigned pane, uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
+    return (scope_rect){(uint16_t)(pane_left(pane) + x), (uint16_t)(pane_top(pane) + y), w, h};
 }
+
+scope_rect scope_pane_rect(unsigned pane) { return in_pane(pane, 0, 0, SCOPE_PANE_W, SCOPE_PANE_H); }
 scope_rect scope_pane_tag_rect(unsigned pane) {
-    return (scope_rect){SCOPE_TAG_X, (uint16_t)(pane_top(pane) + SCOPE_PANE_MARGIN_TOP), SCOPE_TAG_W, SCOPE_PLOT_H};
+    return in_pane(pane, SCOPE_TAG_X, SCOPE_PLOT_Y, SCOPE_TAG_W, SCOPE_PLOT_H);
 }
 scope_rect scope_pane_plot_rect(unsigned pane) {
-    return (scope_rect){SCOPE_PLOT_X, (uint16_t)(pane_top(pane) + SCOPE_PANE_MARGIN_TOP), SCOPE_PLOT_W, SCOPE_PLOT_H};
+    return in_pane(pane, SCOPE_PLOT_X, SCOPE_PLOT_Y, SCOPE_PLOT_W, SCOPE_PLOT_H);
+}
+scope_rect scope_pane_label_rect(unsigned pane) {
+    return in_pane(pane, SCOPE_PLOT_X, SCOPE_LABEL_Y, SCOPE_PLOT_W, SCOPE_LABEL_H);
 }
 scope_rect scope_pane_status_rect(unsigned pane) {
-    return (scope_rect){SCOPE_STATUS_X, (uint16_t)(pane_top(pane) + SCOPE_PANE_MARGIN_TOP), SCOPE_STATUS_W, SCOPE_PLOT_H};
+    return in_pane(pane, SCOPE_PLOT_X, SCOPE_STATUS_Y, SCOPE_PLOT_W, SCOPE_STATUS_H);
 }
 scope_rect scope_pane_separator_rect(unsigned pane) {
-    return (scope_rect){0, (uint16_t)(pane_top(pane) + SCOPE_PANE_H - 1u), SCOPE_DISPLAY_WIDTH, 1};
+    return in_pane(pane, 0, (uint16_t)(SCOPE_PANE_H - 1u), SCOPE_PANE_W, 1);
 }
 
 uint16_t scope_channel_colour(unsigned ch) { return palette[ch % SCOPE_CHANNELS]; }
@@ -88,27 +103,29 @@ static unsigned draw_status(scope_render_state *s, const scope_render_input *in,
     scope_rect st = scope_pane_status_rect(pane);
     uint16_t colour = scope_channel_colour(pane);
     uint16_t tcode = in->link ? in->time_code[0] : in->time_code[pane];
+    uint16_t y = (uint16_t)(st.y + SCOPE_STATUS_BOX_Y);
     unsigned calls = 0;
     for (unsigned i = 0; i < 3u; i++) {
-        scope_rect box = {(uint16_t)(st.x + 4u + i * 24u), (uint16_t)(st.y + 4u), 20, 12};
+        scope_rect box = {(uint16_t)(st.x + i * SCOPE_STATUS_RANGE_PITCH), y, SCOPE_STATUS_RANGE_W, SCOPE_STATUS_BOX_H};
         calls += fill(s, box, in->range[pane] == (int8_t)i ? colour : SCOPE_COLOUR_DIM);
     }
-    const uint16_t bar_w = 100u;
+    const uint16_t bar_x = (uint16_t)(st.x + SCOPE_STATUS_BAR_X), bar_w = SCOPE_STATUS_BAR_W;
     uint16_t lit = (uint16_t)(1u + (uint32_t)(tcode > 4095u ? 4095u : tcode) * (bar_w - 1u) / 4095u);
-    calls += fill(s, (scope_rect){(uint16_t)(st.x + 4u), (uint16_t)(st.y + 22u), lit, 8}, colour);
+    calls += fill(s, (scope_rect){bar_x, y, lit, SCOPE_STATUS_BOX_H}, colour);
     if (lit < bar_w)
-        calls += fill(s, (scope_rect){(uint16_t)(st.x + 4u + lit), (uint16_t)(st.y + 22u), (uint16_t)(bar_w - lit), 8},
+        calls += fill(s, (scope_rect){(uint16_t)(bar_x + lit), y, (uint16_t)(bar_w - lit), SCOPE_STATUS_BOX_H},
                       SCOPE_COLOUR_DIM);
-    calls += fill(s, (scope_rect){(uint16_t)(st.x + 4u), (uint16_t)(st.y + 34u), 8, 8},
+    calls += fill(s, (scope_rect){(uint16_t)(st.x + SCOPE_STATUS_LINK_X), y, SCOPE_STATUS_FLAG_W, SCOPE_STATUS_BOX_H},
                   in->link ? SCOPE_COLOUR_LINK : SCOPE_COLOUR_DIM);
-    calls += fill(s, (scope_rect){(uint16_t)(st.x + 16u), (uint16_t)(st.y + 34u), 8, 8},
+    calls += fill(s, (scope_rect){(uint16_t)(st.x + SCOPE_STATUS_HOLD_X), y, SCOPE_STATUS_FLAG_W, SCOPE_STATUS_BOX_H},
                   in->hold ? SCOPE_COLOUR_HOLD : SCOPE_COLOUR_DIM);
     return calls;
 }
 
 static unsigned draw_column(scope_render_state *s, unsigned pane, unsigned col) {
     uint16_t px[SCOPE_PLOT_H];
-    unsigned first = SCOPE_PLOT_W - s->nbins;
+    unsigned nbins = s->nbins < SCOPE_PLOT_W ? s->nbins : SCOPE_PLOT_W;
+    unsigned first = SCOPE_PLOT_W - nbins;
     const scope_bin *bin = col >= first ? &s->bins[col - first] : NULL;
     scope_rect p = scope_pane_plot_rect(pane);
     scope_render_column(bin, SCOPE_PLOT_H, scope_channel_colour(pane), px);
