@@ -423,6 +423,124 @@ def _module_power_evidence_consistency(check, ctx):
 EXTRA_CHECKS.append(_module_power_evidence_consistency)
 
 
+def _usb_power_contract_parity(check, ctx):
+    """#37 (source #20): design/power-contract.json is the single shared source for
+    the declared USB descriptor value; every firmware target's actual CMake
+    configuration must agree with it, and the removed GPIO24/VBUS-sense
+    substitute suggestion must not resurface."""
+    import json
+    import re
+    import sys
+
+    R = ctx['R']
+    sys.path.insert(0, str(R / 'scripts'))
+    import power_budget
+
+    contract_path = R / 'design/power-contract.json'
+    check('design/power-contract.json exists', contract_path.exists())
+    if not contract_path.exists():
+        return
+    contract = json.loads(contract_path.read_text())
+
+    check(
+        'power-contract.json has the required top-level sections',
+        all(k in contract for k in ('source_contract', 'declared_max_power_ma',
+                                     'override_investigation', 'honesty', 'power_states')),
+    )
+    check(
+        'power-contract.json documents that USBD_MAX_POWER_MA is not #ifndef-guarded in pinned SDK 2.1.1',
+        contract.get('override_investigation', {}).get('finding_guarded_by_ifndef') is False,
+    )
+
+    required_states = {
+        'pre_configuration', 'configured', 'suspend_or_deconfigured',
+        'reset', 'bootsel_rom', 'unpowered',
+    }
+    check(
+        'power-contract.json power_states covers boot, reset, BOOTSEL, configuration and suspend/deconfiguration',
+        required_states <= set(contract.get('power_states', {})),
+        f"missing: {required_states - set(contract.get('power_states', {}))}",
+    )
+
+    cmake_text = (R / 'firmware/CMakeLists.txt').read_text()
+    fw_targets = set(re.findall(r'add_executable\((\w+)\b', cmake_text))
+    check(
+        'firmware/CMakeLists.txt still defines the expected firmware targets',
+        {'scope10_diagnostic', 'scope10_acq'} <= fw_targets,
+        str(sorted(fw_targets)),
+    )
+
+    declared = contract.get('declared_max_power_ma')
+    target_overrides = power_budget.parse_cmake_usbd_max_power_targets()
+    check(
+        'Every firmware target parsed from CMakeLists.txt has an explicit descriptor override entry',
+        fw_targets <= set(target_overrides),
+        str(target_overrides),
+    )
+    mismatched = {t: v for t, v in target_overrides.items() if v is not None and v != declared}
+    check(
+        "Every firmware target's USBD_MAX_POWER_MA override (if any) equals power-contract.json's declared_max_power_ma",
+        not mismatched,
+        f"declared={declared} mismatched={mismatched}",
+    )
+
+    report_path = R / 'reports/power-budget.json'
+    if not report_path.exists():
+        check('reports/power-budget.json exists for USB power-contract cross-check', False, 'run scripts/analyze.py')
+        return
+    report = json.loads(report_path.read_text())
+    usb_budget = report.get('usb_budget', {})
+    check(
+        "reports/power-budget.json's declared_max_power_ma matches design/power-contract.json",
+        usb_budget.get('declared_max_power_ma') == declared,
+        f"report={usb_budget.get('declared_max_power_ma')} contract={declared}",
+    )
+    allowance = usb_budget.get('documented_allowance_total_ma')
+    vs_declared = usb_budget.get('vs_declared_limit', {})
+    check(
+        'A budget allowance greater than the declared configured demand cannot report a PASS',
+        (vs_declared.get('status') == 'fail') if (allowance is not None and declared is not None and allowance > declared)
+        else (vs_declared.get('status') == 'pass'),
+        json.dumps(vs_declared),
+    )
+    check(
+        "reports/power-budget.json separates the allowance from a measured current (measured_current_ma is null; no bench result invented)",
+        'measured_current_ma' in usb_budget and usb_budget['measured_current_ma'] is None,
+    )
+
+    leftover_targets = [
+        R / 'scripts/power_budget.py',
+        R / 'LOCAL-HANDOFF.md',
+        R / 'design/narrative-pages.json',
+        R / 'design/power-contract.json',
+        R / 'reports/power-budget.json',
+    ]
+    # A file may cite the rejected suggestion, by name, as a decision record --
+    # e.g. "removed/rejected ... see decision_notes.rejected_gpio24_vbus_sense" --
+    # without that counting as reintroducing it as a live suggestion. Only a
+    # mention with no such citation nearby is treated as a leftover.
+    leftovers = []
+    for f in leftover_targets:
+        text = f.read_text()
+        if not re.search(r'GPIO24|VBUS-sense', text):
+            continue
+        if 'rejected_gpio24_vbus_sense' in text:
+            continue
+        leftovers.append(str(f.relative_to(R)))
+    check(
+        'GPIO24/VBUS-sense is not proposed anywhere as a configuration-state substitute',
+        not leftovers,
+        str(leftovers),
+    )
+
+    gates = json.loads((R / 'design/release-gates.json').read_text())
+    g07 = next((g for g in gates['gates'] if g['id'] == 'G07'), None)
+    check('G07 stays OPEN after the USB power-contract desk decision', g07 is not None and g07['status'] == 'OPEN')
+
+
+EXTRA_CHECKS.append(_usb_power_contract_parity)
+
+
 def run(check, ctx):
     for extra in EXTRA_CHECKS:
         extra(check, ctx)

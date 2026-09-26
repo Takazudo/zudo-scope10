@@ -171,15 +171,38 @@ along with `operator` and `date`.
    hardcoded `maximum_sequential_channel_skew_us` value, then regenerate `reports/analog-
    analysis.json` and the docs.
 3. **G07 (power/USB):** measure backlight/inrush current, Pico current and analog-rail current
-   separately (no display / dark display / bright display), and confirm the USB source contract.
-   `reports/power-budget.json` flags `vs_unconfigured_limit: fail_or_unknown` — there is no power
-   gate tying `+5V_FUSED` to USB enumeration state. F1 carries only the display+analog branch
-   (340 mA allowance; see `f1_branch_sizing` in the report), and its 1.5x-derated target of 510 mA
-   sits 10 mA above the selected `1206L050YR` candidate's 500 mA nominal (25C) hold rating, with no
-   manufacturer temperature-derating curve retained to confirm the part's actual derated hold
-   current at operating temperature. Decide whether a soft-start/power-gate (e.g. VBUS-sense before
-   enabling the downstream load) is needed, and measure backlight current and module-side VBUS bulk
-   capacitance, both currently unknown.
+   separately (no display / dark display / bright display), and confirm the USB source contract in
+   `design/power-contract.json`. Only a source meeting that contract (>=500 mA at 5 V from attach,
+   not established by VBUS presence alone) is supported for bring-up; do not power the board from an
+   ordinary host port expecting it to honor a staged enumeration allowance. `reports/power-
+   budget.json` flags `vs_unconfigured_limit: fail_or_unknown` and `vs_declared_limit: fail` — there
+   is no power gate tying `+5V_FUSED` to USB enumeration state, and the declared USB descriptor value
+   (250 mA, the unmodified Pico SDK default; see `design/power-contract.json`'s
+   `override_investigation`) is below the 420 mA planning allowance. F1 carries only the
+   display+analog branch (340 mA allowance; see `f1_branch_sizing` in the report), and its
+   1.5x-derated target of 510 mA sits 10 mA above the selected `1206L050YR` candidate's 500 mA
+   nominal (25C) hold rating, with no manufacturer temperature-derating curve retained to confirm
+   the part's actual derated hold current at operating temperature. Measure backlight current and
+   module-side VBUS bulk capacitance, both currently unknown. A configuration-gated hardware load
+   switch (using real USB configured state, not VBUS presence) is a recorded future option for
+   compliant-host operation (`design/power-contract.json`'s `honesty.future_compliant_host_option`),
+   not something to implement here.
+
+   **Bench procedures per supported power state** (factory-assembled prototype only; see
+   `design/power-contract.json`'s `power_states` for the full behaviour table):
+   1. **Pre-configuration:** power from a source meeting the source contract, capture current at the
+      instant 5 V appears, before the host completes enumeration.
+   2. **Configured:** measure current with no display, dark display and bright display, once the host
+      has completed enumeration and accepted the configuration descriptor. Compare against the 420 mA
+      allowance and the declared descriptor value.
+   3. **Suspend/deconfigured:** suspend the bus (or deconfigure the device) and measure whether the
+      unconditional display/analog load persists, as expected from the contract.
+   4. **Reset:** measure current across a host-initiated bus reset and a device power-on reset.
+   5. **BOOTSEL/ROM:** inspect the RP2040 bootrom's own USB descriptor (e.g. via the host OS's
+      descriptor dump or a USB protocol analyzer) and measure current in BOOTSEL mode. No number for
+      the bootrom's declared max-power is assumed ahead of this measurement.
+   6. **Unpowered:** confirm zero draw and no back-power with 5 V removed (shares the G04 no-back-power
+      procedure).
 
 ## G06 — firmware/display integration
 
