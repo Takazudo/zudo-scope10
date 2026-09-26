@@ -30,6 +30,16 @@ Single display with ten panes; touch and SD unused
 
 Factory female Pico socket headers are present.
 
+Outline 86.00 x 57.20 x 1.6 mm PCB, R1.0 corners; two 1.0 mm recesses on the pin-1 edge (RUN 38.64-47.62, microSD 61.06-76.95 from the header-side edge).
+
+Mounting holes 4.10 from each corner, 77.80 x 49.00 pitch; STEP models dia 5.5 x 4.0 mm standoffs (dia 2.5 bore) on the socket side. Drill diameter not dimensioned.
+
+Female Pico sockets on the non-LCD side: pins 1-20 row 10.45 mm and pins 21-40 row 28.25 mm from the header-side edge (17.80 in STEP, 17.78 nominal); pin 1 and pin 40 at 1.62 mm from the pin-1 edge; pitch 2.54.
+
+Socket housing extends 9.0 mm below the module PCB; modelled cavity depth 8.0 mm. Other underside parts &lt;= 4.0 mm (standoffs), RUN switch 3.5 mm.
+
+Active area 73.44 x 48.96 mm at 3.60 (header side) / 8.96 / 3.97 (pin-1 edge) / 4.27 mm from the board edges; glass top 5.2 mm above module PCB top.
+
 ## Pin map
 
 Pin assignments below are electrical evidence or explicitly logical placeholders. They are not footprint qualification.
@@ -87,8 +97,8 @@ No original model or source binary was recovered for this record in this package
 
 - STOP: inspect R11/R12/R14/R15 regulator straps and module revision before connecting power.
 - Do not tie Pico 3V3_OUT to the display regulator output.
-- Verify high/low unused chip-select states, SPI word framing, actual mounting holes and board stack.
-- Exact module STEP and vendor driver were linked but binary downloads failed in this environment.
+- Verify high/low unused chip-select states and SPI word framing.
+- Measure mounting-hole drill and standoff thread; confirm socket engagement spec on the received module.
 
 The presence of a part number, datasheet or model closes none of these remaining gates automatically.
 

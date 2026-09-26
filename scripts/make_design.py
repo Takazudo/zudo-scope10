@@ -39,7 +39,12 @@ for n in range(1,11):
  add(f'RV{n}','pot',{1:'GND',2:t+'_TIME_W',3:'+3V3A'},sheet,'Endpoint direction must be checked on actual sample')
  add(f'R{b+1}','r1k',{1:t+'_TIME_W',2:t+'_TIME'},sheet)
  add(f'C{b+1}','c100n',{1:t+'_TIME',2:'GND'},sheet)
- add(f'SW{n}','range',{'C':t+'_RANGE_W','L':'GND','M':'RANGE_MID','H':'+3V3A'},sheet,'Logical pin letters intentionally block footprint release')
+ # G02 (#6): numeric terminal map replaces logical C/L/M/H placeholders. C->3 and M->2 are
+ # vendor facts (NKK H46); L->1 / H->4 follow NKK Left/Right naming but the panel-legend
+ # direction is a layout decision, still OPEN -- swap to L->4/H->1 if the panel reads the
+ # other way. See catalog range.open_questions and design/evidence/g02-delta.json.
+ RANGE_PIN={'C':'3','M':'2','L':'1','H':'4'}
+ add(f'SW{n}','range',{RANGE_PIN['C']:t+'_RANGE_W',RANGE_PIN['L']:'GND',RANGE_PIN['M']:'RANGE_MID',RANGE_PIN['H']:'+3V3A'},sheet,'Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.')
  add(f'R{b+2}','r1k',{1:t+'_RANGE_W',2:t+'_RANGE'},sheet)
  add(f'C{b+2}','c100n',{1:t+'_RANGE',2:'GND'},sheet)
 add('R40','r10k',{1:'+3V3A',2:'RANGE_MID'},'controls-left')
@@ -77,8 +82,10 @@ add('J20','socket20',{k:pico_nets[k] for k in range(1,21)},'module-interfaces','
 add('J21','socket20',{k:pico_nets[41-k] for k in range(1,21)},'module-interfaces','Right Pico H socket: pin 1 = Pico pin 40; do not mirror blindly')
 # Isolate ALL unused display header positions. No broad 40-pin pass-through.
 displaymap={3:'GND',8:'GND',13:'GND',18:'GND',23:'GND',28:'GND',33:'GND',38:'GND',39:'+5V_FUSED',11:'LCD_DC',12:'LCD_CS',14:'LCD_CLK',15:'LCD_MOSI',16:'LCD_MISO',17:'LCD_BL',20:'LCD_RST',21:'TP_CS_N',29:'SD_CS_N'}
-add('J30','header20',{k:displaymap.get(k) for k in range(1,21)},'module-interfaces','Display left header: pin 1 = Pico position 1. Power straps OPEN gate G01.')
-add('J31','header20',{k:displaymap.get(41-k) for k in range(1,21)},'module-interfaces','Display right header: pin 1 = Pico position 40; pin 2 supplies VSYS position')
+# G01 (#3) set_notes applied verbatim (applies_net_change: false); the J30/J31 net
+# assignments above (displaymap) are unchanged per the G01 header-net rule (#13).
+add('J30','header20',{k:displaymap.get(k) for k in range(1,21)},'module-interfaces','Display left header: pin 1 = Pico position 1. Keep pos 4 (module SRAM_CS, PSRAM CE w/ 10k pull-up), pos 7 (module SDIO_CLK via H6 jumper) and pos 19 (module GPIO14 -> R14 NC -> 3V3 LDO EN) unconnected: carrier uses GP2/GP5/GP14 for mux address/timing. LCD_BL (pos 17) has module 10k pull-up to VSYS. G01 OPEN pending physical strap check.')
+add('J31','header20',{k:displaymap.get(41-k) for k in range(1,21)},'module-interfaces','Display right header: pin 1 = Pico position 40. Pin 2 (pos 39 VSYS) is the module\'s only 5 V entry (no diode; feeds RT9193-33 3V3 LDO and backlight regulator). Pos 40 VBUS, 36 Pico3V3 (R15 NC), 37 3V3_EN (R12 NC), 35 ADC_VREF unused by module; keep isolated so no strap variant can cause regulator contention. G01 OPEN pending physical strap check.')
 for n,name in enumerate(['LCD_DC','LCD_CS','LCD_CLK','LCD_MOSI','LCD_BL','LCD_RST','ADDR0','ADDR1','ADDR2','ADDR3']):
  add(f'R{60+n}','r33',{1:name+'_SRC',2:name},'module-interfaces')
 for n,name in enumerate(['ADDR0','ADDR1','ADDR2','ADDR3']):add(f'R{80+n}','r100k',{1:name,2:'GND'},'module-interfaces')
@@ -100,7 +107,15 @@ for n,net in enumerate(['GND','VBUS_USB','+5V_FUSED','+3V3A','REF_RAW','+3V0_REF
 # Explicit physical-to-module relation is independent of pin-type assumptions.
 interface={'pico_h':{'J20':{str(k):k for k in range(1,21)},'J21':{str(k):41-k for k in range(1,21)}},'display':{'J30':{str(k):k for k in range(1,21)},'J31':{str(k):41-k for k in range(1,21)}}}
 write=lambda path,obj:(ROOT/path).write_text(json.dumps(obj,indent=2)+'\n')
-write('design/circuit.json',{'schema_version':1,'generator':'scripts/make_design.py','status':'REVIEW_ONLY_NOT_FOR_FABRICATION','parts':parts,'external_modules':['pico-h','display'],'connector_position_maps':interface})
+# G01 header-net rule (#13): desk evidence from #3 must NOT change the J30/J31 netlist above.
+# It is recorded here as pending proposals only; the local G01 procedure (issue #16's
+# LOCAL-HANDOFF.md) applies or rejects them after the physical module check.
+pending_g01_changes=[
+ {'id':'g01-r88-backlight-default','target':'parts[ref=R88]','proposal':'Module R16 (10k, VSYS->LCD_BL) overrides carrier R88 (100k, LCD_BL->GND): the backlight node sits near 4.5 V with GP13 high-impedance, so the backlight defaults ON (not off) and the node exceeds the RP2040 GPIO abs max of IOVDD+0.5V (small clamp current, estimated <0.1 mA, unmeasured). Decide at G01/G06 whether to keep R88, remove it, or accept and document; no value is changed here.','status':'OPEN_PENDING_PHYSICAL_CHECK','citation':'design/evidence/g01-delta.json changes[op=review_decision, target=parts[ref=R88]]; Waveshare Pico-ResTouch-LCD-3.5 schematic p1 LCD BACKLIGHT (3A) R16 10K VSYS->LCD_BL/CAT1 EN; RP2040 datasheet Sec 5.5.3.1 Table 622 (PDF p615)'},
+ {'id':'g01-j30-notes','target':'parts[ref=J30].notes','proposal':'set_notes applied to J30.notes: spare display positions 4/7/19 stay open (null pins already implement this); LCD_BL module pull-up documented. No net change.','status':'APPLIED_NOTES_ONLY_NO_NET_CHANGE','citation':'design/evidence/g01-delta.json changes[op=set_notes, target=parts[ref=J30].notes]'},
+ {'id':'g01-j31-notes','target':'parts[ref=J31].notes','proposal':'set_notes applied to J31.notes: position 39 (VSYS) is the module’s only 5V entry; isolating 35/36/37/40 is contention-free for every strap variant. No net change.','status':'APPLIED_NOTES_ONLY_NO_NET_CHANGE','citation':'design/evidence/g01-delta.json changes[op=set_notes, target=parts[ref=J31].notes]'},
+]
+write('design/circuit.json',{'schema_version':1,'generator':'scripts/make_design.py','status':'REVIEW_ONLY_NOT_FOR_FABRICATION','parts':parts,'external_modules':['pico-h','display'],'connector_position_maps':interface,'pending_g01_changes':pending_g01_changes})
 write('design/gpio.json',{'gpio_nets':gpio,'adc_channels':{0:'ADC0',1:'ADC1',2:'ADC2'},'mux_address_pins':[2,3,4,5],'mux_disable_pin':7,'display_spi':1,'display_spi_hz_initial':8000000,'display_cs_pin':9,'display_touch_sd_unused':True})
 # Planning BOM; no locations are invented and no CPL is emitted.
 groups={}

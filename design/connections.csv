@@ -276,10 +276,10 @@ R1111,1k,1,P1,CH01_TIME_W,controls-left,
 R1111,1k,2,P2,CH01_TIME,controls-left,
 C1111,100nF,1,P1,CH01_TIME,controls-left,
 C1111,100nF,2,P2,GND,controls-left,
-SW1,SS14MDP2,C,COMMON_LOGICAL,CH01_RANGE_W,controls-left,Logical pin letters intentionally block footprint release
-SW1,SS14MDP2,L,LOW_RANGE_LOGICAL,GND,controls-left,Logical pin letters intentionally block footprint release
-SW1,SS14MDP2,M,MID_RANGE_LOGICAL,RANGE_MID,controls-left,Logical pin letters intentionally block footprint release
-SW1,SS14MDP2,H,HIGH_RANGE_LOGICAL,+3V3A,controls-left,Logical pin letters intentionally block footprint release
+SW1,SS14MDP2,3,COMMON,CH01_RANGE_W,controls-left,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW1,SS14MDP2,1,THROW_LEFT,GND,controls-left,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW1,SS14MDP2,2,THROW_CENTER,RANGE_MID,controls-left,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW1,SS14MDP2,4,THROW_RIGHT,+3V3A,controls-left,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
 R1112,1k,1,P1,CH01_RANGE_W,controls-left,
 R1112,1k,2,P2,CH01_RANGE,controls-left,
 C1112,100nF,1,P1,CH01_RANGE,controls-left,
@@ -291,10 +291,10 @@ R1121,1k,1,P1,CH02_TIME_W,controls-left,
 R1121,1k,2,P2,CH02_TIME,controls-left,
 C1121,100nF,1,P1,CH02_TIME,controls-left,
 C1121,100nF,2,P2,GND,controls-left,
-SW2,SS14MDP2,C,COMMON_LOGICAL,CH02_RANGE_W,controls-left,Logical pin letters intentionally block footprint release
-SW2,SS14MDP2,L,LOW_RANGE_LOGICAL,GND,controls-left,Logical pin letters intentionally block footprint release
-SW2,SS14MDP2,M,MID_RANGE_LOGICAL,RANGE_MID,controls-left,Logical pin letters intentionally block footprint release
-SW2,SS14MDP2,H,HIGH_RANGE_LOGICAL,+3V3A,controls-left,Logical pin letters intentionally block footprint release
+SW2,SS14MDP2,3,COMMON,CH02_RANGE_W,controls-left,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW2,SS14MDP2,1,THROW_LEFT,GND,controls-left,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW2,SS14MDP2,2,THROW_CENTER,RANGE_MID,controls-left,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW2,SS14MDP2,4,THROW_RIGHT,+3V3A,controls-left,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
 R1122,1k,1,P1,CH02_RANGE_W,controls-left,
 R1122,1k,2,P2,CH02_RANGE,controls-left,
 C1122,100nF,1,P1,CH02_RANGE,controls-left,
@@ -306,10 +306,10 @@ R1131,1k,1,P1,CH03_TIME_W,controls-left,
 R1131,1k,2,P2,CH03_TIME,controls-left,
 C1131,100nF,1,P1,CH03_TIME,controls-left,
 C1131,100nF,2,P2,GND,controls-left,
-SW3,SS14MDP2,C,COMMON_LOGICAL,CH03_RANGE_W,controls-left,Logical pin letters intentionally block footprint release
-SW3,SS14MDP2,L,LOW_RANGE_LOGICAL,GND,controls-left,Logical pin letters intentionally block footprint release
-SW3,SS14MDP2,M,MID_RANGE_LOGICAL,RANGE_MID,controls-left,Logical pin letters intentionally block footprint release
-SW3,SS14MDP2,H,HIGH_RANGE_LOGICAL,+3V3A,controls-left,Logical pin letters intentionally block footprint release
+SW3,SS14MDP2,3,COMMON,CH03_RANGE_W,controls-left,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW3,SS14MDP2,1,THROW_LEFT,GND,controls-left,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW3,SS14MDP2,2,THROW_CENTER,RANGE_MID,controls-left,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW3,SS14MDP2,4,THROW_RIGHT,+3V3A,controls-left,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
 R1132,1k,1,P1,CH03_RANGE_W,controls-left,
 R1132,1k,2,P2,CH03_RANGE,controls-left,
 C1132,100nF,1,P1,CH03_RANGE,controls-left,
@@ -321,10 +321,10 @@ R1141,1k,1,P1,CH04_TIME_W,controls-left,
 R1141,1k,2,P2,CH04_TIME,controls-left,
 C1141,100nF,1,P1,CH04_TIME,controls-left,
 C1141,100nF,2,P2,GND,controls-left,
-SW4,SS14MDP2,C,COMMON_LOGICAL,CH04_RANGE_W,controls-left,Logical pin letters intentionally block footprint release
-SW4,SS14MDP2,L,LOW_RANGE_LOGICAL,GND,controls-left,Logical pin letters intentionally block footprint release
-SW4,SS14MDP2,M,MID_RANGE_LOGICAL,RANGE_MID,controls-left,Logical pin letters intentionally block footprint release
-SW4,SS14MDP2,H,HIGH_RANGE_LOGICAL,+3V3A,controls-left,Logical pin letters intentionally block footprint release
+SW4,SS14MDP2,3,COMMON,CH04_RANGE_W,controls-left,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW4,SS14MDP2,1,THROW_LEFT,GND,controls-left,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW4,SS14MDP2,2,THROW_CENTER,RANGE_MID,controls-left,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW4,SS14MDP2,4,THROW_RIGHT,+3V3A,controls-left,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
 R1142,1k,1,P1,CH04_RANGE_W,controls-left,
 R1142,1k,2,P2,CH04_RANGE,controls-left,
 C1142,100nF,1,P1,CH04_RANGE,controls-left,
@@ -336,10 +336,10 @@ R1151,1k,1,P1,CH05_TIME_W,controls-left,
 R1151,1k,2,P2,CH05_TIME,controls-left,
 C1151,100nF,1,P1,CH05_TIME,controls-left,
 C1151,100nF,2,P2,GND,controls-left,
-SW5,SS14MDP2,C,COMMON_LOGICAL,CH05_RANGE_W,controls-left,Logical pin letters intentionally block footprint release
-SW5,SS14MDP2,L,LOW_RANGE_LOGICAL,GND,controls-left,Logical pin letters intentionally block footprint release
-SW5,SS14MDP2,M,MID_RANGE_LOGICAL,RANGE_MID,controls-left,Logical pin letters intentionally block footprint release
-SW5,SS14MDP2,H,HIGH_RANGE_LOGICAL,+3V3A,controls-left,Logical pin letters intentionally block footprint release
+SW5,SS14MDP2,3,COMMON,CH05_RANGE_W,controls-left,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW5,SS14MDP2,1,THROW_LEFT,GND,controls-left,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW5,SS14MDP2,2,THROW_CENTER,RANGE_MID,controls-left,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW5,SS14MDP2,4,THROW_RIGHT,+3V3A,controls-left,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
 R1152,1k,1,P1,CH05_RANGE_W,controls-left,
 R1152,1k,2,P2,CH05_RANGE,controls-left,
 C1152,100nF,1,P1,CH05_RANGE,controls-left,
@@ -351,10 +351,10 @@ R1161,1k,1,P1,CH06_TIME_W,controls-right,
 R1161,1k,2,P2,CH06_TIME,controls-right,
 C1161,100nF,1,P1,CH06_TIME,controls-right,
 C1161,100nF,2,P2,GND,controls-right,
-SW6,SS14MDP2,C,COMMON_LOGICAL,CH06_RANGE_W,controls-right,Logical pin letters intentionally block footprint release
-SW6,SS14MDP2,L,LOW_RANGE_LOGICAL,GND,controls-right,Logical pin letters intentionally block footprint release
-SW6,SS14MDP2,M,MID_RANGE_LOGICAL,RANGE_MID,controls-right,Logical pin letters intentionally block footprint release
-SW6,SS14MDP2,H,HIGH_RANGE_LOGICAL,+3V3A,controls-right,Logical pin letters intentionally block footprint release
+SW6,SS14MDP2,3,COMMON,CH06_RANGE_W,controls-right,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW6,SS14MDP2,1,THROW_LEFT,GND,controls-right,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW6,SS14MDP2,2,THROW_CENTER,RANGE_MID,controls-right,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW6,SS14MDP2,4,THROW_RIGHT,+3V3A,controls-right,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
 R1162,1k,1,P1,CH06_RANGE_W,controls-right,
 R1162,1k,2,P2,CH06_RANGE,controls-right,
 C1162,100nF,1,P1,CH06_RANGE,controls-right,
@@ -366,10 +366,10 @@ R1171,1k,1,P1,CH07_TIME_W,controls-right,
 R1171,1k,2,P2,CH07_TIME,controls-right,
 C1171,100nF,1,P1,CH07_TIME,controls-right,
 C1171,100nF,2,P2,GND,controls-right,
-SW7,SS14MDP2,C,COMMON_LOGICAL,CH07_RANGE_W,controls-right,Logical pin letters intentionally block footprint release
-SW7,SS14MDP2,L,LOW_RANGE_LOGICAL,GND,controls-right,Logical pin letters intentionally block footprint release
-SW7,SS14MDP2,M,MID_RANGE_LOGICAL,RANGE_MID,controls-right,Logical pin letters intentionally block footprint release
-SW7,SS14MDP2,H,HIGH_RANGE_LOGICAL,+3V3A,controls-right,Logical pin letters intentionally block footprint release
+SW7,SS14MDP2,3,COMMON,CH07_RANGE_W,controls-right,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW7,SS14MDP2,1,THROW_LEFT,GND,controls-right,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW7,SS14MDP2,2,THROW_CENTER,RANGE_MID,controls-right,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW7,SS14MDP2,4,THROW_RIGHT,+3V3A,controls-right,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
 R1172,1k,1,P1,CH07_RANGE_W,controls-right,
 R1172,1k,2,P2,CH07_RANGE,controls-right,
 C1172,100nF,1,P1,CH07_RANGE,controls-right,
@@ -381,10 +381,10 @@ R1181,1k,1,P1,CH08_TIME_W,controls-right,
 R1181,1k,2,P2,CH08_TIME,controls-right,
 C1181,100nF,1,P1,CH08_TIME,controls-right,
 C1181,100nF,2,P2,GND,controls-right,
-SW8,SS14MDP2,C,COMMON_LOGICAL,CH08_RANGE_W,controls-right,Logical pin letters intentionally block footprint release
-SW8,SS14MDP2,L,LOW_RANGE_LOGICAL,GND,controls-right,Logical pin letters intentionally block footprint release
-SW8,SS14MDP2,M,MID_RANGE_LOGICAL,RANGE_MID,controls-right,Logical pin letters intentionally block footprint release
-SW8,SS14MDP2,H,HIGH_RANGE_LOGICAL,+3V3A,controls-right,Logical pin letters intentionally block footprint release
+SW8,SS14MDP2,3,COMMON,CH08_RANGE_W,controls-right,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW8,SS14MDP2,1,THROW_LEFT,GND,controls-right,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW8,SS14MDP2,2,THROW_CENTER,RANGE_MID,controls-right,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW8,SS14MDP2,4,THROW_RIGHT,+3V3A,controls-right,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
 R1182,1k,1,P1,CH08_RANGE_W,controls-right,
 R1182,1k,2,P2,CH08_RANGE,controls-right,
 C1182,100nF,1,P1,CH08_RANGE,controls-right,
@@ -396,10 +396,10 @@ R1191,1k,1,P1,CH09_TIME_W,controls-right,
 R1191,1k,2,P2,CH09_TIME,controls-right,
 C1191,100nF,1,P1,CH09_TIME,controls-right,
 C1191,100nF,2,P2,GND,controls-right,
-SW9,SS14MDP2,C,COMMON_LOGICAL,CH09_RANGE_W,controls-right,Logical pin letters intentionally block footprint release
-SW9,SS14MDP2,L,LOW_RANGE_LOGICAL,GND,controls-right,Logical pin letters intentionally block footprint release
-SW9,SS14MDP2,M,MID_RANGE_LOGICAL,RANGE_MID,controls-right,Logical pin letters intentionally block footprint release
-SW9,SS14MDP2,H,HIGH_RANGE_LOGICAL,+3V3A,controls-right,Logical pin letters intentionally block footprint release
+SW9,SS14MDP2,3,COMMON,CH09_RANGE_W,controls-right,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW9,SS14MDP2,1,THROW_LEFT,GND,controls-right,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW9,SS14MDP2,2,THROW_CENTER,RANGE_MID,controls-right,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW9,SS14MDP2,4,THROW_RIGHT,+3V3A,controls-right,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
 R1192,1k,1,P1,CH09_RANGE_W,controls-right,
 R1192,1k,2,P2,CH09_RANGE,controls-right,
 C1192,100nF,1,P1,CH09_RANGE,controls-right,
@@ -411,10 +411,10 @@ R1201,1k,1,P1,CH10_TIME_W,controls-right,
 R1201,1k,2,P2,CH10_TIME,controls-right,
 C1201,100nF,1,P1,CH10_TIME,controls-right,
 C1201,100nF,2,P2,GND,controls-right,
-SW10,SS14MDP2,C,COMMON_LOGICAL,CH10_RANGE_W,controls-right,Logical pin letters intentionally block footprint release
-SW10,SS14MDP2,L,LOW_RANGE_LOGICAL,GND,controls-right,Logical pin letters intentionally block footprint release
-SW10,SS14MDP2,M,MID_RANGE_LOGICAL,RANGE_MID,controls-right,Logical pin letters intentionally block footprint release
-SW10,SS14MDP2,H,HIGH_RANGE_LOGICAL,+3V3A,controls-right,Logical pin letters intentionally block footprint release
+SW10,SS14MDP2,3,COMMON,CH10_RANGE_W,controls-right,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW10,SS14MDP2,1,THROW_LEFT,GND,controls-right,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW10,SS14MDP2,2,THROW_CENTER,RANGE_MID,controls-right,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
+SW10,SS14MDP2,4,THROW_RIGHT,+3V3A,controls-right,Numeric terminals from NKK H46/H47 (G02 #6); pad geometry still OPEN pending a drawn footprint. L/H (1/4) panel direction OPEN pending layout.
 R1202,1k,1,P1,CH10_RANGE_W,controls-right,
 R1202,1k,2,P2,CH10_RANGE,controls-right,
 C1202,100nF,1,P1,CH10_RANGE,controls-right,
@@ -584,46 +584,46 @@ J21,socket20,17,CONTACT,NO_CONNECT,module-interfaces,Right Pico H socket: pin 1 
 J21,socket20,18,CONTACT,GND,module-interfaces,Right Pico H socket: pin 1 = Pico pin 40; do not mirror blindly
 J21,socket20,19,CONTACT,NO_CONNECT,module-interfaces,Right Pico H socket: pin 1 = Pico pin 40; do not mirror blindly
 J21,socket20,20,CONTACT,TP_CS_N,module-interfaces,Right Pico H socket: pin 1 = Pico pin 40; do not mirror blindly
-J30,header20,1,CONTACT,NO_CONNECT,module-interfaces,Display left header: pin 1 = Pico position 1. Power straps OPEN gate G01.
-J30,header20,2,CONTACT,NO_CONNECT,module-interfaces,Display left header: pin 1 = Pico position 1. Power straps OPEN gate G01.
-J30,header20,3,CONTACT,GND,module-interfaces,Display left header: pin 1 = Pico position 1. Power straps OPEN gate G01.
-J30,header20,4,CONTACT,NO_CONNECT,module-interfaces,Display left header: pin 1 = Pico position 1. Power straps OPEN gate G01.
-J30,header20,5,CONTACT,NO_CONNECT,module-interfaces,Display left header: pin 1 = Pico position 1. Power straps OPEN gate G01.
-J30,header20,6,CONTACT,NO_CONNECT,module-interfaces,Display left header: pin 1 = Pico position 1. Power straps OPEN gate G01.
-J30,header20,7,CONTACT,NO_CONNECT,module-interfaces,Display left header: pin 1 = Pico position 1. Power straps OPEN gate G01.
-J30,header20,8,CONTACT,GND,module-interfaces,Display left header: pin 1 = Pico position 1. Power straps OPEN gate G01.
-J30,header20,9,CONTACT,NO_CONNECT,module-interfaces,Display left header: pin 1 = Pico position 1. Power straps OPEN gate G01.
-J30,header20,10,CONTACT,NO_CONNECT,module-interfaces,Display left header: pin 1 = Pico position 1. Power straps OPEN gate G01.
-J30,header20,11,CONTACT,LCD_DC,module-interfaces,Display left header: pin 1 = Pico position 1. Power straps OPEN gate G01.
-J30,header20,12,CONTACT,LCD_CS,module-interfaces,Display left header: pin 1 = Pico position 1. Power straps OPEN gate G01.
-J30,header20,13,CONTACT,GND,module-interfaces,Display left header: pin 1 = Pico position 1. Power straps OPEN gate G01.
-J30,header20,14,CONTACT,LCD_CLK,module-interfaces,Display left header: pin 1 = Pico position 1. Power straps OPEN gate G01.
-J30,header20,15,CONTACT,LCD_MOSI,module-interfaces,Display left header: pin 1 = Pico position 1. Power straps OPEN gate G01.
-J30,header20,16,CONTACT,LCD_MISO,module-interfaces,Display left header: pin 1 = Pico position 1. Power straps OPEN gate G01.
-J30,header20,17,CONTACT,LCD_BL,module-interfaces,Display left header: pin 1 = Pico position 1. Power straps OPEN gate G01.
-J30,header20,18,CONTACT,GND,module-interfaces,Display left header: pin 1 = Pico position 1. Power straps OPEN gate G01.
-J30,header20,19,CONTACT,NO_CONNECT,module-interfaces,Display left header: pin 1 = Pico position 1. Power straps OPEN gate G01.
-J30,header20,20,CONTACT,LCD_RST,module-interfaces,Display left header: pin 1 = Pico position 1. Power straps OPEN gate G01.
-J31,header20,1,CONTACT,NO_CONNECT,module-interfaces,Display right header: pin 1 = Pico position 40; pin 2 supplies VSYS position
-J31,header20,2,CONTACT,+5V_FUSED,module-interfaces,Display right header: pin 1 = Pico position 40; pin 2 supplies VSYS position
-J31,header20,3,CONTACT,GND,module-interfaces,Display right header: pin 1 = Pico position 40; pin 2 supplies VSYS position
-J31,header20,4,CONTACT,NO_CONNECT,module-interfaces,Display right header: pin 1 = Pico position 40; pin 2 supplies VSYS position
-J31,header20,5,CONTACT,NO_CONNECT,module-interfaces,Display right header: pin 1 = Pico position 40; pin 2 supplies VSYS position
-J31,header20,6,CONTACT,NO_CONNECT,module-interfaces,Display right header: pin 1 = Pico position 40; pin 2 supplies VSYS position
-J31,header20,7,CONTACT,NO_CONNECT,module-interfaces,Display right header: pin 1 = Pico position 40; pin 2 supplies VSYS position
-J31,header20,8,CONTACT,GND,module-interfaces,Display right header: pin 1 = Pico position 40; pin 2 supplies VSYS position
-J31,header20,9,CONTACT,NO_CONNECT,module-interfaces,Display right header: pin 1 = Pico position 40; pin 2 supplies VSYS position
-J31,header20,10,CONTACT,NO_CONNECT,module-interfaces,Display right header: pin 1 = Pico position 40; pin 2 supplies VSYS position
-J31,header20,11,CONTACT,NO_CONNECT,module-interfaces,Display right header: pin 1 = Pico position 40; pin 2 supplies VSYS position
-J31,header20,12,CONTACT,SD_CS_N,module-interfaces,Display right header: pin 1 = Pico position 40; pin 2 supplies VSYS position
-J31,header20,13,CONTACT,GND,module-interfaces,Display right header: pin 1 = Pico position 40; pin 2 supplies VSYS position
-J31,header20,14,CONTACT,NO_CONNECT,module-interfaces,Display right header: pin 1 = Pico position 40; pin 2 supplies VSYS position
-J31,header20,15,CONTACT,NO_CONNECT,module-interfaces,Display right header: pin 1 = Pico position 40; pin 2 supplies VSYS position
-J31,header20,16,CONTACT,NO_CONNECT,module-interfaces,Display right header: pin 1 = Pico position 40; pin 2 supplies VSYS position
-J31,header20,17,CONTACT,NO_CONNECT,module-interfaces,Display right header: pin 1 = Pico position 40; pin 2 supplies VSYS position
-J31,header20,18,CONTACT,GND,module-interfaces,Display right header: pin 1 = Pico position 40; pin 2 supplies VSYS position
-J31,header20,19,CONTACT,NO_CONNECT,module-interfaces,Display right header: pin 1 = Pico position 40; pin 2 supplies VSYS position
-J31,header20,20,CONTACT,TP_CS_N,module-interfaces,Display right header: pin 1 = Pico position 40; pin 2 supplies VSYS position
+J30,header20,1,CONTACT,NO_CONNECT,module-interfaces,"Display left header: pin 1 = Pico position 1. Keep pos 4 (module SRAM_CS, PSRAM CE w/ 10k pull-up), pos 7 (module SDIO_CLK via H6 jumper) and pos 19 (module GPIO14 -> R14 NC -> 3V3 LDO EN) unconnected: carrier uses GP2/GP5/GP14 for mux address/timing. LCD_BL (pos 17) has module 10k pull-up to VSYS. G01 OPEN pending physical strap check."
+J30,header20,2,CONTACT,NO_CONNECT,module-interfaces,"Display left header: pin 1 = Pico position 1. Keep pos 4 (module SRAM_CS, PSRAM CE w/ 10k pull-up), pos 7 (module SDIO_CLK via H6 jumper) and pos 19 (module GPIO14 -> R14 NC -> 3V3 LDO EN) unconnected: carrier uses GP2/GP5/GP14 for mux address/timing. LCD_BL (pos 17) has module 10k pull-up to VSYS. G01 OPEN pending physical strap check."
+J30,header20,3,CONTACT,GND,module-interfaces,"Display left header: pin 1 = Pico position 1. Keep pos 4 (module SRAM_CS, PSRAM CE w/ 10k pull-up), pos 7 (module SDIO_CLK via H6 jumper) and pos 19 (module GPIO14 -> R14 NC -> 3V3 LDO EN) unconnected: carrier uses GP2/GP5/GP14 for mux address/timing. LCD_BL (pos 17) has module 10k pull-up to VSYS. G01 OPEN pending physical strap check."
+J30,header20,4,CONTACT,NO_CONNECT,module-interfaces,"Display left header: pin 1 = Pico position 1. Keep pos 4 (module SRAM_CS, PSRAM CE w/ 10k pull-up), pos 7 (module SDIO_CLK via H6 jumper) and pos 19 (module GPIO14 -> R14 NC -> 3V3 LDO EN) unconnected: carrier uses GP2/GP5/GP14 for mux address/timing. LCD_BL (pos 17) has module 10k pull-up to VSYS. G01 OPEN pending physical strap check."
+J30,header20,5,CONTACT,NO_CONNECT,module-interfaces,"Display left header: pin 1 = Pico position 1. Keep pos 4 (module SRAM_CS, PSRAM CE w/ 10k pull-up), pos 7 (module SDIO_CLK via H6 jumper) and pos 19 (module GPIO14 -> R14 NC -> 3V3 LDO EN) unconnected: carrier uses GP2/GP5/GP14 for mux address/timing. LCD_BL (pos 17) has module 10k pull-up to VSYS. G01 OPEN pending physical strap check."
+J30,header20,6,CONTACT,NO_CONNECT,module-interfaces,"Display left header: pin 1 = Pico position 1. Keep pos 4 (module SRAM_CS, PSRAM CE w/ 10k pull-up), pos 7 (module SDIO_CLK via H6 jumper) and pos 19 (module GPIO14 -> R14 NC -> 3V3 LDO EN) unconnected: carrier uses GP2/GP5/GP14 for mux address/timing. LCD_BL (pos 17) has module 10k pull-up to VSYS. G01 OPEN pending physical strap check."
+J30,header20,7,CONTACT,NO_CONNECT,module-interfaces,"Display left header: pin 1 = Pico position 1. Keep pos 4 (module SRAM_CS, PSRAM CE w/ 10k pull-up), pos 7 (module SDIO_CLK via H6 jumper) and pos 19 (module GPIO14 -> R14 NC -> 3V3 LDO EN) unconnected: carrier uses GP2/GP5/GP14 for mux address/timing. LCD_BL (pos 17) has module 10k pull-up to VSYS. G01 OPEN pending physical strap check."
+J30,header20,8,CONTACT,GND,module-interfaces,"Display left header: pin 1 = Pico position 1. Keep pos 4 (module SRAM_CS, PSRAM CE w/ 10k pull-up), pos 7 (module SDIO_CLK via H6 jumper) and pos 19 (module GPIO14 -> R14 NC -> 3V3 LDO EN) unconnected: carrier uses GP2/GP5/GP14 for mux address/timing. LCD_BL (pos 17) has module 10k pull-up to VSYS. G01 OPEN pending physical strap check."
+J30,header20,9,CONTACT,NO_CONNECT,module-interfaces,"Display left header: pin 1 = Pico position 1. Keep pos 4 (module SRAM_CS, PSRAM CE w/ 10k pull-up), pos 7 (module SDIO_CLK via H6 jumper) and pos 19 (module GPIO14 -> R14 NC -> 3V3 LDO EN) unconnected: carrier uses GP2/GP5/GP14 for mux address/timing. LCD_BL (pos 17) has module 10k pull-up to VSYS. G01 OPEN pending physical strap check."
+J30,header20,10,CONTACT,NO_CONNECT,module-interfaces,"Display left header: pin 1 = Pico position 1. Keep pos 4 (module SRAM_CS, PSRAM CE w/ 10k pull-up), pos 7 (module SDIO_CLK via H6 jumper) and pos 19 (module GPIO14 -> R14 NC -> 3V3 LDO EN) unconnected: carrier uses GP2/GP5/GP14 for mux address/timing. LCD_BL (pos 17) has module 10k pull-up to VSYS. G01 OPEN pending physical strap check."
+J30,header20,11,CONTACT,LCD_DC,module-interfaces,"Display left header: pin 1 = Pico position 1. Keep pos 4 (module SRAM_CS, PSRAM CE w/ 10k pull-up), pos 7 (module SDIO_CLK via H6 jumper) and pos 19 (module GPIO14 -> R14 NC -> 3V3 LDO EN) unconnected: carrier uses GP2/GP5/GP14 for mux address/timing. LCD_BL (pos 17) has module 10k pull-up to VSYS. G01 OPEN pending physical strap check."
+J30,header20,12,CONTACT,LCD_CS,module-interfaces,"Display left header: pin 1 = Pico position 1. Keep pos 4 (module SRAM_CS, PSRAM CE w/ 10k pull-up), pos 7 (module SDIO_CLK via H6 jumper) and pos 19 (module GPIO14 -> R14 NC -> 3V3 LDO EN) unconnected: carrier uses GP2/GP5/GP14 for mux address/timing. LCD_BL (pos 17) has module 10k pull-up to VSYS. G01 OPEN pending physical strap check."
+J30,header20,13,CONTACT,GND,module-interfaces,"Display left header: pin 1 = Pico position 1. Keep pos 4 (module SRAM_CS, PSRAM CE w/ 10k pull-up), pos 7 (module SDIO_CLK via H6 jumper) and pos 19 (module GPIO14 -> R14 NC -> 3V3 LDO EN) unconnected: carrier uses GP2/GP5/GP14 for mux address/timing. LCD_BL (pos 17) has module 10k pull-up to VSYS. G01 OPEN pending physical strap check."
+J30,header20,14,CONTACT,LCD_CLK,module-interfaces,"Display left header: pin 1 = Pico position 1. Keep pos 4 (module SRAM_CS, PSRAM CE w/ 10k pull-up), pos 7 (module SDIO_CLK via H6 jumper) and pos 19 (module GPIO14 -> R14 NC -> 3V3 LDO EN) unconnected: carrier uses GP2/GP5/GP14 for mux address/timing. LCD_BL (pos 17) has module 10k pull-up to VSYS. G01 OPEN pending physical strap check."
+J30,header20,15,CONTACT,LCD_MOSI,module-interfaces,"Display left header: pin 1 = Pico position 1. Keep pos 4 (module SRAM_CS, PSRAM CE w/ 10k pull-up), pos 7 (module SDIO_CLK via H6 jumper) and pos 19 (module GPIO14 -> R14 NC -> 3V3 LDO EN) unconnected: carrier uses GP2/GP5/GP14 for mux address/timing. LCD_BL (pos 17) has module 10k pull-up to VSYS. G01 OPEN pending physical strap check."
+J30,header20,16,CONTACT,LCD_MISO,module-interfaces,"Display left header: pin 1 = Pico position 1. Keep pos 4 (module SRAM_CS, PSRAM CE w/ 10k pull-up), pos 7 (module SDIO_CLK via H6 jumper) and pos 19 (module GPIO14 -> R14 NC -> 3V3 LDO EN) unconnected: carrier uses GP2/GP5/GP14 for mux address/timing. LCD_BL (pos 17) has module 10k pull-up to VSYS. G01 OPEN pending physical strap check."
+J30,header20,17,CONTACT,LCD_BL,module-interfaces,"Display left header: pin 1 = Pico position 1. Keep pos 4 (module SRAM_CS, PSRAM CE w/ 10k pull-up), pos 7 (module SDIO_CLK via H6 jumper) and pos 19 (module GPIO14 -> R14 NC -> 3V3 LDO EN) unconnected: carrier uses GP2/GP5/GP14 for mux address/timing. LCD_BL (pos 17) has module 10k pull-up to VSYS. G01 OPEN pending physical strap check."
+J30,header20,18,CONTACT,GND,module-interfaces,"Display left header: pin 1 = Pico position 1. Keep pos 4 (module SRAM_CS, PSRAM CE w/ 10k pull-up), pos 7 (module SDIO_CLK via H6 jumper) and pos 19 (module GPIO14 -> R14 NC -> 3V3 LDO EN) unconnected: carrier uses GP2/GP5/GP14 for mux address/timing. LCD_BL (pos 17) has module 10k pull-up to VSYS. G01 OPEN pending physical strap check."
+J30,header20,19,CONTACT,NO_CONNECT,module-interfaces,"Display left header: pin 1 = Pico position 1. Keep pos 4 (module SRAM_CS, PSRAM CE w/ 10k pull-up), pos 7 (module SDIO_CLK via H6 jumper) and pos 19 (module GPIO14 -> R14 NC -> 3V3 LDO EN) unconnected: carrier uses GP2/GP5/GP14 for mux address/timing. LCD_BL (pos 17) has module 10k pull-up to VSYS. G01 OPEN pending physical strap check."
+J30,header20,20,CONTACT,LCD_RST,module-interfaces,"Display left header: pin 1 = Pico position 1. Keep pos 4 (module SRAM_CS, PSRAM CE w/ 10k pull-up), pos 7 (module SDIO_CLK via H6 jumper) and pos 19 (module GPIO14 -> R14 NC -> 3V3 LDO EN) unconnected: carrier uses GP2/GP5/GP14 for mux address/timing. LCD_BL (pos 17) has module 10k pull-up to VSYS. G01 OPEN pending physical strap check."
+J31,header20,1,CONTACT,NO_CONNECT,module-interfaces,"Display right header: pin 1 = Pico position 40. Pin 2 (pos 39 VSYS) is the module's only 5 V entry (no diode; feeds RT9193-33 3V3 LDO and backlight regulator). Pos 40 VBUS, 36 Pico3V3 (R15 NC), 37 3V3_EN (R12 NC), 35 ADC_VREF unused by module; keep isolated so no strap variant can cause regulator contention. G01 OPEN pending physical strap check."
+J31,header20,2,CONTACT,+5V_FUSED,module-interfaces,"Display right header: pin 1 = Pico position 40. Pin 2 (pos 39 VSYS) is the module's only 5 V entry (no diode; feeds RT9193-33 3V3 LDO and backlight regulator). Pos 40 VBUS, 36 Pico3V3 (R15 NC), 37 3V3_EN (R12 NC), 35 ADC_VREF unused by module; keep isolated so no strap variant can cause regulator contention. G01 OPEN pending physical strap check."
+J31,header20,3,CONTACT,GND,module-interfaces,"Display right header: pin 1 = Pico position 40. Pin 2 (pos 39 VSYS) is the module's only 5 V entry (no diode; feeds RT9193-33 3V3 LDO and backlight regulator). Pos 40 VBUS, 36 Pico3V3 (R15 NC), 37 3V3_EN (R12 NC), 35 ADC_VREF unused by module; keep isolated so no strap variant can cause regulator contention. G01 OPEN pending physical strap check."
+J31,header20,4,CONTACT,NO_CONNECT,module-interfaces,"Display right header: pin 1 = Pico position 40. Pin 2 (pos 39 VSYS) is the module's only 5 V entry (no diode; feeds RT9193-33 3V3 LDO and backlight regulator). Pos 40 VBUS, 36 Pico3V3 (R15 NC), 37 3V3_EN (R12 NC), 35 ADC_VREF unused by module; keep isolated so no strap variant can cause regulator contention. G01 OPEN pending physical strap check."
+J31,header20,5,CONTACT,NO_CONNECT,module-interfaces,"Display right header: pin 1 = Pico position 40. Pin 2 (pos 39 VSYS) is the module's only 5 V entry (no diode; feeds RT9193-33 3V3 LDO and backlight regulator). Pos 40 VBUS, 36 Pico3V3 (R15 NC), 37 3V3_EN (R12 NC), 35 ADC_VREF unused by module; keep isolated so no strap variant can cause regulator contention. G01 OPEN pending physical strap check."
+J31,header20,6,CONTACT,NO_CONNECT,module-interfaces,"Display right header: pin 1 = Pico position 40. Pin 2 (pos 39 VSYS) is the module's only 5 V entry (no diode; feeds RT9193-33 3V3 LDO and backlight regulator). Pos 40 VBUS, 36 Pico3V3 (R15 NC), 37 3V3_EN (R12 NC), 35 ADC_VREF unused by module; keep isolated so no strap variant can cause regulator contention. G01 OPEN pending physical strap check."
+J31,header20,7,CONTACT,NO_CONNECT,module-interfaces,"Display right header: pin 1 = Pico position 40. Pin 2 (pos 39 VSYS) is the module's only 5 V entry (no diode; feeds RT9193-33 3V3 LDO and backlight regulator). Pos 40 VBUS, 36 Pico3V3 (R15 NC), 37 3V3_EN (R12 NC), 35 ADC_VREF unused by module; keep isolated so no strap variant can cause regulator contention. G01 OPEN pending physical strap check."
+J31,header20,8,CONTACT,GND,module-interfaces,"Display right header: pin 1 = Pico position 40. Pin 2 (pos 39 VSYS) is the module's only 5 V entry (no diode; feeds RT9193-33 3V3 LDO and backlight regulator). Pos 40 VBUS, 36 Pico3V3 (R15 NC), 37 3V3_EN (R12 NC), 35 ADC_VREF unused by module; keep isolated so no strap variant can cause regulator contention. G01 OPEN pending physical strap check."
+J31,header20,9,CONTACT,NO_CONNECT,module-interfaces,"Display right header: pin 1 = Pico position 40. Pin 2 (pos 39 VSYS) is the module's only 5 V entry (no diode; feeds RT9193-33 3V3 LDO and backlight regulator). Pos 40 VBUS, 36 Pico3V3 (R15 NC), 37 3V3_EN (R12 NC), 35 ADC_VREF unused by module; keep isolated so no strap variant can cause regulator contention. G01 OPEN pending physical strap check."
+J31,header20,10,CONTACT,NO_CONNECT,module-interfaces,"Display right header: pin 1 = Pico position 40. Pin 2 (pos 39 VSYS) is the module's only 5 V entry (no diode; feeds RT9193-33 3V3 LDO and backlight regulator). Pos 40 VBUS, 36 Pico3V3 (R15 NC), 37 3V3_EN (R12 NC), 35 ADC_VREF unused by module; keep isolated so no strap variant can cause regulator contention. G01 OPEN pending physical strap check."
+J31,header20,11,CONTACT,NO_CONNECT,module-interfaces,"Display right header: pin 1 = Pico position 40. Pin 2 (pos 39 VSYS) is the module's only 5 V entry (no diode; feeds RT9193-33 3V3 LDO and backlight regulator). Pos 40 VBUS, 36 Pico3V3 (R15 NC), 37 3V3_EN (R12 NC), 35 ADC_VREF unused by module; keep isolated so no strap variant can cause regulator contention. G01 OPEN pending physical strap check."
+J31,header20,12,CONTACT,SD_CS_N,module-interfaces,"Display right header: pin 1 = Pico position 40. Pin 2 (pos 39 VSYS) is the module's only 5 V entry (no diode; feeds RT9193-33 3V3 LDO and backlight regulator). Pos 40 VBUS, 36 Pico3V3 (R15 NC), 37 3V3_EN (R12 NC), 35 ADC_VREF unused by module; keep isolated so no strap variant can cause regulator contention. G01 OPEN pending physical strap check."
+J31,header20,13,CONTACT,GND,module-interfaces,"Display right header: pin 1 = Pico position 40. Pin 2 (pos 39 VSYS) is the module's only 5 V entry (no diode; feeds RT9193-33 3V3 LDO and backlight regulator). Pos 40 VBUS, 36 Pico3V3 (R15 NC), 37 3V3_EN (R12 NC), 35 ADC_VREF unused by module; keep isolated so no strap variant can cause regulator contention. G01 OPEN pending physical strap check."
+J31,header20,14,CONTACT,NO_CONNECT,module-interfaces,"Display right header: pin 1 = Pico position 40. Pin 2 (pos 39 VSYS) is the module's only 5 V entry (no diode; feeds RT9193-33 3V3 LDO and backlight regulator). Pos 40 VBUS, 36 Pico3V3 (R15 NC), 37 3V3_EN (R12 NC), 35 ADC_VREF unused by module; keep isolated so no strap variant can cause regulator contention. G01 OPEN pending physical strap check."
+J31,header20,15,CONTACT,NO_CONNECT,module-interfaces,"Display right header: pin 1 = Pico position 40. Pin 2 (pos 39 VSYS) is the module's only 5 V entry (no diode; feeds RT9193-33 3V3 LDO and backlight regulator). Pos 40 VBUS, 36 Pico3V3 (R15 NC), 37 3V3_EN (R12 NC), 35 ADC_VREF unused by module; keep isolated so no strap variant can cause regulator contention. G01 OPEN pending physical strap check."
+J31,header20,16,CONTACT,NO_CONNECT,module-interfaces,"Display right header: pin 1 = Pico position 40. Pin 2 (pos 39 VSYS) is the module's only 5 V entry (no diode; feeds RT9193-33 3V3 LDO and backlight regulator). Pos 40 VBUS, 36 Pico3V3 (R15 NC), 37 3V3_EN (R12 NC), 35 ADC_VREF unused by module; keep isolated so no strap variant can cause regulator contention. G01 OPEN pending physical strap check."
+J31,header20,17,CONTACT,NO_CONNECT,module-interfaces,"Display right header: pin 1 = Pico position 40. Pin 2 (pos 39 VSYS) is the module's only 5 V entry (no diode; feeds RT9193-33 3V3 LDO and backlight regulator). Pos 40 VBUS, 36 Pico3V3 (R15 NC), 37 3V3_EN (R12 NC), 35 ADC_VREF unused by module; keep isolated so no strap variant can cause regulator contention. G01 OPEN pending physical strap check."
+J31,header20,18,CONTACT,GND,module-interfaces,"Display right header: pin 1 = Pico position 40. Pin 2 (pos 39 VSYS) is the module's only 5 V entry (no diode; feeds RT9193-33 3V3 LDO and backlight regulator). Pos 40 VBUS, 36 Pico3V3 (R15 NC), 37 3V3_EN (R12 NC), 35 ADC_VREF unused by module; keep isolated so no strap variant can cause regulator contention. G01 OPEN pending physical strap check."
+J31,header20,19,CONTACT,NO_CONNECT,module-interfaces,"Display right header: pin 1 = Pico position 40. Pin 2 (pos 39 VSYS) is the module's only 5 V entry (no diode; feeds RT9193-33 3V3 LDO and backlight regulator). Pos 40 VBUS, 36 Pico3V3 (R15 NC), 37 3V3_EN (R12 NC), 35 ADC_VREF unused by module; keep isolated so no strap variant can cause regulator contention. G01 OPEN pending physical strap check."
+J31,header20,20,CONTACT,TP_CS_N,module-interfaces,"Display right header: pin 1 = Pico position 40. Pin 2 (pos 39 VSYS) is the module's only 5 V entry (no diode; feeds RT9193-33 3V3 LDO and backlight regulator). Pos 40 VBUS, 36 Pico3V3 (R15 NC), 37 3V3_EN (R12 NC), 35 ADC_VREF unused by module; keep isolated so no strap variant can cause regulator contention. G01 OPEN pending physical strap check."
 R60,33,1,P1,LCD_DC_SRC,module-interfaces,
 R60,33,2,P2,LCD_DC,module-interfaces,
 R61,33,1,P1,LCD_CS_SRC,module-interfaces,
@@ -663,8 +663,8 @@ R87,100k,2,P2,MUX_DISABLE,module-interfaces,
 R88,100k,1,P1,LCD_BL,module-interfaces,
 R88,100k,2,P2,GND,module-interfaces,
 TP30,testpoint,1,PAD,TIMING_TP,module-interfaces,
-F1,fuse,1,IN,VBUS_USB,power,Protection component identity pending; not an inrush/load-switch substitute
-F1,fuse,2,OUT,+5V_FUSED,power,Protection component identity pending; not an inrush/load-switch substitute
+F1,1206L050YR,1,IN,VBUS_USB,power,Protection component identity pending; not an inrush/load-switch substitute
+F1,1206L050YR,2,OUT,+5V_FUSED,power,Protection component identity pending; not an inrush/load-switch substitute
 U10,TLV75533PDBVR,1,IN,+5V_FUSED,power,
 U10,TLV75533PDBVR,2,GND,GND,power,
 U10,TLV75533PDBVR,3,EN,+5V_FUSED,power,
