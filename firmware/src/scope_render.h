@@ -14,8 +14,11 @@
  *   y 95       separator line across the pane
  * Text rows are a grid of 24 cells of SCOPE_CELL_W x SCOPE_CELL_H; each glyph is 5 x 7 from
  * the in-repo font. A text field is redrawn only when its string or colour changes.
- * SCOPE_PLOT_W is independent of SCOPE_HISTORY_BINS. Interim mapping: the plot shows the
- * most recent SCOPE_PLOT_W bins of the chosen level, right-aligned, newest at the right.
+ * SCOPE_PLOT_W is independent of SCOPE_HISTORY_BINS. Each plot spans the requested TIME
+ * window through scope_window_map() (scope_core.h: level choice, column mapping, tolerance,
+ * partial history right-aligned with blank columns on the left), newest at the right.
+ * The duration label and the plot both derive from scope_window_samples() of the same
+ * effective TIME code, so the label names the interval the plot represents.
  * LINK makes every pane use CH1's TIME window: a time-link of views, not phase sync. The
  * channels are still sampled sequentially. HOLD freezes the plots; text keeps updating. */
 #include "scope_core.h"
@@ -85,8 +88,8 @@ typedef struct {
     uint8_t pane;
     uint16_t item;                          /* static, then PLOT_W columns, then text fields */
     bool static_done[SCOPE_CHANNELS];
-    uint16_t nbins;                         /* <= SCOPE_PLOT_W most recent bins */
-    scope_bin bins[SCOPE_PLOT_W];
+    scope_window window;                    /* current pane's mapping; columns before first_col blank */
+    scope_bin cols[SCOPE_PLOT_W];
     struct {                                /* last drawn text per field; redraw on change only */
         char text[SCOPE_FIELD_MAX + 1u];
         uint16_t colour;
@@ -113,9 +116,12 @@ uint16_t scope_channel_colour(unsigned ch);
 uint16_t scope_code_to_row(uint16_t code, uint16_t h);
 /* One plot column: background, mid-scale grid row, and the bin's lo..hi span. NULL = empty. */
 void scope_render_column(const scope_bin *bin, uint16_t h, uint16_t colour, uint16_t *out);
-unsigned scope_render_level(uint16_t time_code, uint32_t samples_per_s);
-/* The one source of window-duration text: "2.0ms" .. "8.19s". Writes at most
- * SCOPE_FIELD_MAX characters plus NUL to out and returns the length. */
+/* TIME code a pane uses: CH1's under LINK, its own otherwise. */
+uint16_t scope_render_time_code(const scope_render_input *in, unsigned pane);
+/* The one source of window-duration text: "2.0ms" .. "8.19s". It shows the window of
+ * scope_window_samples(time_code, samples_per_s), the interval the plot represents (within
+ * the scope_core.h coarse-bin tolerance); samples_per_s == 0 falls back to the raw TIME
+ * duration. Writes at most SCOPE_FIELD_MAX characters plus NUL to out and returns the length. */
 unsigned scope_render_window_label(uint16_t time_code, uint32_t samples_per_s, char out[SCOPE_FIELD_MAX + 1u]);
 /* "UNCAL" / "CLIP" / "SAT", or "" for SCOPE_STATUS_NONE and unknown values. */
 const char *scope_status_token_text(unsigned token);

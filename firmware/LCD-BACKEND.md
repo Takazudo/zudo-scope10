@@ -109,13 +109,21 @@ The source is `https://files.waveshare.com/upload/f/fc/Pico-ResTouch-LCD-X_X_Cod
 
 - a label row above the plot (`scope_pane_label_rect`, 144 × 10): the two-digit channel ID `01`…`10` in the channel colour, the debounced range `±3V` / `±5V` / `±8V` (`±?V` while the range is unknown, `range == -1`), and the window duration, right-aligned;
 - a 4-px channel colour tag to the left of the plot;
-- a 144 × 66 plot (`SCOPE_PLOT_W` × `SCOPE_PLOT_H`), independent of the 192-bin `SCOPE_HISTORY_BINS`. For now it shows the newest 144 bins of the chosen level, right-aligned, with the newest sample at the right;
+- a 144 × 66 plot (`SCOPE_PLOT_W` × `SCOPE_PLOT_H`), independent of the 192-bin `SCOPE_HISTORY_BINS`. It spans the requested TIME window (see **Window**), with the newest sample at the right;
 - a status row below the plot (`scope_pane_status_rect`, 144 × 10): a status-token slot for `UNCAL` / `CLIP` / `SAT` (set through `scope_render_input.status_token`; nothing sets it yet), then `LINK` and `HOLD`, each shown only while that mode is latched;
 - a separator row.
 
 **Text.** Both text rows are a grid of 24 cells, each 6 × 10 px. Glyphs are 5 × 7 from a clean-room font defined in `scope_render.c` as a `const` table: digits, `. + - ± ? V m s k` and the capitals needed for `HOLD LINK UNCAL CLIP SAT`. `scope_pane_field_rect()` gives each field's rect. Each field is one render item, drawn two cells (120 px) per `scope_display_rect` call. The last drawn string and colour of each field are cached per pane, and a field is redrawn only when either changes. A field whose transfer fails is retried on the next pass.
 
-**Window.** Each pane's window is `scope_time_seconds(TIME code) × 10 000 samples/s`, mapped through `scope_history_level_for_window`. All duration text comes from `scope_render_window_label()` (`2.0ms` … `99.9ms`, `100ms` … `999ms`, `1.00s` … `8.19s`), which for now formats `scope_time_seconds()` of the effective TIME code.
+**Window.** Each pane spans the whole requested TIME window, independent of the storage level. `scope_window_map()` in `scope_core.c` does the mapping as a pure function, without pixels:
+
+- **Window.** W = round(`scope_time_seconds(code)` × `samples_per_s`) samples (`scope_window_samples()`), from 20 samples (2 ms) to 81 920 samples (8.192 s) at 10 000 samples/s. The code is the pane's own, or CH1's under LINK (`scope_render_time_code()`), so independent and linked panes share one mapping.
+- **Level.** The smallest history level L with 192 × 2^L ≥ W. Level 9 holds 98 304 samples, so the existing ten levels cover 8.192 s with no extra RAM.
+- **Columns.** The pane takes the newest n = ceil((W − lag) / 2^L) level-L bins. Here lag is the samples still in lower levels' pending halves, which are not yet displayable. If n > 144, each column merges the min/max of its bin range, so an extreme anywhere in the window stays visible. If n < 144, each bin is repeated across several columns.
+- **Tolerance.** The represented interval, counted in samples before the newest sample, is [lag, lag + n × 2^L). Each edge is within one coarse bin (2^L samples) of the requested [0, W): 0 ≤ lag < 2^L and W ≤ lag + n × 2^L < W + 2^L. One coarse bin is at most 512 samples, 51.2 ms at level 9.
+- **Partial history.** The time axis always spans the full window. The retained bins sit right-aligned, and columns with no retained sample are left blank.
+
+All duration text comes from `scope_render_window_label()` (`2.0ms` … `99.9ms`, `100ms` … `999ms`, `1.00s` … `8.19s`). It formats W / `samples_per_s`, the same W the plot maps, so the label names the represented interval within the tolerance above.
 
 **HOLD and LINK.**
 

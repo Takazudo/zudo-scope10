@@ -16,7 +16,6 @@ _Static_assert(SCOPE_PLOT_X + SCOPE_PLOT_W <= SCOPE_PANE_W, "plot leaves its pan
 _Static_assert(SCOPE_LABEL_Y + SCOPE_LABEL_H < SCOPE_PLOT_Y, "label row and plot overlap");
 _Static_assert(SCOPE_PLOT_Y + SCOPE_PLOT_H < SCOPE_STATUS_Y, "plot and status row overlap");
 _Static_assert(SCOPE_STATUS_Y + SCOPE_STATUS_H < SCOPE_PANE_H - 1u, "status row hits separator");
-_Static_assert(SCOPE_PLOT_W <= SCOPE_HISTORY_BINS, "history shorter than the plot");
 _Static_assert(SCOPE_PLOT_H <= SCOPE_RENDER_FILL_MAX, "plot column exceeds one transfer");
 _Static_assert(SCOPE_CELL_H == SCOPE_LABEL_H && SCOPE_CELL_H == SCOPE_STATUS_H, "text cells fill a text row");
 _Static_assert(SCOPE_GLYPH_W < SCOPE_CELL_W && SCOPE_GLYPH_Y + SCOPE_GLYPH_H <= SCOPE_CELL_H, "glyph leaves its cell");
@@ -123,14 +122,15 @@ void scope_render_column(const scope_bin *bin, uint16_t h, uint16_t colour, uint
     for (uint16_t r = a; r <= b && r < h; r++) out[r] = colour;
 }
 
-unsigned scope_render_level(uint16_t time_code, uint32_t samples_per_s) {
-    float samples = scope_time_seconds(time_code) * (float)samples_per_s + 0.5f;
-    return scope_history_level_for_window((uint32_t)samples, SCOPE_PLOT_W);
+uint16_t scope_render_time_code(const scope_render_input *in, unsigned pane) {
+    return in->link ? in->time_code[0] : in->time_code[pane % SCOPE_CHANNELS];
 }
 
 unsigned scope_render_window_label(uint16_t time_code, uint32_t samples_per_s, char out[SCOPE_FIELD_MAX + 1u]) {
-    (void)samples_per_s; /* the TIME sub derives the represented window from the rate */
-    uint32_t us = (uint32_t)(scope_time_seconds(time_code) * 1e6f + 0.5f);
+    uint32_t us = samples_per_s
+        ? (uint32_t)(((uint64_t)scope_window_samples(time_code, samples_per_s) * 1000000u + samples_per_s / 2u)
+                     / samples_per_s)
+        : (uint32_t)(scope_time_seconds(time_code) * 1e6f + 0.5f);
     unsigned n = 0;
     char d[8];
     unsigned nd = 0, point, value;
@@ -234,7 +234,7 @@ static void field_content(const scope_render_input *in, unsigned pane, scope_tex
         break;
     }
     case SCOPE_FIELD_WINDOW:
-        scope_render_window_label(in->link ? in->time_code[0] : in->time_code[pane], in->samples_per_s, raw);
+        scope_render_window_label(scope_render_time_code(in, pane), in->samples_per_s, raw);
         if (in->link) *colour = SCOPE_COLOUR_LINK; /* the window comes from CH1's TIME */
         break;
     case SCOPE_FIELD_TOKEN: {
@@ -282,9 +282,7 @@ static unsigned draw_field(scope_render_state *s, const scope_render_input *in, 
 
 static unsigned draw_column(scope_render_state *s, unsigned pane, unsigned col) {
     uint16_t px[SCOPE_PLOT_H];
-    unsigned nbins = s->nbins < SCOPE_PLOT_W ? s->nbins : SCOPE_PLOT_W;
-    unsigned first = SCOPE_PLOT_W - nbins;
-    const scope_bin *bin = col >= first ? &s->bins[col - first] : NULL;
+    const scope_bin *bin = col >= s->window.first_col ? &s->cols[col] : NULL;
     scope_rect p = scope_pane_plot_rect(pane);
     scope_render_column(bin, SCOPE_PLOT_H, scope_channel_colour(pane), px);
     count(s, scope_display_rect((uint16_t)(p.x + col), p.y, 1, SCOPE_PLOT_H, px));
@@ -306,9 +304,8 @@ unsigned scope_render_step(scope_render_state *s, const scope_render_input *in, 
                 s->item = ITEM_TEXT0;
                 continue;
             }
-            uint16_t tcode = in->link ? in->time_code[0] : in->time_code[pane];
-            s->nbins = (uint16_t)scope_history_recent(&in->hist[pane], scope_render_level(tcode, in->samples_per_s),
-                                                      s->bins, SCOPE_PLOT_W);
+            uint32_t window = scope_window_samples(scope_render_time_code(in, pane), in->samples_per_s);
+            s->window = scope_window_map(&in->hist[pane], window, SCOPE_PLOT_W, s->cols);
             s->item = ITEM_COL0;
         } else if (s->item < ITEM_TEXT0) {
             if (in->hold) { /* HOLD mid-pane: freeze now, leave the rest of the plot as drawn */

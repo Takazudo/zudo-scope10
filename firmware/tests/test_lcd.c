@@ -290,8 +290,6 @@ static void test_layout(void) {
     assert(lit == (unsigned)(scope_code_to_row(1000, SCOPE_PLOT_H) - scope_code_to_row(3000, SCOPE_PLOT_H) + 1));
     scope_render_column(NULL, SCOPE_PLOT_H, 0xFFFF, col);
     for (unsigned r = 0; r < SCOPE_PLOT_H; r++) assert(col[r] != 0xFFFF);
-    assert(scope_render_level(0, 10000) == 0);    /* 2 ms = 20 samples over 144 columns */
-    assert(scope_render_level(4095, 10000) == 9); /* 8.192 s = 81920 samples: 568/column -> level 9, 512/bin */
 }
 
 /* Decodes one text cell from GRAM against the firmware font table; '#' = no glyph matches or
@@ -418,10 +416,8 @@ static void test_renderer(void) {
         scope_rect p = scope_pane_plot_rect(ch);
         uint16_t colour = scope_channel_colour(ch);
         uint16_t row = scope_code_to_row((uint16_t)(400u * ch + 10u), SCOPE_PLOT_H);
-        /* level 0 holds 100 bins, right-aligned: columns 44..143 carry the trace */
-        assert(gram[p.y + row][p.x + SCOPE_PLOT_W - 1u] == colour);
-        assert(gram[p.y + row][p.x + SCOPE_PLOT_W - 100u] == colour);
-        assert(gram[p.y + row][p.x + SCOPE_PLOT_W - 101u] != colour);
+        /* 2 ms = 20 samples, all held (100 pushed): stretched over every column */
+        for (unsigned col = 0; col < SCOPE_PLOT_W; col++) assert(gram[p.y + row][p.x + col] == colour);
         scope_rect tag = scope_pane_tag_rect(ch);
         assert(gram[tag.y][tag.x] == colour);
         scope_rect sep = scope_pane_separator_rect(ch);
@@ -495,23 +491,30 @@ static void test_renderer(void) {
     assert(field_is(5, SCOPE_FIELD_WINDOW, "2.0ms", SCOPE_COLOUR_TEXT) && field_is(5, SCOPE_FIELD_LINK, "", 0));
     assert(field_is(0, SCOPE_FIELD_WINDOW, "8.19s", SCOPE_COLOUR_TEXT));
 
-    /* More history than plot columns (192 bins > 144): only the newest SCOPE_PLOT_W bins are
-     * drawn, right-aligned, filling every column; the older samples fall off the left edge. */
-    in.time_code[0] = 0;
-    in.time_code[9] = 0;
+    /* #21 reproduction 1: raw values 0..999 at TIME code 0 (2 ms = 20 samples). Only the
+     * newest 20 samples, 980..999, are represented; the older 980 are excluded. */
     for (unsigned ch = 0; ch < SCOPE_CHANNELS; ch++) {
+        in.time_code[ch] = 0;
         scope_history_init(&H[ch]);
-        for (unsigned i = 0; i < 300; i++) scope_history_push(&H[ch], i < 300u - SCOPE_PLOT_W ? 100u : 4000u);
+        for (unsigned i = 0; i < 1000; i++) scope_history_push(&H[ch], (uint16_t)i);
     }
+    scope_bin cols[SCOPE_PLOT_W];
+    scope_window w = scope_window_map(&H[0], scope_window_samples(0, 10000), SCOPE_PLOT_W, cols);
+    assert(w.window == 20 && w.level == 0 && w.lag == 0 && w.bins == 20 && w.avail == 20 && w.first_col == 0);
+    uint16_t lo = 0xFFFF, hi = 0;
+    for (unsigned col = 0; col < SCOPE_PLOT_W; col++) {
+        if (cols[col].lo < lo) lo = cols[col].lo;
+        if (cols[col].hi > hi) hi = cols[col].hi;
+    }
+    assert(lo == 980 && hi == 999);
+    assert(cols[0].lo == 980 && cols[SCOPE_PLOT_W - 1u].hi == 999); /* oldest left, newest right */
     render_pass(&s, &in);
-    uint16_t old_row = scope_code_to_row(100, SCOPE_PLOT_H), new_row = scope_code_to_row(4000, SCOPE_PLOT_H);
-    assert(old_row != new_row);
+    uint16_t top = scope_code_to_row(999, SCOPE_PLOT_H), bottom = scope_code_to_row(980, SCOPE_PLOT_H);
     for (unsigned ch = 0; ch < SCOPE_CHANNELS; ch++) {
         scope_rect p = scope_pane_plot_rect(ch);
-        for (unsigned col = 0; col < SCOPE_PLOT_W; col++) {
-            assert(gram[p.y + new_row][p.x + col] == scope_channel_colour(ch));
-            assert(gram[p.y + old_row][p.x + col] != scope_channel_colour(ch));
-        }
+        for (unsigned col = 0; col < SCOPE_PLOT_W; col++)
+            for (unsigned r = 0; r < SCOPE_PLOT_H; r++)
+                if (gram[p.y + r][p.x + col] == scope_channel_colour(ch)) assert(r >= top && r <= bottom);
     }
 
     /* A failing backend is counted, never reported as drawn. */
@@ -520,6 +523,132 @@ static void test_renderer(void) {
     scope_render_step(&s, &in, 4);
     assert(s.rects_failed > failed);
     fake_ready = true;
+}
+
+/* Label text back to samples: *half = half a unit of its last digit, in samples. */
+static uint32_t label_samples(const char *label, uint32_t sps, uint32_t *half) {
+    unsigned n = (unsigned)strlen(label), digits = 0, point = 0;
+    bool seconds = label[n - 2] != 'm';
+    uint64_t v = 0;
+    for (const char *c = label; (*c >= '0' && *c <= '9') || *c == '.'; c++) {
+        if (*c == '.') { point = 1; continue; }
+        v = v * 10u + (unsigned)(*c - '0');
+        digits += point;
+    }
+    uint64_t unit_us = seconds ? 1000000u : 1000u;
+    for (unsigned i = 0; i < digits; i++) unit_us /= 10u;
+    *half = (uint32_t)((unit_us * sps / 2u + 999999u) / 1000000u);
+    return (uint32_t)((v * unit_us * sps + 500000u) / 1000000u);
+}
+
+/* Represented interval of a plan, in samples before the newest pushed sample: [lag, oldest). */
+static uint32_t oldest_edge(scope_window w) { return w.lag + ((uint32_t)w.bins << w.level); }
+
+static void test_time_window(void) {
+    static scope_history hist;
+    scope_bin cols[SCOPE_PLOT_W];
+    char label[SCOPE_FIELD_MAX + 1];
+
+    /* Endpoint and intermediate codes, with the newest bins at every stage of completion:
+     * each edge of the represented interval lies within one coarse bin (2^L samples). */
+    static const uint16_t codes[] = {0, 1, 300, 800, 1454, 1455, 2000, 2400, 2730, 3000, 3300, 3700, 4000, 4094, 4095};
+    static const uint32_t extra[] = {0, 1, 255, 256, 511, 777};
+    for (unsigned e = 0; e < sizeof extra / sizeof extra[0]; e++) {
+        scope_history_init(&hist);
+        for (uint32_t i = 0; i < SCOPE_WINDOW_MAX_SAMPLES + extra[e]; i++) scope_history_push(&hist, 2048);
+        for (unsigned k = 0; k < sizeof codes / sizeof codes[0]; k++) {
+            uint32_t want = scope_window_samples(codes[k], 10000);
+            scope_window w = scope_window_map(&hist, want, SCOPE_PLOT_W, cols);
+            uint32_t coarse = (uint32_t)1 << w.level;
+            assert(w.window == want && ((uint32_t)SCOPE_HISTORY_BINS << w.level) >= want);
+            assert(w.level == 0 || ((uint32_t)SCOPE_HISTORY_BINS << (w.level - 1u)) < want); /* smallest level */
+            assert(w.lag == (SCOPE_WINDOW_MAX_SAMPLES + extra[e]) % coarse && w.lag < coarse);
+            assert(oldest_edge(w) >= want && oldest_edge(w) < want + coarse);
+            assert(w.avail == w.bins && w.first_col == 0);
+        }
+    }
+    scope_history_init(&hist);
+    for (uint32_t i = 0; i < SCOPE_WINDOW_MAX_SAMPLES; i++) scope_history_push(&hist, 2048);
+    scope_window w0 = scope_window_map(&hist, scope_window_samples(0, 10000), SCOPE_PLOT_W, cols);
+    scope_window w1 = scope_window_map(&hist, scope_window_samples(4095, 10000), SCOPE_PLOT_W, cols);
+    assert(w0.level == 0 && w0.bins == 20 && oldest_edge(w0) == 20);           /* 2 ms exactly */
+    assert(w1.level == 9 && w1.bins == 160 && oldest_edge(w1) == 81920);       /* 8.192 s exactly */
+
+    /* No dead zone: the represented duration never shrinks as the knob turns and changes
+     * within a short run of codes everywhere; the #21 renderer held one window for 1455.
+     * The longest runs sit at 2 ms, where one sample is ~25 codes. The label agrees with the
+     * represented interval: within a coarse bin plus the label's own rounding. */
+    uint32_t prev = 0, run = 0, max_run = 0;
+    for (unsigned c = 0; c < 4096; c++) {
+        scope_window w = scope_window_map(&hist, scope_window_samples((uint16_t)c, 10000), SCOPE_PLOT_W, cols);
+        uint32_t span = oldest_edge(w), half;
+        assert(span >= prev);
+        run = span == prev ? run + 1u : 1u;
+        if (run > max_run) max_run = run;
+        prev = span;
+        scope_render_window_label((uint16_t)c, 10000, label);
+        uint32_t shown = label_samples(label, 10000, &half);
+        uint32_t d_req = shown > w.window ? shown - w.window : w.window - shown;
+        uint32_t d_rep = shown > span ? shown - span : span - shown;
+        assert(d_req <= half && d_rep <= ((uint32_t)1 << w.level) + half);
+    }
+    assert(max_run <= 32u);
+    printf("time window: longest run of codes with one represented interval %u\n", (unsigned)max_run);
+
+    /* Partial history: 30 samples at 8.192 s keep the full-pane time axis. The held data
+     * sits right-aligned and the time not yet recorded stays blank on the left. */
+    scope_history_init(&hist);
+    for (unsigned i = 0; i < 30; i++) scope_history_push(&hist, 3000);
+    scope_window wp = scope_window_map(&hist, 81920, SCOPE_PLOT_W, cols);
+    assert(wp.level == 9 && wp.avail == 0 && wp.first_col == SCOPE_PLOT_W); /* no complete 512-sample bin yet */
+    for (unsigned i = 30; i < 512u * 16u; i++) scope_history_push(&hist, 3000);
+    wp = scope_window_map(&hist, 81920, SCOPE_PLOT_W, cols);
+    assert(wp.avail == 16 && wp.bins == 160 && wp.first_col == SCOPE_PLOT_W - 14u); /* 16 of 160 bins: 14.4 columns */
+    for (unsigned c = wp.first_col; c < SCOPE_PLOT_W; c++) assert(cols[c].lo == 3000 && cols[c].hi == 3000);
+
+    /* #21 reproduction 2: 98 304 samples at baseline 1858 with one full-scale impulse at
+     * index 28 304, about 7 s old. At TIME 4095 (8.192 s) it is in the plot. */
+    rig_reset();
+    lcd_init_panel(&bus);
+    for (unsigned ch = 0; ch < SCOPE_CHANNELS; ch++) scope_history_init(&H[ch]);
+    for (uint32_t i = 0; i < 98304u; i++) scope_history_push(&H[0], i == 28304u ? 4095u : 1858u);
+    scope_window wi = scope_window_map(&H[0], scope_window_samples(4095, 10000), SCOPE_PLOT_W, cols);
+    unsigned impulse_cols = 0, impulse_col = 0;
+    for (unsigned c = wi.first_col; c < SCOPE_PLOT_W; c++)
+        if (cols[c].hi == 4095) { impulse_cols++; impulse_col = c; }
+    uint32_t age = 98303u - 28304u; /* 69 999 samples before the newest */
+    unsigned expect = (unsigned)((uint64_t)(oldest_edge(wi) - 1u - age) * SCOPE_PLOT_W / oldest_edge(wi));
+    assert(wi.first_col == 0 && impulse_cols == 1 && impulse_col + 1u >= expect && impulse_col <= expect + 1u);
+    scope_render_input in = {.hist = H, .samples_per_s = 10000};
+    in.time_code[0] = 4095;
+    scope_render_state s;
+    scope_render_init(&s);
+    render_pass(&s, &in);
+    scope_rect p = scope_pane_plot_rect(0);
+    assert(gram[p.y + scope_code_to_row(4095, SCOPE_PLOT_H)][p.x + impulse_col] == scope_channel_colour(0));
+    assert(field_is(0, SCOPE_FIELD_WINDOW, "8.19s", SCOPE_COLOUR_TEXT));
+
+    /* LINK uses the same mapping: CH6 linked to CH1 at 4095 draws exactly what CH6 draws at
+     * its own 4095. */
+    for (uint32_t i = 0; i < 98304u; i++) scope_history_push(&H[5], (uint16_t)(i * 7u % 4096u));
+    static uint16_t own[SCOPE_PLOT_H][SCOPE_PLOT_W];
+    scope_rect p6 = scope_pane_plot_rect(5);
+    in.time_code[5] = 4095;
+    render_pass(&s, &in);
+    for (unsigned r = 0; r < SCOPE_PLOT_H; r++)
+        for (unsigned c = 0; c < SCOPE_PLOT_W; c++) own[r][c] = gram[p6.y + r][p6.x + c];
+    in.time_code[5] = 0;
+    render_pass(&s, &in);
+    bool differs = false; /* its own 2 ms shows other samples */
+    for (unsigned r = 0; r < SCOPE_PLOT_H; r++)
+        for (unsigned c = 0; c < SCOPE_PLOT_W; c++) differs |= gram[p6.y + r][p6.x + c] != own[r][c];
+    assert(differs);
+    in.link = true;
+    render_pass(&s, &in);
+    for (unsigned r = 0; r < SCOPE_PLOT_H; r++)
+        for (unsigned c = 0; c < SCOPE_PLOT_W; c++) assert(gram[p6.y + r][p6.x + c] == own[r][c]);
+    assert(scope_render_time_code(&in, 5) == 4095);
+    assert(field_is(5, SCOPE_FIELD_WINDOW, "8.19s", SCOPE_COLOUR_LINK));
 }
 
 static void test_buttons(void) {
@@ -545,6 +674,7 @@ int main(void) {
     test_layout();
     test_font_and_labels();
     test_renderer();
+    test_time_window();
     test_buttons();
     puts("LCD bridge framing, clipping, pane layout and renderer host tests passed (models only; G06 OPEN)");
     return 0;
