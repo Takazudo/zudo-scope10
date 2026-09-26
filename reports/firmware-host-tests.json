@@ -4,8 +4,8 @@
   "output": "PASS: calibration, 4096 time points, range/debounce/wrap, multiresolution extremes.\nTen-channel history allocation: 77800 bytes.\n",
   "suites": {
     "test_core": "PASS: calibration, 4096 time points, range/debounce/wrap, multiresolution extremes.\nTen-channel history allocation: 77800 bytes.\n",
-    "test_acq": "PASS: acq uniform slots (1000 cycles, frame 12000 cycles @ 120 MHz nominal), ring wrap/overrun, injected-stall missed-slot accounting, channel-order invariance, scope_core history.\nAcquisition engine RAM (ring + missed tags + state): 49496 bytes; IRQ budget 240 cycles.\n",
-    "test_lcd": "LCD bridge framing, clipping, pane layout and renderer host tests passed (models only; G06 OPEN)\n"
+    "test_acq": "startup: 72 preempted atomic starts, 0 wrong/0 accepted-wrong/0 stale, tick-to-enable <= 21 cycles (model; bound 27, slack 40). Pre-fix negative controls: preempt-before-enable accepted-wrong=2160/2400 missed=0; preempt-after-enable stale-epoch steps=1.\nresync: 24 stop/resync/restart cycles, each stop with core1 mid-handler; 0 accepted wrong-address samples, disarmed handler gated.\nPASS: acq uniform slots (1000 cycles, frame 12000 cycles @ 120 MHz nominal), ring wrap/overrun, injected-stall missed-slot accounting, channel-order invariance, scope_core history.\nAcquisition engine RAM (ring + missed tags + state): 49496 bytes; IRQ budget 240 cycles.\n",
+    "test_lcd": "renderer: first pass 1670 display calls, 180 of them text (worst case)\ntime window: longest run of codes with one represented interval 23\nvertical mapping: +3 V -> row 0 at +-3 V, row 13 at +-5 V, row 20 at +-8 V (zero row 32)\nLCD bridge framing, clipping, pane layout and renderer host tests passed (models only; G06 OPEN)\n"
   },
   "target_build": "NOT_RUN",
   "hardware_tests": "NOT_RUN"

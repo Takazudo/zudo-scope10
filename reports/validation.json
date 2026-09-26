@@ -1,11 +1,16 @@
 {
   "result": "PASS",
   "scope": "Offline structural checks only. NOT native ERC/DRC or assembly approval.",
-  "physical_instances": 224,
-  "nets": 134,
-  "component_records": 30,
+  "physical_instances": 225,
+  "nets": 135,
+  "component_records": 31,
   "retained_source_files": 19,
   "checks": [
+    {
+      "check": "design_phase is a recognized value",
+      "result": "PASS",
+      "detail": "pre-layout"
+    },
     {
       "check": "Unique component records",
       "result": "PASS",
@@ -327,24 +332,19 @@
       "detail": ""
     },
     {
-      "check": "Release guard blocks this package",
+      "check": "Release guard exits 2 (REFUSED) for the checked-in manifest, production route",
+      "result": "PASS",
+      "detail": "exit=2 stderr=\"REFUSED: no order files may be generated from this manifest.\\n  - release_allowed is false\\n  - G01 (Exact display power/straps and module revision): status is 'OPEN', not CLOSED\\n  - G02 (Mechanical par\""
+    },
+    {
+      "check": "Release guard exits 2 (REFUSED) for the checked-in manifest, prototype route",
+      "result": "PASS",
+      "detail": "exit=2 stderr='REFUSED: no order files may be generated from this manifest.\\n  - decisions.prototype.allowed is false\\n  - prototype prerequisite reviewed_power_and_pin_design (Reviewed power and pin design: the displ'"
+    },
+    {
+      "check": "Isolated regeneration matches checkout without mutating it",
       "result": "PASS",
       "detail": ""
-    },
-    {
-      "check": "Regeneration preserves generated design/page bytes",
-      "result": "PASS",
-      "detail": ""
-    },
-    {
-      "check": "KiCad root sheet, PCB load, root ERC (0 unexplained), outline DRC and netlist parity with circuit.json",
-      "result": "PASS",
-      "detail": "sheets=11 pcb_loaded=True erc_total=0 erc_unexplained=0 drc_errors=0 parity=PASS differences=0"
-    },
-    {
-      "check": "ngspice run reconciled with analyze.py (#7)",
-      "result": "PASS",
-      "detail": "{\"gain_pct_diff\": 1.8286479255568185e-05, \"zero_pct_diff\": 1.5100401603078925e-05, \"corner_vs_single_pole_pct_diff\": 35.62711169384085, \"corner_vs_two_pole_cascade_pct_diff\": 0.0592774215330625, \"tolerance_pct\": 2.0, \"within_tolerance\": true, \"explanation\": \"analyze.py's filter_poles_hz lists each RC stage's own pole frequency (~3392 Hz and ~3386 Hz), not the -3 dB point of the two of them cascaded; two near-equal single-pole stages in series cross -3 dB at about 0.64x a single stage's pole, so comparing ngspice's simulated corner directly against filter_poles_hz would show a large, expected difference. This script instead re-derives the cascade's own -3 dB point from analyze.py's published poles using the same textbook two-pole formula (reimplemented here, analyze.py itself is not imported or modified) and compares ngspice against that.\"}"
     },
     {
       "check": "Panel print SVG regenerates byte-identical",
@@ -365,6 +365,51 @@
       "check": "Panel print outline matches mechanical/envelope-study.scad panel size",
       "result": "PASS",
       "detail": "(250.0, 180.0)"
+    },
+    {
+      "check": "Panel print active area is shifted by the documented offset (design/evidence/g02-mechanical-pins.md #4a), not centred",
+      "result": "PASS",
+      "detail": "(185.52, 109.1)"
+    },
+    {
+      "check": "Panel print labels the active-area offset orientation as an explicit, unconfirmed ASSUMPTION",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Panel print embeds reports/renderer-capture.png byte-identically (not a placeholder)",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Panel print embeds the capture at the module's physical pixel pitch (320x480 px over the active-area mm size)",
+      "result": "PASS",
+      "detail": "('48.96', '73.44')"
+    },
+    {
+      "check": "G02 stays OPEN after the renderer-capture panel print work",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "G09 stays OPEN after the renderer-capture panel print work",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Renderer capture regenerates byte-identical",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Renderer capture is exactly 320x480 (SCOPE_DISPLAY_WIDTH x SCOPE_DISPLAY_HEIGHT)",
+      "result": "PASS",
+      "detail": "320x480"
+    },
+    {
+      "check": "Renderer capture is 8-bit truecolor (no alpha) PNG",
+      "result": "PASS",
+      "detail": ""
     },
     {
       "check": "power-budget.json has required sections",
@@ -392,14 +437,209 @@
       "detail": ""
     },
     {
-      "check": "doc/ zfb build produced doc/dist (routes.json present)",
+      "check": "acceptance-results.csv rows match header width (no unnamed/None field)",
       "result": "PASS",
       "detail": ""
     },
     {
-      "check": "HTTP browser smoke passed (catalogue, ten-pane UI, GLB viewer, built site)",
+      "check": "acceptance-results.csv result values are all allowed",
       "result": "PASS",
-      "detail": "[\"Inline offline catalogue search\", \"Ten controls / three ranges / link restores local positions / hold freezes pixels\", \"HTTP offline catalogue loads and search filters cards\", \"HTTP ten-pane UI: time controls, radios, link restore, HOLD freeze, no 390px overflow, no console errors\", \"HTTP GLB viewer: model loads, no console errors, non-blank canvas captured\", \"HTTP built zfb site (doc/dist) serves getting-started and components pages\"]"
+      "detail": "['NOT_RUN']"
+    },
+    {
+      "check": "acceptance-results.csv PASS/FAIL rows cite evidence, operator and date",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "acceptance-results.csv: every row is still NOT_RUN (no physical measurement performed)",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Pane numbering parity: firmware panes, simulator and panel control banks are column-major (CH1-5 left, CH6-10 right, same top-to-bottom order)",
+      "result": "PASS",
+      "detail": "firmware={1: (0, 0), 2: (0, 1), 3: (0, 2), 4: (0, 3), 5: (0, 4), 6: (1, 0), 7: (1, 1), 8: (1, 2), 9: (1, 3), 10: (1, 4)}; simulator={1: (0, 0), 2: (0, 1), 3: (0, 2), 4: (0, 3), 5: (0, 4), 6: (1, 0), 7: (1, 1), 8: (1, 2), 9: (1, 3), 10: (1, 4)}; panel={1: (0, 0), 2: (0, 1), 3: (0, 2), 4: (0, 3), 5: (0, 4), 6: (1, 0), 7: (1, 1), 8: (1, 2), 9: (1, 3), 10: (1, 4)}"
+    },
+    {
+      "check": "module-power.json has an entry for every #35 claim",
+      "result": "PASS",
+      "detail": "missing: set()"
+    },
+    {
+      "check": "module-power.json entries carry status/citation/uncertainty",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "180 mA claim is unknown/rejected, not carried as a manufacturer maximum",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "display allowance is labelled an allowance, not a manufacturer/measured figure",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "report capacitance matches module-power.json (module, carrier, combined)",
+      "result": "PASS",
+      "detail": "{\"known_module_uf\": 11.2, \"known_carrier_uf\": 1.0, \"known_carrier_plus_module_uf\": 12.2, \"citation\": \"module-power-json\", \"evidence_status\": {\"module\": \"verified-schematic\", \"carrier\": \"verified-schematic\", \"combined_subtotal\": \"verified-schematic\"}, \"inrush_guidance_uf\": 10.0, \"status_known_figure_only\": \"exceeds_guidance_figure\", \"status_overall\": \"unknown\", \"overall_status_reason\": \"This is a known-figure nominal subtotal only. Pico's own onboard VBUS/VSYS bulk capacitance is not established from its datasheet text, and effective (not nominal) capacitance, fitted-part tolerance, source impedance and attach waveform are all unqualified. This subtotal is not a measured or claimed inrush-compliance result; overall inrush status stays unknown and G07 stays OPEN.\", \"not_a_measured_inrush_compliance_claim\": true}"
+    },
+    {
+      "check": "combined capacitance is exactly module + carrier",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "inrush status_overall stays unknown (no measured-compliance claim)",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "F1 branch current excludes the Pico allowance (branch + pico == total source current)",
+      "result": "PASS",
+      "detail": "{\"note\": \"F1 sits between VBUS_USB and +5V_FUSED (design/circuit.json parts[ref=F1]) and carries display+analog only; Pico's own supply branches upstream of F1 (scripts/make_design.py). A PPTC is not a precision USB current limiter.\", \"total_source_current_ma\": 420.0, \"total_source_current_citation\": \"power-mdx\", \"f1_branch_current_ma\": 340.0, \"f1_branch_current_note\": \"display allowance (300.0 mA) + analog allowance (40.0 mA); excludes the Pico allowance (80.0 mA), which does not cross F1.\", \"sizing_factor_assumption\": 1.5, \"target_hold_current_ma\": 510.0, \"selected_candidate\": {\"mpn\": \"1206L050YR\", \"citation\": \"fuse-catalog\", \"hold_current_rating_ma\": 500.0, \"rating_basis\": \"manufacturer nominal (25C, no temperature curve retained)\", \"derating_from_temperature_curve_ma\": null, \"derating_note\": \"No manufacturer temperature-derating curve for the 1206L050YR was retained in this pass (catalog/components.json's fuse record cites the LCSC/JLC listing only, not a datasheet PDF). Actual derated hold current at the carrier's operating temperature is UNKNOWN; do not assume 500 mA nominal holds at temperature. A PPTC is not a precision USB current limiter.\"}, \"target_vs_candidate_margin_ma\": -10.0, \"target_vs_candidate_note\": \"The 1.5x-derated target of 510.0 mA is 10.0 mA above the candidate's 500 mA nominal (25C, undetermined temperature) hold rating. This is a nominal-vs-nominal comparison, not a qualified fit: whoever selects/confirms F1 must reconcile the sizing margin against the part's actual temperature-derated hold current once that curve is retained.\"}"
+    },
+    {
+      "check": "F1 target hold current is the branch current times the sizing factor",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "F1 selected candidate is the catalog fuse record (1206L050YR, 500 mA)",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "No leftover \"630 mA derated hold\" figure in checked files",
+      "result": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "design/power-contract.json exists",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "power-contract.json has the required top-level sections",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "power-contract.json documents that USBD_MAX_POWER_MA is not #ifndef-guarded in pinned SDK 2.1.1",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "power-contract.json power_states covers boot, reset, BOOTSEL, configuration and suspend/deconfiguration",
+      "result": "PASS",
+      "detail": "missing: set()"
+    },
+    {
+      "check": "firmware/CMakeLists.txt still defines the expected firmware targets",
+      "result": "PASS",
+      "detail": "['scope10_acq', 'scope10_diagnostic']"
+    },
+    {
+      "check": "Every firmware target parsed from CMakeLists.txt has an explicit descriptor override entry",
+      "result": "PASS",
+      "detail": "{'scope10_diagnostic': None, 'scope10_acq': None}"
+    },
+    {
+      "check": "Every firmware target's USBD_MAX_POWER_MA override (if any) equals power-contract.json's declared_max_power_ma",
+      "result": "PASS",
+      "detail": "declared=250 mismatched={}"
+    },
+    {
+      "check": "reports/power-budget.json's declared_max_power_ma matches design/power-contract.json",
+      "result": "PASS",
+      "detail": "report=250 contract=250"
+    },
+    {
+      "check": "A budget allowance greater than the declared configured demand cannot report a PASS",
+      "result": "PASS",
+      "detail": "{\"status\": \"fail\", \"margin_ma\": -170.0, \"note\": \"A budget allowance greater than power-contract.json's declared_max_power_ma cannot report 'pass' here -- see design/power-contract.json's override_investigation for why declared_max_power_ma is currently the unmodified SDK default rather than a value matching the source contract.\"}"
+    },
+    {
+      "check": "reports/power-budget.json separates the allowance from a measured current (measured_current_ma is null; no bench result invented)",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "GPIO24/VBUS-sense is not proposed anywhere as a configuration-state substitute",
+      "result": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "G07 stays OPEN after the USB power-contract desk decision",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Firmware nominal zero code matches analog-analysis.json adc_zero_code_ideal (within 0.0005 code)",
+      "result": "PASS",
+      "detail": "firmware=1858.378 report=1858.3782897134943"
+    },
+    {
+      "check": "Firmware nominal volts/code matches analog-analysis.json input-referred LSB (within 1 ppm)",
+      "result": "PASS",
+      "detail": "firmware=0.008069583 report=0.008069583019578313"
+    },
+    {
+      "check": "GP13 is assigned a carrier net in design/gpio.json",
+      "result": "PASS",
+      "detail": "LCD_BL_SRC"
+    },
+    {
+      "check": "GP13 net has no resistive DC path below 1000000 ohm to a >3.3 V source (+5V_FUSED, VBUS_USB, LCD_BL) (#41)",
+      "result": "PASS",
+      "detail": "gp13_net=LCD_BL_SRC reachable={} walked=['+3V0_REF', '+3V3A', 'ADDR0', 'ADDR0_SRC', 'ADDR1', 'ADDR1_SRC', 'ADDR2', 'ADDR2_SRC', 'ADDR3', 'ADDR3_SRC', 'CH01_BIAS', 'CH02_BIAS', 'CH03_BIAS', 'CH04_BIAS', 'CH05_BIAS', 'CH06_BIAS', 'CH07_BIAS', 'CH08_BIAS', 'CH09_BIAS', 'CH10_BIAS', 'GND', 'LCD_BL_GATE', 'LCD_BL_SRC', 'MUX_DISABLE', 'RANGE_MID']"
+    },
+    {
+      "check": "GP13 net connects only the Pico socket contact and R64 (#41)",
+      "result": "PASS",
+      "detail": "[('J20', '17'), ('R64', '1')]"
+    },
+    {
+      "check": "LCD_BL_GATE connects only R64, R88 (gate pull-down) and the Q1 gate (#41)",
+      "result": "PASS",
+      "detail": "[('Q1', '1'), ('R64', '2'), ('R88', '1')]"
+    },
+    {
+      "check": "LCD_BL (J30 pos 17) connects only the display header and the Q1 drain; module R16 is its only pull-up (#41)",
+      "result": "PASS",
+      "detail": "[('J30', '17'), ('Q1', '3')]"
+    },
+    {
+      "check": "Q1 is the generic logic-level N-MOSFET record with source on GND (#41)",
+      "result": "PASS",
+      "detail": "{\"1\": \"LCD_BL_GATE\", \"2\": \"GND\", \"3\": \"LCD_BL\"}"
+    },
+    {
+      "check": "nmos-ll stays a generic record until G08: no MPN, no LCSC code, footprint unqualified",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "J30/J31 display header nets unchanged by the backlight interface change (#41)",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "Firmware early hook drives GP13 to the inverted OFF level (high) and the levels are named in lcd_safe_pins.h (#41)",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "pending_g01_changes[g01-r88-backlight-default] records the applied design, not an open keep/remove choice",
+      "result": "PASS",
+      "detail": "DESIGN_APPLIED_BENCH_CHECK_PENDING"
+    },
+    {
+      "check": "G01 and G06 stay OPEN after the desk backlight-interface change (#41)",
+      "result": "PASS",
+      "detail": "{'G01': 'OPEN', 'G06': 'OPEN'}"
     }
   ],
   "not_run": [
